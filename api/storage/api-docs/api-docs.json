@@ -1,0 +1,2324 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "TontiTOGO API",
+        "description": "API RESTful de la plateforme TontiTOGO — Gestion numérique des tontines au Togo avec suivi des cotisations et notifications SMS.",
+        "contact": {
+            "name": "Support TontiTOGO",
+            "email": "support@tontitogo.tg"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://127.0.0.1:8000",
+            "description": "Serveur local de développement"
+        }
+    ],
+    "paths": {
+        "/api/agent/login": {
+            "post": {
+                "tags": [
+                    "Auth Agent"
+                ],
+                "summary": "Connexion de l'agent par numéro de téléphone",
+                "operationId": "40155bd0158a0fb398ac2a9539f4ca6b",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "phone",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "22890123456"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "secret123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Connexion réussie — retourne user + token"
+                    },
+                    "422": {
+                        "description": "Identifiants incorrects"
+                    },
+                    "403": {
+                        "description": "Compte suspendu"
+                    }
+                }
+            }
+        },
+        "/api/agent/logout": {
+            "post": {
+                "tags": [
+                    "Auth Agent"
+                ],
+                "summary": "Déconnexion de l'agent",
+                "operationId": "38d81e3a8a1c212393f38b315aa39ec0",
+                "responses": {
+                    "200": {
+                        "description": "Déconnecté"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/agent/me": {
+            "get": {
+                "tags": [
+                    "Auth Agent"
+                ],
+                "summary": "Profil de l'agent connecté + stats du jour",
+                "operationId": "810143d3f358218f0c41f20e24343409",
+                "responses": {
+                    "200": {
+                        "description": "Profil + stats du jour"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/agent/password/change": {
+            "post": {
+                "tags": [
+                    "Auth Agent"
+                ],
+                "summary": "Changement de mot de passe obligatoire à la première connexion",
+                "operationId": "4e53a415889e0f081adba6f0a88d20bd",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "newSecret123"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "newSecret123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Mot de passe changé avec succès"
+                    },
+                    "422": {
+                        "description": "Erreurs de validation"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/agent/password/forgot": {
+            "post": {
+                "tags": [
+                    "Auth Agent"
+                ],
+                "summary": "Demande de réinitialisation de mot de passe par SMS (OTP)",
+                "operationId": "02f1db15f9660f0c14a96cdcd6fda3bd",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "phone"
+                                ],
+                                "properties": {
+                                    "phone": {
+                                        "description": "Numéro de téléphone togolais de l'agent",
+                                        "type": "string",
+                                        "example": "22890123456"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "SMS envoyé (ou numéro inconnu — même réponse par sécurité)"
+                    },
+                    "422": {
+                        "description": "Numéro invalide"
+                    }
+                }
+            }
+        },
+        "/api/agent/password/reset": {
+            "post": {
+                "tags": [
+                    "Auth Agent"
+                ],
+                "summary": "Réinitialisation du mot de passe avec le code OTP reçu par SMS",
+                "operationId": "0a7cdf4dba4c3e59fd9c84e5197a8786",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "phone",
+                                    "otp",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "22890123456"
+                                    },
+                                    "otp": {
+                                        "description": "Code à 6 chiffres reçu par SMS",
+                                        "type": "string",
+                                        "example": "482916"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "nouveauMdp123"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "nouveauMdp123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Mot de passe réinitialisé avec succès"
+                    },
+                    "422": {
+                        "description": "Code OTP invalide, expiré ou données incorrectes"
+                    },
+                    "404": {
+                        "description": "Agent introuvable"
+                    }
+                }
+            }
+        },
+        "/api/agent/contributions": {
+            "get": {
+                "tags": [
+                    "Agent - Cotisations"
+                ],
+                "summary": "Historique des cotisations de l'agent (infinite scroll, 20 par page)",
+                "operationId": "b946357991b6f00b559c42464fd504cb",
+                "parameters": [
+                    {
+                        "name": "settlement_status",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "pending",
+                                "settled"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "date",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Liste paginée des cotisations de l'agent"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Agent - Cotisations"
+                ],
+                "summary": "Enregistrer une cotisation terrain",
+                "operationId": "e479ce90aa7b75c83c3824e07a4a44d7",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "tontine_participant_id",
+                                    "amount"
+                                ],
+                                "properties": {
+                                    "tontine_participant_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "amount": {
+                                        "type": "number",
+                                        "example": 5000
+                                    },
+                                    "latitude": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 6.1375
+                                    },
+                                    "longitude": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 1.2123
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Cotisation enregistrée + SMS envoyé"
+                    },
+                    "422": {
+                        "description": "Erreur métier ou validation"
+                    },
+                    "403": {
+                        "description": "Tontine hors organisation"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/agent/contributions/{id}": {
+            "get": {
+                "tags": [
+                    "Agent - Cotisations"
+                ],
+                "summary": "Détail d'une cotisation de l'agent",
+                "operationId": "ba40286d0420c4ffea8ff75b173532a6",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Détail de la cotisation"
+                    },
+                    "404": {
+                        "description": "Non trouvée"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/agent/members/search": {
+            "get": {
+                "tags": [
+                    "Agent - Membres"
+                ],
+                "summary": "Recherche d'un membre sur le terrain",
+                "operationId": "b8cf25c773fec07610cdd7b3a4059836",
+                "parameters": [
+                    {
+                        "name": "query",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "minLength": 2
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Liste des membres correspondants (max 10)"
+                    },
+                    "422": {
+                        "description": "Terme de recherche invalide"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/agent/members/{id}/tontines": {
+            "get": {
+                "tags": [
+                    "Agent - Membres"
+                ],
+                "summary": "Tontines actives d'un membre (pour l'écran d'encaissement)",
+                "operationId": "6521ba452ccbeaf7f9774ac8c3ac158a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Membre + participations actives avec montants choisis"
+                    },
+                    "404": {
+                        "description": "Membre non trouvé"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/agent/members": {
+            "post": {
+                "tags": [
+                    "Agent - Membres"
+                ],
+                "summary": "Enregistrer un nouveau membre sur le terrain",
+                "operationId": "5eb34a55e7e65a34affd999af75e2120",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "notebook_number",
+                                    "firstname",
+                                    "lastname",
+                                    "phone",
+                                    "gender"
+                                ],
+                                "properties": {
+                                    "notebook_number": {
+                                        "type": "string"
+                                    },
+                                    "firstname": {
+                                        "type": "string"
+                                    },
+                                    "lastname": {
+                                        "type": "string"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "22890123456"
+                                    },
+                                    "gender": {
+                                        "type": "string",
+                                        "enum": [
+                                            "M",
+                                            "F"
+                                        ]
+                                    },
+                                    "address": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Membre enregistré"
+                    },
+                    "422": {
+                        "description": "Erreurs de validation"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/agent/members/{id}/enroll": {
+            "post": {
+                "tags": [
+                    "Agent - Membres"
+                ],
+                "summary": "Inscrire un membre à une tontine depuis le terrain",
+                "description": "L'agent inscrit instantanément un membre à une tontine. La date d'adhésion est forcée à aujourd'hui par le serveur.",
+                "operationId": "bfed4eb013acdeed78ce007c6da44268",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID du membre",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "tontine_id",
+                                    "chosen_amount"
+                                ],
+                                "properties": {
+                                    "tontine_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "chosen_amount": {
+                                        "description": "Montant choisi >= minimum de la tontine",
+                                        "type": "number",
+                                        "example": 500
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Membre inscrit à la tontine avec succès"
+                    },
+                    "403": {
+                        "description": "Tontine hors de l'organisation"
+                    },
+                    "422": {
+                        "description": "Membre déjà inscrit, montant insuffisant ou tontine inactive"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/agent/dashboard": {
+            "get": {
+                "tags": [
+                    "Auth Agent"
+                ],
+                "summary": "Tableau de bord agent : stats du jour + derniers encaissements",
+                "operationId": "3dc4c6d16ae3fcbb1db65cea9684f071",
+                "responses": {
+                    "200": {
+                        "description": "Stats + 5 dernières cotisations"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/responsible/agents": {
+            "get": {
+                "tags": [
+                    "Agents"
+                ],
+                "summary": "Liste paginée des agents",
+                "operationId": "77cf34ce8191b6d7bd239c90af3b1580",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Liste des agents"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Agents"
+                ],
+                "summary": "Créer un nouvel agent",
+                "operationId": "f0d27d205966b634619dc68ce161b5d2",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "firstname",
+                                    "lastname",
+                                    "phone",
+                                    "avatar"
+                                ],
+                                "properties": {
+                                    "firstname": {
+                                        "type": "string"
+                                    },
+                                    "lastname": {
+                                        "type": "string"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "22890123456"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "avatar": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Agent créé + mot de passe temporaire"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/responsible/agents/{id}": {
+            "get": {
+                "tags": [
+                    "Agents"
+                ],
+                "summary": "Détail et stats d'un agent",
+                "operationId": "b4497af5ff1c35d5093542e8a25a3bb3",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Agent + stats"
+                    },
+                    "404": {
+                        "description": "Non trouvé"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Agents"
+                ],
+                "summary": "Modifier un agent",
+                "operationId": "6fb6f251940c5daafbac463cf284124a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Agent mis à jour"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Agents"
+                ],
+                "summary": "Supprimer un agent",
+                "operationId": "dc8cb55d5e48552ca1857d0ccf527a4f",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Supprimé"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/responsible/agents/{id}/toggle-status": {
+            "patch": {
+                "tags": [
+                    "Agents"
+                ],
+                "summary": "Suspendre / réactiver un agent",
+                "operationId": "893e667b39568339aea6e278903ae582",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Statut mis à jour"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/responsible/contributions": {
+            "get": {
+                "tags": [
+                    "Cotisations"
+                ],
+                "summary": "Journal général des cotisations",
+                "operationId": "bc898b49ae1a4c8060516ff31ca55c2b",
+                "parameters": [
+                    {
+                        "name": "date",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "agent_id",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "member_id",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "tontine_id",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Liste paginée des cotisations"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/responsible/contributions/{id}": {
+            "get": {
+                "tags": [
+                    "Cotisations"
+                ],
+                "summary": "Détail d'une cotisation",
+                "operationId": "d71b1516f0204aa24891900c3e17aab5",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Détail de la cotisation"
+                    },
+                    "404": {
+                        "description": "Non trouvée"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/responsible/contributions/export/pdf": {
+            "get": {
+                "tags": [
+                    "Cotisations"
+                ],
+                "summary": "Exporter les cotisations en PDF",
+                "operationId": "fd3c9f132fc2f3546b266acc6e2b482a",
+                "parameters": [
+                    {
+                        "name": "date",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "agent_id",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "member_id",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "tontine_id",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Fichier PDF téléchargé"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/responsible/contributions/export/excel": {
+            "get": {
+                "tags": [
+                    "Cotisations"
+                ],
+                "summary": "Exporter les cotisations en Excel",
+                "operationId": "14f069e4d81202a5cf1e695734af7090",
+                "parameters": [
+                    {
+                        "name": "date",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "agent_id",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "member_id",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "tontine_id",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Fichier XLSX téléchargé"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/responsible/dashboard": {
+            "get": {
+                "tags": [
+                    "Dashboard"
+                ],
+                "summary": "Données complètes du tableau de bord responsable (KPIs + graphiques)",
+                "operationId": "16a1e4c4a4e6746410af5671ab9d64a6",
+                "responses": {
+                    "200": {
+                        "description": "KPIs, graphiques et activité récente"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/responsible/email/verification-notification": {
+            "post": {
+                "tags": [
+                    "Auth Responsable"
+                ],
+                "summary": "Renvoi de l'email de vérification",
+                "operationId": "ed3b5e0e7fbc7d0ff29bf5f65122750d",
+                "responses": {
+                    "200": {
+                        "description": "Email renvoyé"
+                    },
+                    "204": {
+                        "description": "Email déjà vérifié"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/responsible/email/verify/{id}/{hash}": {
+            "get": {
+                "tags": [
+                    "Auth Responsable"
+                ],
+                "summary": "Validation du lien de vérification d'email",
+                "operationId": "60fe53936bff5ff57afaebcee80ccf6e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "hash",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Email vérifié avec succès"
+                    },
+                    "403": {
+                        "description": "Lien invalide ou expiré"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/responsible/map/markers": {
+            "get": {
+                "tags": [
+                    "Carte GPS"
+                ],
+                "summary": "Points GPS des cotisations géolocalisées pour la carte Leaflet",
+                "operationId": "e84d4e2d347015bfb47d7bd872522ea2",
+                "parameters": [
+                    {
+                        "name": "date",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "agent_id",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Marqueurs géolocalisés"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/responsible/members": {
+            "get": {
+                "tags": [
+                    "Membres"
+                ],
+                "summary": "Liste paginée des membres",
+                "operationId": "f09691ee31c974ea397b1da6ee618384",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "active",
+                                "suspended"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Liste des membres"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Membres"
+                ],
+                "summary": "Créer un membre",
+                "operationId": "d392ad4b39f58431a01d05a1da3e00db",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "notebook_number",
+                                    "firstname",
+                                    "lastname",
+                                    "phone",
+                                    "gender"
+                                ],
+                                "properties": {
+                                    "notebook_number": {
+                                        "type": "string"
+                                    },
+                                    "firstname": {
+                                        "type": "string"
+                                    },
+                                    "lastname": {
+                                        "type": "string"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "22890123456"
+                                    },
+                                    "gender": {
+                                        "type": "string",
+                                        "enum": [
+                                            "M",
+                                            "F"
+                                        ]
+                                    },
+                                    "address": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Membre créé"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/responsible/members/{id}": {
+            "get": {
+                "tags": [
+                    "Membres"
+                ],
+                "summary": "Détail d'un membre",
+                "operationId": "1d7e6399bd6c33573fad41653dc5ecfb",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Fiche membre + participations"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Membres"
+                ],
+                "summary": "Modifier un membre",
+                "operationId": "3ba9277493e5db50162f09f73be28338",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Membre mis à jour"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Membres"
+                ],
+                "summary": "Supprimer un membre",
+                "operationId": "3953d9165d4ebdacbfedb8e0d6ed6a73",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Supprimé"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/responsible/members/{id}/toggle-status": {
+            "patch": {
+                "tags": [
+                    "Membres"
+                ],
+                "summary": "Suspendre / réactiver un membre",
+                "operationId": "864c802e13adf6593087caee556aca6b",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Statut mis à jour"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/responsible/register": {
+            "post": {
+                "tags": [
+                    "Auth Responsable"
+                ],
+                "summary": "Inscription d'un nouveau responsable",
+                "operationId": "4f2b832b808b2fc3508dc71aba4d7892",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "organization_name",
+                                    "firstname",
+                                    "lastname",
+                                    "phone",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "organization_name": {
+                                        "type": "string",
+                                        "example": "Tontine Solidarité"
+                                    },
+                                    "firstname": {
+                                        "type": "string",
+                                        "example": "Kofi"
+                                    },
+                                    "lastname": {
+                                        "type": "string",
+                                        "example": "Mensah"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "22890123456"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "kofi@example.tg"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "secret123"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "secret123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Compte créé avec succès"
+                    },
+                    "422": {
+                        "description": "Erreurs de validation"
+                    }
+                }
+            }
+        },
+        "/api/responsible/login": {
+            "post": {
+                "tags": [
+                    "Auth Responsable"
+                ],
+                "summary": "Connexion du responsable",
+                "operationId": "77a5c2dba899f6934e9ba31950dbc5ea",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "login",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "login": {
+                                        "description": "Email ou téléphone",
+                                        "type": "string",
+                                        "example": "kofi@example.tg"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "secret123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Connexion réussie — retourne user + token"
+                    },
+                    "422": {
+                        "description": "Identifiants incorrects"
+                    },
+                    "403": {
+                        "description": "Compte suspendu"
+                    }
+                }
+            }
+        },
+        "/api/responsible/logout": {
+            "post": {
+                "tags": [
+                    "Auth Responsable"
+                ],
+                "summary": "Déconnexion du responsable",
+                "operationId": "8f977318768239eb6008a9fe84b6105b",
+                "responses": {
+                    "200": {
+                        "description": "Déconnecté"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/responsible/me": {
+            "get": {
+                "tags": [
+                    "Auth Responsable"
+                ],
+                "summary": "Profil du responsable authentifié",
+                "operationId": "eac97702e5e5c22b1241fdfeaedbe24f",
+                "responses": {
+                    "200": {
+                        "description": "Profil retourné"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/responsible/profile": {
+            "put": {
+                "tags": [
+                    "Auth Responsable"
+                ],
+                "summary": "Mettre à jour le profil du responsable",
+                "operationId": "b6a0005d4a87acb5f073fb68ced1a508",
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "firstname": {
+                                        "type": "string"
+                                    },
+                                    "lastname": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "22890123456"
+                                    },
+                                    "current_password": {
+                                        "type": "string",
+                                        "format": "password"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "format": "password"
+                                    },
+                                    "avatar": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Profil mis à jour"
+                    },
+                    "422": {
+                        "description": "Erreurs de validation"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/responsible/account": {
+            "delete": {
+                "tags": [
+                    "Auth Responsable"
+                ],
+                "summary": "Supprimer définitivement son compte (droit à l'oubli)",
+                "operationId": "c046f357d43bbf788466b89a997b0c5b",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "password"
+                                ],
+                                "properties": {
+                                    "password": {
+                                        "description": "Mot de passe actuel pour confirmation",
+                                        "type": "string",
+                                        "format": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Compte supprimé définitivement"
+                    },
+                    "422": {
+                        "description": "Mot de passe incorrect"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/responsible/password/forgot": {
+            "post": {
+                "tags": [
+                    "Auth Responsable"
+                ],
+                "summary": "Envoi d'un lien de réinitialisation par email",
+                "operationId": "9501c9d4e342e0ff8e9b74fdf21043ff",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "kofi@example.tg"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Lien envoyé (même réponse si email inconnu)"
+                    },
+                    "422": {
+                        "description": "Email invalide"
+                    }
+                }
+            }
+        },
+        "/api/responsible/password/reset": {
+            "post": {
+                "tags": [
+                    "Auth Responsable"
+                ],
+                "summary": "Réinitialisation du mot de passe avec le token reçu par email",
+                "operationId": "1a7281267617d344aac38089528bf114",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "token",
+                                    "email",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "token": {
+                                        "description": "Token reçu dans l'email",
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "kofi@example.tg"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "nouveauMdp123"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "nouveauMdp123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Mot de passe réinitialisé"
+                    },
+                    "422": {
+                        "description": "Token invalide ou expiré"
+                    }
+                }
+            }
+        },
+        "/api/responsible/settings": {
+            "get": {
+                "tags": [
+                    "Paramètres"
+                ],
+                "summary": "Récupérer tous les paramètres de l'organisation",
+                "operationId": "895c67ccc7a02436bc7e195630c15666",
+                "responses": {
+                    "200": {
+                        "description": "Map clé → valeur des paramètres"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Paramètres"
+                ],
+                "summary": "Mettre à jour un ou plusieurs paramètres de l'organisation",
+                "operationId": "e384ed71ae8cc651ac4a19df7fbbee96",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "sms_template_confirmation": {
+                                        "type": "string",
+                                        "example": "Bonjour {nom}, votre cotisation de {montant} FCFA a bien été enregistrée."
+                                    },
+                                    "sms_template_reminder": {
+                                        "type": "string",
+                                        "example": "Bonjour {nom}, votre cotisation pour {tontine} est attendue aujourd'hui."
+                                    },
+                                    "sms_reminder_time": {
+                                        "type": "string",
+                                        "example": "17:30"
+                                    },
+                                    "organization_name": {
+                                        "type": "string",
+                                        "example": "Tontine Solidarité"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Paramètres mis à jour"
+                    },
+                    "422": {
+                        "description": "Erreurs de validation"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/responsible/settlements": {
+            "get": {
+                "tags": [
+                    "Règlements"
+                ],
+                "summary": "Historique des règlements journaliers",
+                "operationId": "a4bb907866ab656bb9626ffc8c4fac4a",
+                "parameters": [
+                    {
+                        "name": "agent_id",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "validated",
+                                "discrepancy"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Liste paginée des règlements"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/responsible/settlements/validate": {
+            "post": {
+                "tags": [
+                    "Règlements"
+                ],
+                "summary": "Valider le versement journalier d'un agent",
+                "operationId": "cfffce11306c57d1efdc3b5654b18708",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "agent_id",
+                                    "date_settled",
+                                    "received_amount"
+                                ],
+                                "properties": {
+                                    "agent_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "date_settled": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-01-15"
+                                    },
+                                    "received_amount": {
+                                        "type": "number",
+                                        "example": 45000
+                                    },
+                                    "notes": {
+                                        "type": "string",
+                                        "example": "Versement en espèces"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Règlement enregistré"
+                    },
+                    "422": {
+                        "description": "Règlement déjà existant ou erreur de validation"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/responsible/settlements/pending-summary": {
+            "get": {
+                "tags": [
+                    "Règlements"
+                ],
+                "summary": "Résumé des cotisations en attente par agent pour une date",
+                "operationId": "f35a1dda2eabf04fa151eb7f03a74b7a",
+                "parameters": [
+                    {
+                        "name": "date",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2025-01-15"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Résumé journalier des cotisations en attente"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/responsible/sms": {
+            "get": {
+                "tags": [
+                    "SMS"
+                ],
+                "summary": "Liste paginée des logs SMS",
+                "operationId": "7b1bfb5cf75477737678efaaaaf8f9be",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "sent",
+                                "failed"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "confirmation",
+                                "reminder"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Liste des logs SMS + stats"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/responsible/sms/{id}": {
+            "get": {
+                "tags": [
+                    "SMS"
+                ],
+                "summary": "Détail d'un log SMS avec payload Termii brut",
+                "operationId": "787dbaa0291935fc90627514ff3c3ec8",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Détail du log SMS"
+                    },
+                    "404": {
+                        "description": "Non trouvé"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/responsible/sms/send-reminders": {
+            "post": {
+                "tags": [
+                    "SMS"
+                ],
+                "summary": "Déclencher manuellement les SMS de rappel",
+                "operationId": "89c418463b082d2faa9b234739532182",
+                "responses": {
+                    "200": {
+                        "description": "Envoi des rappels lancé en arrière-plan"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/responsible/tontines": {
+            "get": {
+                "tags": [
+                    "Tontines"
+                ],
+                "summary": "Liste paginée des tontines",
+                "operationId": "c62b15277e10a2fd0feb26829d55e79d",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "active",
+                                "closed"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Liste des tontines"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Tontines"
+                ],
+                "summary": "Créer une tontine",
+                "operationId": "03141c612e3e487b724dc5d61386b4fe",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "minimum_amount",
+                                    "frequency",
+                                    "start_date"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Tontine Mensuelle"
+                                    },
+                                    "minimum_amount": {
+                                        "type": "number",
+                                        "example": 5000
+                                    },
+                                    "frequency": {
+                                        "type": "string",
+                                        "example": "monthly",
+                                        "enum": [
+                                            "daily",
+                                            "weekly",
+                                            "monthly"
+                                        ]
+                                    },
+                                    "start_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-01-01"
+                                    },
+                                    "end_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-12-31"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Tontine créée"
+                    },
+                    "422": {
+                        "description": "Erreurs de validation"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/responsible/tontines/{id}": {
+            "get": {
+                "tags": [
+                    "Tontines"
+                ],
+                "summary": "Détail d'une tontine avec ses participants",
+                "operationId": "acad420e5684eb9954fc484973565e02",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Tontine + stats + participants"
+                    },
+                    "404": {
+                        "description": "Non trouvée"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Tontines"
+                ],
+                "summary": "Modifier une tontine",
+                "operationId": "62ae84b8ff9d721fa4cc8f35edcda1d7",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Tontine mise à jour"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Tontines"
+                ],
+                "summary": "Supprimer une tontine",
+                "operationId": "5d6bb3cb5134c29c131622542f65565e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Supprimée"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/responsible/tontines/{tontine}/participants": {
+            "post": {
+                "tags": [
+                    "Tontines"
+                ],
+                "summary": "Ajouter un participant à une tontine",
+                "operationId": "4b24f0c5710c5e94af6ad32f1788965a",
+                "parameters": [
+                    {
+                        "name": "tontine",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "member_id",
+                                    "chosen_amount"
+                                ],
+                                "properties": {
+                                    "member_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "chosen_amount": {
+                                        "type": "number",
+                                        "example": 5000
+                                    },
+                                    "joined_at": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-01-01"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Participant ajouté"
+                    },
+                    "422": {
+                        "description": "Erreur métier ou validation"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/responsible/tontines/{tontine}/participants/{participant}": {
+            "delete": {
+                "tags": [
+                    "Tontines"
+                ],
+                "summary": "Retirer un participant d'une tontine",
+                "operationId": "81f8a182db55253589e413931281818c",
+                "parameters": [
+                    {
+                        "name": "tontine",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "participant",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Participant retiré"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "sanctum": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT",
+                "description": "Entrez votre token Sanctum : Bearer {token}"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Auth Responsable",
+            "description": "Inscription, connexion et profil du responsable"
+        },
+        {
+            "name": "Auth Agent",
+            "description": "Connexion, profil et changement de mot de passe de l'agent"
+        },
+        {
+            "name": "Dashboard",
+            "description": "KPIs et graphiques du tableau de bord responsable"
+        },
+        {
+            "name": "Agents",
+            "description": "Gestion des agents collecteurs"
+        },
+        {
+            "name": "Membres",
+            "description": "Gestion des membres et carnets"
+        },
+        {
+            "name": "Tontines",
+            "description": "Gestion des tontines et participants"
+        },
+        {
+            "name": "Cotisations",
+            "description": "Journal des cotisations et exports PDF/Excel"
+        },
+        {
+            "name": "Règlements",
+            "description": "Clôture de caisse journalière"
+        },
+        {
+            "name": "SMS",
+            "description": "Logs Termii et envoi de rappels"
+        },
+        {
+            "name": "Carte GPS",
+            "description": "Points de collecte géolocalisés Leaflet"
+        },
+        {
+            "name": "Paramètres",
+            "description": "Configuration SMS et organisation"
+        },
+        {
+            "name": "Agent - Membres",
+            "description": "Recherche et inscription de membres sur le terrain"
+        },
+        {
+            "name": "Agent - Cotisations",
+            "description": "Encaissement de cotisations sur le terrain"
+        }
+    ],
+    "security": [
+        {
+            "sanctum": []
+        }
+    ]
+}
