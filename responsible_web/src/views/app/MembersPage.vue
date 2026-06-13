@@ -2,6 +2,7 @@
 import { ref, onMounted, reactive } from 'vue'
 import { useMembersStore } from '@/stores/members'
 import { useToast }        from '@/composables/useToast'
+import { useDateFormatter } from '@/composables/useDateFormatter'
 
 const store = useMembersStore()
 const toast = useToast()
@@ -113,10 +114,7 @@ async function confirmDelete() {
   } catch { toast.error('Impossible de supprimer ce membre.') }
 }
 
-function formatDate(d) {
-  if (!d) return '—'
-  return new Date(d).toLocaleDateString('fr-FR')
-}
+const { formatDate } = useDateFormatter()
 
 onMounted(() => store.fetchAll())
 </script>

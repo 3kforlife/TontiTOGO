@@ -125,6 +125,9 @@ class _MemberSearchScreenState extends State<MemberSearchScreen> {
             case 2:
               context.go('/contributions');
               break;
+            case 3:
+              context.go('/settings');
+              break;
           }
         },
         items: const [
@@ -139,6 +142,10 @@ class _MemberSearchScreenState extends State<MemberSearchScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.receipt_long),
             label: 'Cotisations',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Paramètres',
           ),
         ],
       ),

@@ -30,6 +30,9 @@ Route::prefix('responsible')->name('responsible.')->group(function () {
     Route::post('/login',    [ResponsibleAuthController::class, 'login'])->name('login');
     Route::post('/password/forgot', [ResponsiblePasswordController::class, 'forgotPassword'])->name('password.forgot');
     Route::post('/password/reset',  [ResponsiblePasswordController::class, 'resetPassword'])->name('password.reset');
+    Route::get('/email/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])
+        ->middleware('signed')
+        ->name('verification.verify');
 
     // --- Routes protégées (Sanctum + rôle responsible) ---
     Route::middleware(['auth:sanctum', 'role:responsible'])->group(function () {
@@ -115,6 +118,7 @@ Route::prefix('agent')->name('agent.')->group(function () {
         Route::middleware(['password.changed'])->group(function () {
 
             Route::get('/dashboard', [MobileMemberController::class, 'agentDashboard'])->name('dashboard');
+            Route::get('/tontines',  [MobileMemberController::class, 'tontinesList'])->name('tontines.list');
 
             Route::get('/members/search',        [MobileMemberController::class, 'search'])->name('members.search');
             Route::get('/members/{id}/tontines', [MobileMemberController::class, 'tontines'])->name('members.tontines');

@@ -9,6 +9,33 @@ const authStore = useAuthStore()
 const status    = ref('loading') // loading | success | error
 const message   = ref('')
 
+async function verifyEmail(backendUrl) {
+  try {
+    await axios.get(backendUrl)
+
+    // Si l'utilisateur est connecté, rafraîchir ses infos
+    if (authStore.isAuthenticated) {
+      await authStore.fetchMe()
+    }
+
+    status.value  = 'success'
+    message.value = 'Adresse e-mail vérifiée avec succès !'
+    
+    // Nettoyer le localStorage
+    localStorage.removeItem('pendingEmailVerificationUrl')
+
+    // Rediriger vers le dashboard si connecté, sinon vers la connexion
+    if (authStore.isAuthenticated) {
+      setTimeout(() => router.replace({ name: 'dashboard' }), 2000)
+    } else {
+      setTimeout(() => router.replace({ name: 'login' }), 2000)
+    }
+  } catch (err) {
+    status.value  = 'error'
+    message.value = err.response?.data?.message || 'Le lien est invalide ou a expiré.'
+  }
+}
+
 onMounted(async () => {
   const backendUrl = route.query.url
   if (!backendUrl) {
@@ -17,21 +44,14 @@ onMounted(async () => {
     return
   }
 
-  try {
-    const token = localStorage.getItem('token')
-    await axios.get(backendUrl, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-
-    // Rafraîchir le user en localStorage pour persister email_verified_at
-    await authStore.fetchMe()
-
-    status.value  = 'success'
-    message.value = 'Adresse e-mail vérifiée avec succès !'
-    setTimeout(() => router.replace({ name: 'dashboard' }), 2000)
-  } catch {
-    status.value  = 'error'
-    message.value = 'Le lien est invalide ou a expiré.'
+  if (authStore.isAuthenticated) {
+    await verifyEmail(backendUrl)
+  } else {
+    // Stocke l'URL pour la vérifier après la connexion
+    localStorage.setItem('pendingEmailVerificationUrl', backendUrl)
+    status.value = 'info'
+    message.value = 'Veuillez vous connecter pour vérifier votre adresse e-mail.'
+    setTimeout(() => router.replace({ name: 'login' }), 3000)
   }
 })
 </script>
@@ -48,13 +68,22 @@ onMounted(async () => {
         <p class="text-gray-500">Vérification en cours...</p>
       </div>
 
+      <!-- Info (se connecter d'abord) -->
+      <div v-else-if="status === 'info'">
+        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+          <svg class="w-6 h-6 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <p class="font-semibold text-gray-900 mb-1">{{ message }}</p>
+        <p class="text-sm text-gray-400">Redirection vers la page de connexion...</p>
+      </div>
+
       <!-- Succès -->
       <div v-else-if="status === 'success'">
         <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
           <svg class="w-6 h-6 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
         </div>
         <p class="font-semibold text-gray-900 mb-1">{{ message }}</p>
-        <p class="text-sm text-gray-400">Redirection vers le tableau de bord...</p>
+        <p class="text-sm text-gray-400">{{ authStore.isAuthenticated ? 'Redirection vers le tableau de bord...' : 'Redirection vers la page de connexion...' }}</p>
       </div>
 
       <!-- Erreur -->
@@ -63,10 +92,11 @@ onMounted(async () => {
           <svg class="w-6 h-6 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </div>
         <p class="font-semibold text-gray-900 mb-3">{{ message }}</p>
-        <button>
-        <RouterLink :to="{ name: 'login' }" class="btn-secondary w-full">Retour à la connexion</RouterLink>
-          {{ resending ? 'Envoi en cours...' : 'Renvoyer le lien' }}
-        </button>
+        <div class="space-y-2">
+          <RouterLink :to="{ name: 'login' }" class="btn-secondary w-full">
+            Retour à la connexion
+          </RouterLink>
+        </div>
       </div>
     </div>
   </div>

@@ -4,41 +4,26 @@ import 'package:provider/provider.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/providers/auth_provider.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class OtpScreen extends StatefulWidget {
+  const OtpScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<OtpScreen> createState() => _OtpScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _OtpScreenState extends State<OtpScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _phoneController = TextEditingController();
-  final _passwordController = TextEditingController();
-  bool _obscurePassword = true;
+  final _otpController = TextEditingController();
 
   @override
   void dispose() {
-    _phoneController.dispose();
-    _passwordController.dispose();
+    _otpController.dispose();
     super.dispose();
   }
 
   Future<void> _submit() async {
     if (_formKey.currentState!.validate()) {
-      final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      final success = await authProvider.login(
-        phone: _phoneController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
-
-      if (success && mounted) {
-        if (authProvider.mustChangePassword) {
-          context.go('/change-password');
-        } else {
-          context.go('/');
-        }
-      }
+      context.go('/forgot-password/reset', extra: _otpController.text.trim());
     }
   }
 
@@ -69,13 +54,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: Column(
                           children: [
                             Icon(
-                              Icons.account_balance_wallet,
+                              Icons.sms,
                               size: 64,
                               color: AppColors.primary,
                             ),
                             SizedBox(height: 12),
                             Text(
-                              'TontiTOGO Agent',
+                              'Vérification du code',
                               style: TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
@@ -84,7 +69,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             SizedBox(height: 8),
                             Text(
-                              'Connectez-vous pour continuer',
+                              'Entrez le code OTP reçu par SMS',
                               style: TextStyle(
                                 color: AppColors.gray500,
                               ),
@@ -94,42 +79,20 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(height: 32),
                       TextFormField(
-                        controller: _phoneController,
-                        keyboardType: TextInputType.phone,
+                        controller: _otpController,
+                        keyboardType: TextInputType.number,
+                        maxLength: 6,
                         decoration: const InputDecoration(
-                          labelText: 'Numéro de téléphone',
-                          prefixIcon: Icon(Icons.phone),
+                          labelText: 'Code OTP (6 chiffres)',
+                          prefixIcon: Icon(Icons.pin),
+                          counterText: '',
                         ),
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
-                            return 'Veuillez entrer votre numéro de téléphone';
+                            return 'Veuillez entrer le code OTP';
                           }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 16),
-                      TextFormField(
-                        controller: _passwordController,
-                        obscureText: _obscurePassword,
-                        decoration: InputDecoration(
-                          labelText: 'Mot de passe',
-                          prefixIcon: const Icon(Icons.lock),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _obscurePassword
-                                  ? Icons.visibility_off
-                                  : Icons.visibility,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _obscurePassword = !_obscurePassword;
-                              });
-                            },
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'Veuillez entrer votre mot de passe';
+                          if (value.length != 6) {
+                            return 'Le code doit comporter 6 chiffres';
                           }
                           return null;
                         },
@@ -154,14 +117,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                       ],
-                      const SizedBox(height: 16),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: TextButton(
-                          onPressed: () => context.go('/forgot-password'),
-                          child: const Text('Mot de passe oublié ?'),
-                        ),
-                      ),
                       const SizedBox(height: 24),
                       ElevatedButton(
                         onPressed: authProvider.isLoading ? null : _submit,
@@ -177,12 +132,17 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               )
                             : const Text(
-                                'Se connecter',
+                                'Vérifier',
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
+                      ),
+                      const SizedBox(height: 16),
+                      TextButton(
+                        onPressed: () => context.go('/forgot-password'),
+                        child: const Text('Réessayer avec un autre numéro'),
                       ),
                     ],
                   ),

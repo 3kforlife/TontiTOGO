@@ -4,40 +4,54 @@ import 'package:provider/provider.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/providers/auth_provider.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class ResetPasswordScreen extends StatefulWidget {
+  const ResetPasswordScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _passwordConfirmController = TextEditingController();
   bool _obscurePassword = true;
+  bool _obscurePasswordConfirm = true;
 
   @override
   void dispose() {
-    _phoneController.dispose();
     _passwordController.dispose();
+    _passwordConfirmController.dispose();
     super.dispose();
   }
 
-  Future<void> _submit() async {
+  bool _validatePassword(String value) {
+    if (value.isEmpty) return false;
+    if (value.length < 8) return false;
+    if (!value.contains(RegExp(r'[A-Z]'))) return false;
+    if (!value.contains(RegExp(r'[a-z]'))) return false;
+    if (!value.contains(RegExp(r'[0-9]'))) return false;
+    if (!value.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) return false;
+    return true;
+  }
+
+  Future<void> _submit(String otp) async {
     if (_formKey.currentState!.validate()) {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      final success = await authProvider.login(
-        phone: _phoneController.text.trim(),
+      final success = await authProvider.resetPassword(
+        otp: otp,
         password: _passwordController.text.trim(),
+        passwordConfirmation: _passwordConfirmController.text.trim(),
       );
 
       if (success && mounted) {
-        if (authProvider.mustChangePassword) {
-          context.go('/change-password');
-        } else {
-          context.go('/');
-        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Mot de passe réinitialisé avec succès !'),
+            backgroundColor: AppColors.success,
+          ),
+        );
+        context.go('/login');
       }
     }
   }
@@ -45,6 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
+    final otp = GoRouterState.of(context).extra as String?;
 
     return Scaffold(
       backgroundColor: AppColors.primary,
@@ -69,13 +84,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: Column(
                           children: [
                             Icon(
-                              Icons.account_balance_wallet,
+                              Icons.lock_open,
                               size: 64,
                               color: AppColors.primary,
                             ),
                             SizedBox(height: 12),
                             Text(
-                              'TontiTOGO Agent',
+                              'Nouveau mot de passe',
                               style: TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
@@ -84,7 +99,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             SizedBox(height: 8),
                             Text(
-                              'Connectez-vous pour continuer',
+                              'Créez un nouveau mot de passe',
                               style: TextStyle(
                                 color: AppColors.gray500,
                               ),
@@ -94,25 +109,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(height: 32),
                       TextFormField(
-                        controller: _phoneController,
-                        keyboardType: TextInputType.phone,
-                        decoration: const InputDecoration(
-                          labelText: 'Numéro de téléphone',
-                          prefixIcon: Icon(Icons.phone),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'Veuillez entrer votre numéro de téléphone';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 16),
-                      TextFormField(
                         controller: _passwordController,
                         obscureText: _obscurePassword,
                         decoration: InputDecoration(
-                          labelText: 'Mot de passe',
+                          labelText: 'Nouveau mot de passe',
                           prefixIcon: const Icon(Icons.lock),
                           suffixIcon: IconButton(
                             icon: Icon(
@@ -129,7 +129,40 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
-                            return 'Veuillez entrer votre mot de passe';
+                            return 'Veuillez entrer un mot de passe';
+                          }
+                          if (!_validatePassword(value)) {
+                            return 'Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un symbole';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: _passwordConfirmController,
+                        obscureText: _obscurePasswordConfirm,
+                        decoration: InputDecoration(
+                          labelText: 'Confirmez le mot de passe',
+                          prefixIcon: const Icon(Icons.lock),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscurePasswordConfirm
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _obscurePasswordConfirm = !_obscurePasswordConfirm;
+                              });
+                            },
+                          ),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Veuillez confirmer le mot de passe';
+                          }
+                          if (value != _passwordController.text) {
+                            return 'Les mots de passe ne correspondent pas';
                           }
                           return null;
                         },
@@ -154,17 +187,11 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                       ],
-                      const SizedBox(height: 16),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: TextButton(
-                          onPressed: () => context.go('/forgot-password'),
-                          child: const Text('Mot de passe oublié ?'),
-                        ),
-                      ),
                       const SizedBox(height: 24),
                       ElevatedButton(
-                        onPressed: authProvider.isLoading ? null : _submit,
+                        onPressed: (authProvider.isLoading || otp == null)
+                            ? null
+                            : () => _submit(otp!),
                         child: authProvider.isLoading
                             ? const SizedBox(
                                 width: 20,
@@ -177,12 +204,17 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               )
                             : const Text(
-                                'Se connecter',
+                                'Réinitialiser',
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
+                      ),
+                      const SizedBox(height: 16),
+                      TextButton(
+                        onPressed: () => context.go('/login'),
+                        child: const Text('Retour à la connexion'),
                       ),
                     ],
                   ),

@@ -137,6 +137,19 @@ class _MemberDetailScreenState extends State<MemberDetailScreen> {
       children: [
         _buildMemberCard(),
         const SizedBox(height: 24),
+        ElevatedButton.icon(
+          onPressed: () async {
+            final result = await context.push<bool?>(
+              '/members/${widget.memberId}/enroll?name=${Uri.encodeComponent(_member?.displayName ?? 'Membre')}',
+            );
+            if (result == true && mounted) {
+              _loadMember();
+            }
+          },
+          icon: const Icon(Icons.add_card),
+          label: const Text('Inscrire à une tontine'),
+        ),
+        const SizedBox(height: 24),
         _buildTontinesSection(),
       ],
     );

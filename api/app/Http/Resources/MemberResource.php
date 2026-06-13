@@ -17,11 +17,11 @@ class MemberResource extends JsonResource
             'lastname'         => $this->lastname,
             'full_name'        => $this->full_name,
             'phone'            => $this->phone,
-            'gender'           => $this->gender->value,
-            'gender_label'     => $this->gender->label(),
+            'gender'           => $this->gender?->value,
+            'gender_label'     => $this->gender?->label(),
             'address'          => $this->address,
-            'status'           => $this->status->value,
-            'status_label'     => $this->status->label(),
+            'status'           => $this->status?->value,
+            'status_label'     => $this->status?->label(),
             'created_by_agent' => $this->whenLoaded('createdByAgent', fn() =>
                 $this->createdByAgent?->full_name
             ),

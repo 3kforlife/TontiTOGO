@@ -20,8 +20,13 @@ class Tontine {
     required this.minimumAmount,
   });
 
-  factory Tontine.fromJson(Map<String, dynamic> json) =>
-      _$TontineFromJson(json);
+  factory Tontine.fromJson(Map<String, dynamic> json) => Tontine(
+        id: (json['id'] as num?)?.toInt() ?? 0,
+        name: json['name'] as String? ?? '',
+        frequency: json['frequency'] as String? ?? '',
+        frequencyLabel: json['frequency_label'] as String?,
+        minimumAmount: (json['minimum_amount'] as num? ?? 0.0).toDouble(),
+      );
 
   Map<String, dynamic> toJson() => _$TontineToJson(this);
 }
@@ -43,8 +48,12 @@ class Participant {
     required this.minimumAmount,
   });
 
-  factory Participant.fromJson(Map<String, dynamic> json) =>
-      _$ParticipantFromJson(json);
+  factory Participant.fromJson(Map<String, dynamic> json) => Participant(
+        participantId: (json['participant_id'] as num?)?.toInt() ?? 0,
+        tontine: Tontine.fromJson(json['tontine'] as Map<String, dynamic>),
+        chosenAmount: (json['chosen_amount'] as num? ?? 0.0).toDouble(),
+        minimumAmount: (json['minimum_amount'] as num? ?? 0.0).toDouble(),
+      );
 
   Map<String, dynamic> toJson() => _$ParticipantToJson(this);
 }

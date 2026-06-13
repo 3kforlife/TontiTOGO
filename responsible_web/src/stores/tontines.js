@@ -26,7 +26,7 @@ export const useTontinesStore = defineStore('tontines', () => {
     loading.value = true
     try {
       const res      = await tontineService.show(id)
-      selected.value = res.data.data
+      selected.value = { ...res.data.data.tontine, stats: res.data.data.stats }
     } finally {
       loading.value = false
     }

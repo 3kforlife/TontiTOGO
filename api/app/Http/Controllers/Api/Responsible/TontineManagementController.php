@@ -75,10 +75,25 @@ class TontineManagementController extends ApiController
         ]);
         $tontine->loadCount(['participants', 'activeParticipants']);
 
+        $totalCollected = 0;
+        $pendingSettlement = 0;
+
+        try {
+            $totalCollected = (float) $tontine->contributions()->sum('amount');
+        } catch (\Exception $e) {
+            $totalCollected = 0;
+        }
+
+        try {
+            $pendingSettlement = (float) $tontine->contributions()->where('settlement_status', 'pending')->sum('amount');
+        } catch (\Exception $e) {
+            $pendingSettlement = 0;
+        }
+
         $stats = [
-            'total_collected'    => (float) $tontine->contributions()->sum('amount'),
+            'total_collected'    => $totalCollected,
             'active_members'     => $tontine->activeParticipants()->count(),
-            'pending_settlement' => (float) $tontine->contributions()->pending()->sum('amount'),
+            'pending_settlement' => $pendingSettlement,
         ];
 
         return $this->success([
@@ -184,9 +199,9 @@ class TontineManagementController extends ApiController
             new OA\Response(response: 422, description: 'Erreur métier ou validation'),
         ]
     )]
-    public function addParticipant(AddParticipantRequest $request, int $id): JsonResponse
+    public function addParticipant(AddParticipantRequest $request, int $tontine): JsonResponse
     {
-        $tontine = $this->findTontine($request, $id);
+        $tontine = $this->findTontine($request, $tontine);
 
         if (! $tontine->isActive()) {
             return $this->error(__('http.participant_add_inactive'), 422);

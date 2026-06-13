@@ -23,7 +23,6 @@ class EnrollMemberInTontineRequest extends FormRequest
     {
         return [
             'tontine_id'    => ['required', 'exists:tontines,id'],
-            'member_id'     => ['required', 'exists:members,id'],
             'chosen_amount' => ['required', 'numeric', 'min:100'],
             'joined_at'     => ['required', 'date', 'after_or_equal:today', 'before_or_equal:today'],
         ];
@@ -36,6 +35,7 @@ class EnrollMemberInTontineRequest extends FormRequest
     {
         $this->merge([
             'joined_at' => now()->toDateString(),
+            'member_id' => (int) $this->route('id'),
         ]);
     }
 

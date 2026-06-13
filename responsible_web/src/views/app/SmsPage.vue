@@ -2,6 +2,7 @@
 import { ref, onMounted, reactive } from 'vue'
 import { useSmsStore } from '@/stores/sms'
 import { useToast }    from '@/composables/useToast'
+import { useDateFormatter } from '@/composables/useDateFormatter'
 
 const store = useSmsStore()
 const toast = useToast()
@@ -42,10 +43,7 @@ function truncate(str, len = 80) {
   return str.length > len ? str.slice(0, len) + '…' : str
 }
 
-function formatDate(d) {
-  if (!d) return '—'
-  return new Date(d).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' })
-}
+const { formatDate } = useDateFormatter()
 
 function formatPayload(payload) {
   try {
@@ -139,7 +137,7 @@ onMounted(() => store.fetchAll())
               </span>
             </td>
             <td class="px-4 py-3 text-gray-500 text-xs hidden md:table-cell">{{ truncate(log.message) }}</td>
-            <td class="px-4 py-3 text-xs text-gray-400 hidden lg:table-cell">{{ formatDate(log.created_at) }}</td>
+            <td class="px-4 py-3 text-xs text-gray-400 hidden lg:table-cell">{{ formatDate(log.created_at, true) }}</td>
           </tr>
         </tbody>
       </table>
@@ -174,7 +172,7 @@ onMounted(() => store.fetchAll())
               <span :class="store.selected?.type === 'confirmation' ? 'badge-blue' : 'badge-gray'">
                 {{ store.selected?.type_label || store.selected?.type }}
               </span>
-              <span class="text-xs text-gray-400 ml-auto">{{ formatDate(store.selected?.created_at) }}</span>
+              <span class="text-xs text-gray-400 ml-auto">{{ formatDate(store.selected?.created_at, true) }}</span>
             </div>
             <div>
               <p class="text-xs text-gray-400 mb-1">Destinataire</p>

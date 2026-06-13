@@ -1,8 +1,9 @@
 <script setup>
 import { ref, onMounted, reactive } from 'vue'
 import { useTontinesStore } from '@/stores/tontines'
-import { useToast }         from '@/composables/useToast'
-import { memberService }    from '@/services/memberService'
+import { useToast }              from '@/composables/useToast'
+import { useDateFormatter }       from '@/composables/useDateFormatter'
+import { memberService }         from '@/services/memberService'
 
 const store = useTontinesStore()
 const toast = useToast()
@@ -164,13 +165,10 @@ async function removeParticipant(participant) {
   } catch { toast.error('Impossible de retirer ce participant.') }
 }
 
+const { formatDate } = useDateFormatter()
+
 function formatAmount(v) {
   return new Intl.NumberFormat('fr-FR').format(v || 0) + ' F'
-}
-
-function formatDate(d) {
-  if (!d) return '—'
-  return new Date(d).toLocaleDateString('fr-FR')
 }
 
 const tabs = [
@@ -408,15 +406,15 @@ onMounted(() => {
             <!-- Stats -->
             <div class="grid grid-cols-3 gap-3">
               <div class="bg-gray-50 rounded-xl p-3 text-center">
-                <p class="text-lg font-bold text-gray-900">{{ formatAmount(store.selected?.total_collected) }}</p>
+                <p class="text-lg font-bold text-gray-900">{{ formatAmount(store.selected?.stats?.total_collected) }}</p>
                 <p class="text-xs text-gray-400 mt-0.5">Total collecté</p>
               </div>
               <div class="bg-green-50 rounded-xl p-3 text-center">
-                <p class="text-lg font-bold text-green-700">{{ store.selected?.active_members ?? 0 }}</p>
+                <p class="text-lg font-bold text-green-700">{{ store.selected?.stats?.active_members ?? 0 }}</p>
                 <p class="text-xs text-gray-400 mt-0.5">Membres actifs</p>
               </div>
               <div class="bg-yellow-50 rounded-xl p-3 text-center">
-                <p class="text-lg font-bold text-yellow-700">{{ formatAmount(store.selected?.pending_settlement) }}</p>
+                <p class="text-lg font-bold text-yellow-700">{{ formatAmount(store.selected?.stats?.pending_settlement) }}</p>
                 <p class="text-xs text-gray-400 mt-0.5">En attente</p>
               </div>
             </div>
@@ -447,14 +445,14 @@ onMounted(() => {
                 <tbody class="divide-y divide-gray-50">
                   <tr v-for="p in store.selected.participants" :key="p.id" class="hover:bg-gray-50/50">
                     <td class="px-3 py-2">
-                      <p class="font-medium text-gray-800">{{ p.member_full_name || p.full_name }}</p>
+                      <p class="font-medium text-gray-800">{{ p.member?.full_name || '—' }}</p>
                       <p class="text-gray-400">{{ formatDate(p.joined_at) }}</p>
                     </td>
-                    <td class="px-3 py-2 text-gray-500">{{ p.phone || '—' }}</td>
+                    <td class="px-3 py-2 text-gray-500">{{ p.member?.phone || '—' }}</td>
                     <td class="px-3 py-2 text-right text-gray-600">{{ formatAmount(p.chosen_amount) }}</td>
                     <td class="px-3 py-2 text-center">
                       <span :class="p.status === 'active' ? 'badge-green' : p.status === 'suspended' ? 'badge-red' : 'badge-yellow'">
-                        {{ p.status }}
+                        {{ p.status_label || p.status }}
                       </span>
                     </td>
                     <td class="px-3 py-2 text-right font-medium text-gray-900">{{ formatAmount(p.total_paid) }}</td>

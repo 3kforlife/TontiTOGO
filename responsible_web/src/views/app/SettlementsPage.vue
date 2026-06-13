@@ -2,6 +2,7 @@
 import { ref, onMounted, reactive } from 'vue'
 import { useSettlementsStore } from '@/stores/settlements'
 import { useToast }            from '@/composables/useToast'
+import { useDateFormatter }     from '@/composables/useDateFormatter'
 import { agentService }        from '@/services/agentService'
 
 const store = useSettlementsStore()
@@ -67,10 +68,7 @@ function formatAmount(v) {
   return new Intl.NumberFormat('fr-FR').format(v || 0) + ' F'
 }
 
-function formatDate(d) {
-  if (!d) return '—'
-  return new Date(d).toLocaleDateString('fr-FR')
-}
+const { formatDate } = useDateFormatter()
 
 function discrepancyClass(expected, received) {
   const diff = (received || 0) - (expected || 0)

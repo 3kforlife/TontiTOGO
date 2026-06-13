@@ -24,6 +24,34 @@ class MobileMemberController extends ApiController
     ) {}
 
     #[OA\Get(
+        path: '/api/agent/tontines',
+        summary: 'Liste des tontines actives de l\'organisation',
+        tags: ['Agent - Membres'],
+        security: [['sanctum' => []]],
+        responses: [
+            new OA\Response(response: 200, description: 'Liste des tontines actives'),
+        ]
+    )]
+    public function tontinesList(Request $request): JsonResponse
+    {
+        $tontines = Tontine::forOrganization($request->user()->organization_id)
+            ->active()
+            ->orderBy('name')
+            ->get()
+            ->map(fn($tontine) => [
+                'id' => $tontine->id,
+                'name' => $tontine->name,
+                'frequency' => $tontine->frequency->value,
+                'frequency_label' => $tontine->frequency->label(),
+                'minimum_amount' => (float) $tontine->minimum_amount,
+            ])
+            ->values()
+            ->toArray();
+
+        return $this->success($tontines);
+    }
+
+    #[OA\Get(
         path: '/api/agent/members/search',
         summary: 'Recherche d\'un membre sur le terrain',
         tags: ['Agent - Membres'],
@@ -81,6 +109,7 @@ class MobileMemberController extends ApiController
                 'name'            => $p->tontine->name,
                 'frequency'       => $p->tontine->frequency->value,
                 'frequency_label' => $p->tontine->frequency->label(),
+                'minimum_amount'  => (float) $p->tontine->minimum_amount,
             ],
             'chosen_amount'  => (float) $p->chosen_amount,
             'minimum_amount' => (float) $p->tontine->minimum_amount,

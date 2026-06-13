@@ -42,8 +42,21 @@ class Member {
 
   String get displayName => fullName ?? '$firstname $lastname';
 
-  factory Member.fromJson(Map<String, dynamic> json) =>
-      _$MemberFromJson(json);
+  factory Member.fromJson(Map<String, dynamic> json) => Member(
+        id: (json['id'] as num?)?.toInt() ?? 0,
+        memberCode: json['member_code'] as String? ?? '',
+        notebookNumber: json['notebook_number'] as String?,
+        firstname: json['firstname'] as String? ?? '',
+        lastname: json['lastname'] as String? ?? '',
+        fullName: json['full_name'] as String?,
+        phone: json['phone'] as String? ?? '',
+        gender: json['gender'] as String?,
+        genderLabel: json['gender_label'] as String?,
+        address: json['address'] as String?,
+        status: json['status'] as String?,
+        statusLabel: json['status_label'] as String?,
+        createdAt: json['created_at'] as String?,
+      );
 
   Map<String, dynamic> toJson() => _$MemberToJson(this);
 }

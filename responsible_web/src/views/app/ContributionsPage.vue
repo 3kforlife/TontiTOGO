@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { useContributionsStore } from '@/stores/contributions'
 import { useToast }              from '@/composables/useToast'
+import { useDateFormatter }       from '@/composables/useDateFormatter'
 import { agentService }          from '@/services/agentService'
 import { memberService }         from '@/services/memberService'
 import { tontineService }        from '@/services/tontineService'
@@ -43,13 +44,10 @@ async function handleExport(type) {
   }
 }
 
+const { formatDate } = useDateFormatter()
+
 function formatAmount(v) {
   return new Intl.NumberFormat('fr-FR').format(v || 0) + ' F'
-}
-
-function formatDate(d) {
-  if (!d) return '—'
-  return new Date(d).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' })
 }
 
 onMounted(async () => {
@@ -182,7 +180,7 @@ onMounted(async () => {
                 {{ c.settlement_label || c.settlement_status || 'En attente' }}
               </span>
             </td>
-            <td class="px-4 py-3 text-xs text-gray-400 hidden lg:table-cell">{{ formatDate(c.created_at) }}</td>
+            <td class="px-4 py-3 text-xs text-gray-400 hidden lg:table-cell">{{ formatDate(c.created_at, true) }}</td>
           </tr>
         </tbody>
       </table>

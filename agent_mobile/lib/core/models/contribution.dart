@@ -33,7 +33,21 @@ class Contribution {
   });
 
   factory Contribution.fromJson(Map<String, dynamic> json) =>
-      _$ContributionFromJson(json);
+      Contribution(
+        id: (json['id'] as num?)?.toInt() ?? 0,
+        reference: json['reference'] as String? ?? '',
+        amount: (json['amount'] as num?)?.toDouble() ?? 0.0,
+        latitude: (json['latitude'] as num?)?.toDouble(),
+        longitude: (json['longitude'] as num?)?.toDouble(),
+        settlementStatus: json['settlement_status'] as String?,
+        tontineParticipantId: (json['tontine_participant_id'] as num?)?.toInt() ?? 0,
+        tontineParticipant: json['tontine_participant'] == null
+            ? null
+            : TontineParticipant.fromJson(
+              json['tontine_participant'] as Map<String, dynamic>,
+            ),
+        createdAt: json['created_at'] as String?,
+      );
 
   Map<String, dynamic> toJson() => _$ContributionToJson(this);
 }
@@ -54,7 +68,16 @@ class TontineParticipant {
   });
 
   factory TontineParticipant.fromJson(Map<String, dynamic> json) =>
-      _$TontineParticipantFromJson(json);
+      TontineParticipant(
+        id: (json['id'] as num?)?.toInt() ?? 0,
+        member: json['member'] == null
+            ? null
+            : Member.fromJson(json['member'] as Map<String, dynamic>),
+        tontine: json['tontine'] == null
+            ? null
+            : Tontine.fromJson(json['tontine'] as Map<String, dynamic>),
+        chosenAmount: (json['chosen_amount'] as num?)?.toDouble(),
+      );
 
   Map<String, dynamic> toJson() => _$TontineParticipantToJson(this);
 }

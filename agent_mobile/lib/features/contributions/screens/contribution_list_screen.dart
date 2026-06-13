@@ -137,6 +137,9 @@ class _ContributionListScreenState extends State<ContributionListScreen> {
             case 2:
               context.go('/contributions');
               break;
+            case 3:
+              context.go('/settings');
+              break;
           }
         },
         items: const [
@@ -151,6 +154,10 @@ class _ContributionListScreenState extends State<ContributionListScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.receipt_long),
             label: 'Cotisations',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Paramètres',
           ),
         ],
       ),

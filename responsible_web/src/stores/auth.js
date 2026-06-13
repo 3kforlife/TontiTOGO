@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { authService } from '@/services/authService'
+import axios from 'axios'
 
 export const useAuthStore = defineStore('auth', () => {
   const token = ref(localStorage.getItem('token') || null)
@@ -29,6 +30,20 @@ export const useAuthStore = defineStore('auth', () => {
   async function login(credentials) {
     const res = await authService.login(credentials)
     setSession(res.data.data)
+
+    // Vérifie s'il y a une vérification d'email en attente
+    const pendingVerificationUrl = localStorage.getItem('pendingEmailVerificationUrl')
+    if (pendingVerificationUrl) {
+      try {
+        await axios.get(pendingVerificationUrl)
+        await fetchMe()
+        localStorage.removeItem('pendingEmailVerificationUrl')
+      } catch (err) {
+        console.error('Erreur lors de la vérification de l\'email:', err)
+        localStorage.removeItem('pendingEmailVerificationUrl')
+      }
+    }
+
     return res.data
   }
 

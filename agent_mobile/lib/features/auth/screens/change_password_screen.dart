@@ -34,7 +34,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       );
 
       if (success && mounted) {
-        context.go('/');
+        context.go('/dashboard');
       }
     }
   }
@@ -102,8 +102,17 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     if (value == null || value.trim().isEmpty) {
                       return 'Veuillez entrer un mot de passe';
                     }
-                    if (value.trim().length < 6) {
-                      return 'Le mot de passe doit contenir au moins 6 caractères';
+                    if (value.trim().length < 8) {
+                      return 'Le mot de passe doit contenir au moins 8 caractères';
+                    }
+                    if (!RegExp(r'(?=.*[a-z])(?=.*[A-Z])').hasMatch(value.trim())) {
+                      return 'Le mot de passe doit contenir au moins une lettre majuscule et une lettre minuscule';
+                    }
+                    if (!RegExp(r'(?=.*\d)').hasMatch(value.trim())) {
+                      return 'Le mot de passe doit contenir au moins un chiffre';
+                    }
+                    if (!RegExp(r'(?=.*[@$!%*#?&_\-+=^~])').hasMatch(value.trim())) {
+                      return 'Le mot de passe doit contenir au moins un caractère spécial (@ \$ ! % * # ? & _ - + = ^ ~)';
                     }
                     return null;
                   },

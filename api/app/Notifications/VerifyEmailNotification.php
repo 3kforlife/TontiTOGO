@@ -39,6 +39,6 @@ class VerifyEmailNotification extends VerifyEmail
 
         $frontendBase = rtrim(config('app.frontend_url', 'http://localhost:5173'), '/');
 
-        return $frontendBase . '/email/verify?url=' . urlencode($backendUrl);
+        return $frontendBase . '/verify-email?url=' . urlencode($backendUrl);
     }
 }

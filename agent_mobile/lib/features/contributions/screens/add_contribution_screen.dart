@@ -301,17 +301,30 @@ class _AddContributionScreenState extends State<AddContributionScreen> {
                 const SizedBox(height: 8),
                 if (_isLoading) _buildParticipationsLoading(),
                 if (!_isLoading && _participations.isEmpty)
-                  const Center(
+                  Center(
                     child: Padding(
-                      padding: EdgeInsets.all(48),
+                      padding: const EdgeInsets.all(48),
                       child: Column(
                         children: [
-                          Icon(Icons.wallet_outlined,
+                          const Icon(Icons.wallet_outlined,
                               size: 64, color: AppColors.gray300),
-                          SizedBox(height: 16),
-                          Text(
+                          const SizedBox(height: 16),
+                          const Text(
                             'Aucune tontine active',
                             style: TextStyle(color: AppColors.gray500),
+                          ),
+                          const SizedBox(height: 24),
+                          ElevatedButton.icon(
+                            onPressed: () async {
+                              final result = await context.push<bool?>(
+                                '/members/${_selectedMember!.id}/enroll?name=${Uri.encodeComponent(_selectedMember!.displayName)}',
+                              );
+                              if (result == true && mounted) {
+                                _selectMember(_selectedMember!);
+                              }
+                            },
+                            icon: const Icon(Icons.add_card),
+                            label: const Text('Inscrire à une tontine'),
                           ),
                         ],
                       ),

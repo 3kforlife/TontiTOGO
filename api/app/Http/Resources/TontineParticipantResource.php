@@ -18,7 +18,13 @@ class TontineParticipantResource extends JsonResource
             'total_paid'          => (float) ($this->contributions_sum_amount ?? $this->total_contributions),
             'contributions_count' => $this->whenCounted('contributions'),
             'member'              => new MemberResource($this->whenLoaded('member')),
-            'tontine'             => new TontineResource($this->whenLoaded('tontine')),
+            'tontine'             => $this->whenLoaded('tontine', fn() => [
+                'id'                => $this->tontine->id,
+                'name'              => $this->tontine->name,
+                'minimum_amount'    => (float) $this->tontine->minimum_amount,
+                'frequency'         => $this->tontine->frequency->value,
+                'frequency_label'   => $this->tontine->frequency->label(),
+            ]),
         ];
     }
 }

@@ -4,40 +4,32 @@ import 'package:provider/provider.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/providers/auth_provider.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class ForgotPasswordScreen extends StatefulWidget {
+  const ForgotPasswordScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
   final _phoneController = TextEditingController();
-  final _passwordController = TextEditingController();
-  bool _obscurePassword = true;
 
   @override
   void dispose() {
     _phoneController.dispose();
-    _passwordController.dispose();
     super.dispose();
   }
 
   Future<void> _submit() async {
     if (_formKey.currentState!.validate()) {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      final success = await authProvider.login(
+      final success = await authProvider.requestOtp(
         phone: _phoneController.text.trim(),
-        password: _passwordController.text.trim(),
       );
 
       if (success && mounted) {
-        if (authProvider.mustChangePassword) {
-          context.go('/change-password');
-        } else {
-          context.go('/');
-        }
+        context.go('/forgot-password/otp');
       }
     }
   }
@@ -69,13 +61,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: Column(
                           children: [
                             Icon(
-                              Icons.account_balance_wallet,
+                              Icons.lock_reset,
                               size: 64,
                               color: AppColors.primary,
                             ),
                             SizedBox(height: 12),
                             Text(
-                              'TontiTOGO Agent',
+                              'Mot de passe oublié',
                               style: TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
@@ -84,7 +76,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             SizedBox(height: 8),
                             Text(
-                              'Connectez-vous pour continuer',
+                              'Entrez votre numéro de téléphone pour recevoir un code de réinitialisation',
+                              textAlign: TextAlign.center,
                               style: TextStyle(
                                 color: AppColors.gray500,
                               ),
@@ -103,33 +96,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
                             return 'Veuillez entrer votre numéro de téléphone';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 16),
-                      TextFormField(
-                        controller: _passwordController,
-                        obscureText: _obscurePassword,
-                        decoration: InputDecoration(
-                          labelText: 'Mot de passe',
-                          prefixIcon: const Icon(Icons.lock),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _obscurePassword
-                                  ? Icons.visibility_off
-                                  : Icons.visibility,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _obscurePassword = !_obscurePassword;
-                              });
-                            },
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'Veuillez entrer votre mot de passe';
                           }
                           return null;
                         },
@@ -154,14 +120,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                       ],
-                      const SizedBox(height: 16),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: TextButton(
-                          onPressed: () => context.go('/forgot-password'),
-                          child: const Text('Mot de passe oublié ?'),
-                        ),
-                      ),
                       const SizedBox(height: 24),
                       ElevatedButton(
                         onPressed: authProvider.isLoading ? null : _submit,
@@ -177,12 +135,17 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               )
                             : const Text(
-                                'Se connecter',
+                                'Envoyer le code',
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
+                      ),
+                      const SizedBox(height: 16),
+                      TextButton(
+                        onPressed: () => context.go('/login'),
+                        child: const Text('Retour à la connexion'),
                       ),
                     ],
                   ),

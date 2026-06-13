@@ -40,7 +40,6 @@ class EmailVerificationController extends ApiController
         path: '/api/responsible/email/verify/{id}/{hash}',
         summary: 'Validation du lien de vérification d\'email',
         tags: ['Auth Responsable'],
-        security: [['sanctum' => []]],
         parameters: [
             new OA\Parameter(name: 'id',   in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
             new OA\Parameter(name: 'hash', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
@@ -50,15 +49,21 @@ class EmailVerificationController extends ApiController
             new OA\Response(response: 403, description: 'Lien invalide ou expiré'),
         ]
     )]
-    public function verify(EmailVerificationRequest $request): JsonResponse
+    public function verify(Request $request, $id): JsonResponse
     {
-        if ($request->user()->hasVerifiedEmail()) {
+        $user = \App\Models\User::findOrFail($id);
+
+        if (! hash_equals((string) $request->hash, sha1($user->getEmailForVerification()))) {
+            return $this->error(__('http.email_verification_invalid'), 403);
+        }
+
+        if ($user->hasVerifiedEmail()) {
             return $this->success(null, __('http.email_already_verified'));
         }
 
-        $request->user()->markEmailAsVerified();
+        $user->markEmailAsVerified();
 
-        event(new Verified($request->user()));
+        event(new Verified($user));
 
         return $this->success(
             null,

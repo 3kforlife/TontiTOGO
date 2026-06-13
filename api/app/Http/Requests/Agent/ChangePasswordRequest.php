@@ -14,10 +14,16 @@ class ChangePasswordRequest extends FormRequest
 
     public function rules(): array
     {
-        return [
-            'current_password' => ['required', 'string', 'current_password'],
-            'password'         => PasswordRules::update(),
+        $rules = [
+            'password' => PasswordRules::update(),
         ];
+
+        // Si l'agent n'a pas à changer son mot de passe (ce n'est pas la première connexion), on demande le mot de passe actuel
+        if (! $this->user()?->must_change_password) {
+            $rules['current_password'] = ['required', 'string', 'current_password'];
+        }
+
+        return $rules;
     }
 
     public function messages(): array
