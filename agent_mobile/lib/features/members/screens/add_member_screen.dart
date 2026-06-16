@@ -92,9 +92,13 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
                 borderRadius: BorderRadius.all(Radius.circular(12)),
               ),
               elevation: 4,
+              duration: const Duration(seconds: 2),
             ),
           );
-          context.pop();
+          await Future.delayed(const Duration(milliseconds: 500));
+          if (mounted) {
+            context.pop();
+          }
         }
       } catch (e) {
         setState(() {

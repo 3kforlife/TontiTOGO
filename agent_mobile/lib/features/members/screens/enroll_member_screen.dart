@@ -130,9 +130,13 @@ class _EnrollMemberScreenState extends State<EnrollMemberScreen> {
                 borderRadius: BorderRadius.all(Radius.circular(12)),
               ),
               elevation: 4,
+              duration: Duration(seconds: 2),
             ),
           );
-          context.pop(true);
+          await Future.delayed(const Duration(milliseconds: 500));
+          if (mounted) {
+            context.pop(true);
+          }
         }
       } catch (e) {
         if (mounted) {

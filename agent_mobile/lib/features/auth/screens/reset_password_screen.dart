@@ -68,9 +68,13 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               borderRadius: BorderRadius.all(Radius.circular(12)),
             ),
             elevation: 4,
+            duration: Duration(seconds: 2),
           ),
         );
-        context.go('/login');
+        await Future.delayed(const Duration(milliseconds: 500));
+        if (mounted) {
+          context.go('/login');
+        }
       }
     }
   }
