@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/providers/auth_provider.dart';
+import '../../../core/widgets/widgets.dart';
 
 class OtpScreen extends StatefulWidget {
   const OtpScreen({super.key});
@@ -14,6 +15,7 @@ class OtpScreen extends StatefulWidget {
 class _OtpScreenState extends State<OtpScreen> {
   final _formKey = GlobalKey<FormState>();
   final _otpController = TextEditingController();
+  String? _otpError;
 
   @override
   void dispose() {
@@ -22,7 +24,17 @@ class _OtpScreenState extends State<OtpScreen> {
   }
 
   Future<void> _submit() async {
-    if (_formKey.currentState!.validate()) {
+    setState(() {
+      if (_otpController.text.trim().isEmpty) {
+        _otpError = 'Veuillez entrer le code OTP';
+      } else if (_otpController.text.length != 6) {
+        _otpError = 'Le code doit comporter 6 chiffres';
+      } else {
+        _otpError = null;
+      }
+    });
+
+    if (_otpError == null) {
       context.go('/forgot-password/reset', extra: _otpController.text.trim());
     }
   }
@@ -32,120 +44,100 @@ class _OtpScreenState extends State<OtpScreen> {
     final authProvider = Provider.of<AuthProvider>(context);
 
     return Scaffold(
-      backgroundColor: AppColors.primary,
+      backgroundColor: AppColors.gray50,
+      appBar: const TontiAppBar(
+        title: 'Vérification du code',
+      ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: Card(
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(24),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(32),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const Center(
-                        child: Column(
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            child: AppCard(
+              padding: const EdgeInsets.all(AppSpacing.xl),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const Center(
+                      child: Column(
+                        children: [
+                          AppFeatureIcon(
+                            icon: Icons.sms,
+                            size: 80,
+                          ),
+                          SizedBox(height: AppSpacing.lg),
+                          Text(
+                            'Vérification du code',
+                            style: AppTextStyles.h2,
+                          ),
+                          SizedBox(height: AppSpacing.sm),
+                          Text(
+                            'Entrez le code OTP reçu par SMS',
+                            style: AppTextStyles.bodyMedium,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.xl),
+                    AppTextField(
+                      label: 'Code OTP (6 chiffres)',
+                      controller: _otpController,
+                      hintText: '000000',
+                      keyboardType: TextInputType.number,
+                      maxLength: 6,
+                      prefixIcon: Icons.pin,
+                      errorText: _otpError,
+                    ),
+                    if (authProvider.errorMessage != null) ...[
+                      const SizedBox(height: AppSpacing.md),
+                      Container(
+                        padding: const EdgeInsets.all(AppSpacing.md),
+                        decoration: BoxDecoration(
+                          color: AppColors.danger.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(AppBorderRadius.lg),
+                          border: Border.all(
+                            color: AppColors.danger.withValues(alpha: 0.3),
+                          ),
+                        ),
+                        child: Row(
                           children: [
-                            Icon(
-                              Icons.sms,
-                              size: 64,
-                              color: AppColors.primary,
+                            const Icon(
+                              Icons.error_outline,
+                              color: AppColors.danger,
+                              size: 20,
                             ),
-                            SizedBox(height: 12),
-                            Text(
-                              'Vérification du code',
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.gray900,
-                              ),
-                            ),
-                            SizedBox(height: 8),
-                            Text(
-                              'Entrez le code OTP reçu par SMS',
-                              style: TextStyle(
-                                color: AppColors.gray500,
+                            const SizedBox(width: AppSpacing.sm),
+                            Expanded(
+                              child: Text(
+                                authProvider.errorMessage!,
+                                style: AppTextStyles.bodyMedium.copyWith(
+                                  color: AppColors.danger,
+                                ),
                               ),
                             ),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 32),
-                      TextFormField(
-                        controller: _otpController,
-                        keyboardType: TextInputType.number,
-                        maxLength: 6,
-                        decoration: const InputDecoration(
-                          labelText: 'Code OTP (6 chiffres)',
-                          prefixIcon: Icon(Icons.pin),
-                          counterText: '',
-                        ),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'Veuillez entrer le code OTP';
-                          }
-                          if (value.length != 6) {
-                            return 'Le code doit comporter 6 chiffres';
-                          }
-                          return null;
-                        },
-                      ),
-                      if (authProvider.errorMessage != null) ...[
-                        const SizedBox(height: 16),
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: AppColors.danger.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: AppColors.danger.withOpacity(0.3),
-                            ),
-                          ),
-                          child: Text(
-                            authProvider.errorMessage!,
-                            style: const TextStyle(
-                              color: AppColors.danger,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
-                      ],
-                      const SizedBox(height: 24),
-                      ElevatedButton(
-                        onPressed: authProvider.isLoading ? null : _submit,
-                        child: authProvider.isLoading
-                            ? const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    AppColors.white,
-                                  ),
-                                ),
-                              )
-                            : const Text(
-                                'Vérifier',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                      ),
-                      const SizedBox(height: 16),
-                      TextButton(
-                        onPressed: () => context.go('/forgot-password'),
-                        child: const Text('Réessayer avec un autre numéro'),
-                      ),
                     ],
-                  ),
+                    const SizedBox(height: AppSpacing.lg),
+                    AppButton(
+                      text: 'Vérifier',
+                      isLoading: authProvider.isLoading,
+                      onPressed: _submit,
+                      icon: Icons.check,
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    Align(
+                      alignment: Alignment.center,
+                      child: AppButton(
+                        text: 'Réessayer avec un autre numéro',
+                        type: AppButtonType.text,
+                        onPressed: () => context.go('/forgot-password'),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),

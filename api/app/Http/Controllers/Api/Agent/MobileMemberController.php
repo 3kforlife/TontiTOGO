@@ -274,7 +274,10 @@ class MobileMemberController extends ApiController
             'week_amount'        => (float) $agent->contributions()->collectedThisWeek()->sum('amount'),
             'month_amount'       => (float) $agent->contributions()->collectedThisMonth()->sum('amount'),
             'pending_amount'     => (float) $agent->contributions()->pending()->sum('amount'),
-            'members_registered' => Member::where('created_by_agent_id', $agent->id)->count(),
+            'total_members'      => Member::where('created_by_agent_id', $agent->id)->count(),
+            'total_enrollments'  => TontineParticipant::whereHas('member', function($q) use ($agent) {
+                $q->where('created_by_agent_id', $agent->id);
+            })->count(),
         ];
 
         $recentContributions = $agent->contributions()

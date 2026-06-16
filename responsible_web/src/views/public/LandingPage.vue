@@ -1,9 +1,18 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
+import TontiTogoLogo from '../../components/TontiTogoLogo.vue'
 
-const router     = useRouter()
-const menuOpen   = ref(false)
+const router = useRouter()
+const menuOpen = ref(false)
+const activeStep = ref(-1)
+const lineProgress = ref(100)
+
+// Typewriter effect
+const fullText = "La gestion de votre tontine, enfin simple."
+const displayedText = ref("")
+const isTyping = ref(true)
+let typewriterInterval = ref(null)
 
 const features = [
   {
@@ -44,6 +53,27 @@ const steps = [
   { num: '03', title: 'Lancez vos tontines', desc: 'Configurez vos tontines, ajoutez vos membres et définissez les montants.' },
   { num: '04', title: 'Collectez & Suivez', desc: 'Vos agents encaissent sur le terrain. Vous pilotez tout depuis votre bureau.' },
 ]
+
+// Lancer l'effet typewriter au montage
+onMounted(() => {
+  let charIndex = 0
+  typewriterInterval = setInterval(() => {
+    if (charIndex < fullText.length) {
+      displayedText.value += fullText[charIndex]
+      charIndex++
+    } else {
+      clearInterval(typewriterInterval)
+      isTyping.value = false
+    }
+  }, 70) // Vitesse d'écriture : 70ms par caractère
+})
+
+// Nettoyer l'intervalle au démontage
+onUnmounted(() => {
+  if (typewriterInterval) {
+    clearInterval(typewriterInterval)
+  }
+})
 </script>
 
 <template>
@@ -55,13 +85,11 @@ const steps = [
 
         <!-- Logo -->
         <RouterLink :to="{ name: 'home' }" class="flex items-center gap-2.5">
-          <div class="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
-            <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-            </svg>
-          </div>
-          <span class="text-lg font-bold text-gray-900">TontiTOGO</span>
-        </RouterLink>
+              <TontiTogoLogo />
+              <span class="text-lg font-bold">
+                <span class="text-gray-900">Tonti</span><span class="text-primary-600">TOGO</span>
+              </span>
+            </RouterLink>
 
         <!-- CTA desktop -->
         <div class="hidden sm:flex items-center gap-3">
@@ -88,54 +116,124 @@ const steps = [
       </div>
     </nav>
 
-    <!-- ── HERO ────────────────────────────────────────────────────────── -->
-    <section class="relative overflow-hidden bg-gradient-to-br from-primary-50 via-white to-white py-20 sm:py-28">
+    <!-- ── HERO & STEPS (2 colonnes) ───────────────────────────────────── -->
+    <section class="relative overflow-hidden bg-gradient-to-br from-primary-50 via-white to-white py-16 sm:py-24">
 
       <!-- Déco background -->
       <div class="absolute -top-24 -right-24 w-96 h-96 bg-primary-100 rounded-full opacity-40 blur-3xl" />
       <div class="absolute -bottom-16 -left-16 w-72 h-72 bg-primary-200 rounded-full opacity-30 blur-3xl" />
 
-      <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
 
-        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-100 text-primary-700 text-xs font-semibold mb-6">
-          <span class="w-1.5 h-1.5 bg-primary-500 rounded-full"></span>
-          Plateforme numérique de tontine au Togo
-        </span>
+          <!-- Colonne gauche: Hero -->
+          <div class="pt-8">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-100 text-primary-700 text-xs font-semibold mb-6 animate-fade-in-up">
+              <span class="w-1.5 h-1.5 bg-primary-500 rounded-full"></span>
+              Plateforme numérique de tontine au Togo
+            </span>
 
-        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-900 leading-tight mb-6">
-          La gestion de votre tontine,
-          <span class="text-primary-600"> enfin simple.</span>
-        </h1>
+            <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-900 leading-tight mb-6 animate-fade-in-up delay-100">
+              <!-- Partie avant "enfin simple." -->
+              <span v-if="displayedText.length >= 27">
+                {{ displayedText.slice(0, 27) }}
+              </span>
+              <span v-else>{{ displayedText }}</span>
+              
+              <!-- Partie verte "enfin simple." -->
+              <span v-if="displayedText.length >= 27" class="text-primary-600">
+                {{ displayedText.slice(27) }}
+              </span>
+              
+              <!-- Curseur clignotant -->
+              <span v-if="isTyping" class="inline-block w-1.5 h-12 sm:h-14 bg-primary-600 ml-1 align-middle animate-pulse"></span>
+            </h1>
 
-        <p class="text-lg text-gray-500 max-w-2xl mx-auto mb-10 leading-relaxed">
-          Pilotez vos agents, suivez chaque cotisation en temps réel, notifiez vos membres par SMS et
-          exportez vos rapports. Plus besoin de registres papiers, gérez toute votre activité depuis votre navigateur.
-        </p>
+            <p class="text-lg text-gray-600 max-w-xl mb-10 leading-relaxed animate-fade-in-up delay-200">
+              Pilotez vos agents, suivez chaque cotisation en temps réel, notifiez vos membres par SMS et
+              exportez vos rapports. Plus besoin de registres papiers, gérez toute votre activité depuis votre navigateur.
+            </p>
 
-        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <RouterLink :to="{ name: 'register' }" class="btn-primary px-8 py-3 text-base">
-            Créer mon compte responsable
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
-            </svg>
-          </RouterLink>
-          <RouterLink :to="{ name: 'login' }" class="btn-secondary px-8 py-3 text-base">
-            Accéder à mon espace
-          </RouterLink>
+            <div class="flex flex-col sm:flex-row items-start gap-4 animate-fade-in-up delay-300">
+              <RouterLink :to="{ name: 'register' }" class="btn-primary px-8 py-4 text-base shadow-lg shadow-primary-500/20 hover:shadow-xl hover:shadow-primary-500/30 transition-all duration-300">
+                Créer mon compte responsable
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </RouterLink>
+            </div>
+
+            <!-- Social proof minimaliste -->
+            <p class="mt-8 text-sm text-gray-400 animate-fade-in-up delay-400">
+              Sécurisé · Technologie anti-fraude · Données protégées
+            </p>
+          </div>
+
+          <!-- Colonne droite: Étapes -->
+          <div class="relative">
+            <!-- Ligne verticale -->
+            <div class="absolute left-6 top-6 bottom-6 w-0.5 bg-gradient-to-b from-primary-600 via-primary-500 to-primary-400 hidden lg:block" />
+
+            <h2 class="text-2xl font-bold text-gray-900 mb-8 lg:text-center lg:mb-10">
+              Démarrez en 4 étapes
+            </h2>
+
+            <div class="space-y-5">
+              <div
+                v-for="(step, index) in steps"
+                :key="step.num"
+                class="relative flex gap-5 items-start p-5 bg-white rounded-2xl border border-gray-100 shadow-sm transition-all duration-300 timeline-loop-card"
+                :class="{
+                  'shadow-xl border-primary-300': activeStep === index,
+                  'hover:shadow-lg hover:border-primary-200 hover:-translate-y-1.5': activeStep !== index,
+                  '-translate-y-1.5': activeStep === index
+                }"
+                :style="{
+                  '--delay': `${index * 0.6}s`,
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+                }"
+                @mouseenter="activeStep = index"
+                @mouseleave="activeStep = -1"
+              >
+                <!-- Numéro de l'étape dans un cercle vert -->
+                <div
+                  class="relative z-10 flex-shrink-0 w-12 h-12 bg-primary-600 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-primary-600/25 transition-transform duration-300 timeline-loop-circle"
+                  :style="{
+                    '--delay': `${index * 0.6}s`,
+                    transform: activeStep === index ? 'scale(1.15)' : 'scale(1)'
+                  }"
+                >
+                  {{ step.num }}
+                </div>
+
+                <!-- Contenu de l'étape -->
+                <div class="flex-1 pt-1">
+                  <h3
+                    class="font-semibold mb-1 transition-colors duration-300"
+                    :class="activeStep === index ? 'text-primary-700' : 'text-gray-900'"
+                  >
+                    {{ step.title }}
+                  </h3>
+                  <p class="text-sm text-gray-500 leading-relaxed">
+                    {{ step.desc }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
-
-        <!-- Social proof minimaliste -->
-        <p class="mt-8 text-xs text-gray-400">
-          Sécurisé · Technologie anti-fraude · Données protégées
-        </p>
       </div>
     </section>
 
     <!-- ── FONCTIONNALITÉS ─────────────────────────────────────────────── -->
-    <section class="py-20 bg-white">
+    <section class="py-24 bg-white">
       <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 
-        <div class="text-center mb-14">
+        <div class="text-center mb-16">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-100 text-primary-700 text-xs font-semibold mb-4">
+            Fonctionnalités
+          </span>
           <h2 class="text-3xl font-bold text-gray-900 mb-3">Tout ce dont vous avez besoin</h2>
           <p class="text-gray-500 max-w-xl mx-auto">Une seule plateforme pour gérer l'intégralité de votre activité de tontine.</p>
         </div>
@@ -144,7 +242,7 @@ const steps = [
           <div
             v-for="f in features"
             :key="f.title"
-            class="p-6 rounded-2xl border border-gray-100 hover:border-primary-200 hover:shadow-sm transition-all duration-200 group"
+            class="p-6 rounded-2xl border border-gray-100 hover:border-primary-200 hover:shadow-lg transition-all duration-300 group"
           >
             <!-- Icône -->
             <div class="w-11 h-11 rounded-xl bg-primary-50 group-hover:bg-primary-100 transition-colors flex items-center justify-center mb-4">
@@ -180,61 +278,99 @@ const steps = [
       </div>
     </section>
 
-    <!-- ── COMMENT ÇA MARCHE ───────────────────────────────────────────── -->
-    <section class="py-20 bg-gray-50">
-      <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-
-        <div class="text-center mb-14">
-          <h2 class="text-3xl font-bold text-gray-900 mb-3">Démarrez en 4 étapes</h2>
-          <p class="text-gray-500">Votre tontine numérique opérationnelle en moins d'une heure.</p>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div
-            v-for="step in steps"
-            :key="step.num"
-            class="relative bg-white rounded-2xl p-6 border border-gray-100 hover:shadow-sm transition-shadow"
-          >
-            <span class="text-4xl font-black text-primary-100 leading-none">{{ step.num }}</span>
-            <h3 class="font-semibold text-gray-900 mt-2 mb-1.5">{{ step.title }}</h3>
-            <p class="text-sm text-gray-500 leading-relaxed">{{ step.desc }}</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ── CTA FINAL ───────────────────────────────────────────────────── -->
-    <section class="py-20 bg-primary-600">
-      <div class="max-w-2xl mx-auto px-4 text-center">
-        <h2 class="text-3xl font-bold text-white mb-4">Prêt à moderniser votre tontine ?</h2>
-        <p class="text-primary-100 mb-8 text-lg">Rejoignez les responsables qui pilotent leur tontine depuis leur bureau.</p>
-        <RouterLink :to="{ name: 'register' }" class="inline-flex items-center gap-2 px-8 py-3.5 bg-white text-primary-700 font-semibold rounded-xl hover:bg-primary-50 transition-colors text-base">
-          Créer mon compte maintenant
-          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <path d="M5 12h14M12 5l7 7-7 7"/>
-          </svg>
-        </RouterLink>
-      </div>
-    </section>
-
+    
     <!-- ── FOOTER ──────────────────────────────────────────────────────── -->
     <footer class="bg-gray-900 text-gray-400 py-10">
       <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div class="flex items-center gap-2">
-          <div class="w-7 h-7 bg-primary-500 rounded-lg flex items-center justify-center">
-            <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-            </svg>
-          </div>
-          <span class="text-white font-semibold">TontiTOGO</span>
+          <TontiTogoLogo />
+          <span class="text-white font-semibold">
+            <span class="text-gray-300">Tonti</span><span class="text-primary-400">TOGO</span>
+          </span>
         </div>
         <p class="text-xs text-center">© {{ new Date().getFullYear() }} TontiTOGO. La gestion numérique de votre tontine en toute simplicité.</p>
         <div class="flex gap-4 text-xs">
-          <RouterLink :to="{ name: 'login' }" class="hover:text-white transition-colors">Connexion</RouterLink>
-          <RouterLink :to="{ name: 'register' }" class="hover:text-white transition-colors">Inscription</RouterLink>
+          <p>Support@tontitogo.com</p>
         </div>
       </div>
     </footer>
 
   </div>
 </template>
+
+<style scoped>
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out both;
+}
+
+.animate-fade-in-up.delay-100 {
+  animation-delay: 0.1s;
+}
+
+.animate-fade-in-up.delay-200 {
+  animation-delay: 0.2s;
+}
+
+.animate-fade-in-up.delay-300 {
+  animation-delay: 0.3s;
+}
+
+.animate-fade-in-up.delay-400 {
+  animation-delay: 0.4s;
+}
+
+/* Animation pour les cards de la timeline : apparition progressive puis animation subtile continue */
+@keyframes fadeInCard {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInCircle {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes gentleFloat {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.timeline-loop-card {
+  opacity: 0;
+  animation: fadeInCard 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards, gentleFloat 3s ease-in-out infinite;
+  animation-delay: var(--delay, 0s), calc(var(--delay, 0s) + 2s);
+}
+
+.timeline-loop-circle {
+  opacity: 0;
+  animation: fadeInCircle 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  animation-delay: var(--delay, 0s);
+}
+</style>

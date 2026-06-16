@@ -2,6 +2,8 @@
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import TontiTogoLogo from '../../components/TontiTogoLogo.vue'
+import PasswordInput from '../../components/PasswordInput.vue'
 
 const router    = useRouter()
 const authStore = useAuthStore()
@@ -39,12 +41,10 @@ async function submit() {
       <!-- Header -->
       <div class="text-center mb-8">
         <RouterLink :to="{ name: 'home' }" class="inline-flex items-center gap-2 mb-6">
-          <div class="w-9 h-9 bg-primary-600 rounded-xl flex items-center justify-center">
-            <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-            </svg>
-          </div>
-          <span class="text-xl font-bold text-gray-900">TontiTOGO</span>
+          <TontiTogoLogo />
+          <span class="text-xl font-bold">
+            <span class="text-gray-900">Tonti</span><span class="text-primary-600">TOGO</span>
+          </span>
         </RouterLink>
         <h1 class="text-2xl font-bold text-gray-900">Connexion</h1>
         <p class="text-gray-500 text-sm mt-1">Accédez à votre espace responsable</p>
@@ -66,14 +66,18 @@ async function submit() {
 
           <!-- Mot de passe -->
           <div>
-            <div class="flex items-center justify-between mb-1">
-              <label class="form-label mb-0">Mot de passe <span class="text-red-500">*</span></label>
+            <PasswordInput
+              v-model="form.password"
+              label="Mot de passe"
+              placeholder="••••••••"
+              :required="true"
+              :error="errors.password?.[0]"
+            />
+            <div class="flex justify-end mt-3">
               <RouterLink :to="{ name: 'forgot-password' }" class="text-xs text-primary-600 hover:underline">
                 Mot de passe oublié ?
               </RouterLink>
             </div>
-            <input v-model="form.password" type="password" placeholder="••••••••" class="form-input" required />
-            <p v-if="errors.password" class="text-red-500 text-xs mt-1">{{ errors.password[0] }}</p>
           </div>
 
           <button type="submit" :disabled="loading" class="btn-primary w-full py-2.5">

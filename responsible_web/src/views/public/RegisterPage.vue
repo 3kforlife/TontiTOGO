@@ -2,6 +2,8 @@
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import TontiTogoLogo from '../../components/TontiTogoLogo.vue'
+import PasswordInput from '../../components/PasswordInput.vue'
 
 const router    = useRouter()
 const authStore = useAuthStore()
@@ -44,12 +46,10 @@ async function submit() {
 
       <div class="text-center mb-8">
         <RouterLink :to="{ name: 'home' }" class="inline-flex items-center gap-2 mb-6">
-          <div class="w-9 h-9 bg-primary-600 rounded-xl flex items-center justify-center">
-            <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-            </svg>
-          </div>
-          <span class="text-xl font-bold text-gray-900">TontiTOGO</span>
+          <TontiTogoLogo />
+          <span class="text-xl font-bold">
+            <span class="text-gray-900">Tonti</span><span class="text-primary-600">TOGO</span>
+          </span>
         </RouterLink>
         <h1 class="text-2xl font-bold text-gray-900">Créer un compte</h1>
         <p class="text-gray-500 text-sm mt-1">Commencez à gérer votre tontine dès aujourd'hui</p>
@@ -107,15 +107,24 @@ async function submit() {
           </div>
 
           <div>
-            <label class="form-label">Mot de passe <span class="text-red-500">*</span></label>
-            <input v-model="form.password" type="password" placeholder="••••••••" class="form-input" required />
+            <PasswordInput
+              v-model="form.password"
+              label="Mot de passe"
+              placeholder="••••••••"
+              :required="true"
+              :error="errors.password?.[0]"
+            />
             <p class="text-xs text-gray-400 mt-1">Min. 8 caractères, 1 majuscule, 1 chiffre, 1 caractère spécial</p>
-            <p v-if="errors.password" class="text-red-500 text-xs mt-1">{{ errors.password[0] }}</p>
           </div>
 
           <div>
-            <label class="form-label">Confirmer le mot de passe <span class="text-red-500">*</span></label>
-            <input v-model="form.password_confirmation" type="password" placeholder="••••••••" class="form-input" required />
+            <PasswordInput
+              v-model="form.password_confirmation"
+              label="Confirmer le mot de passe"
+              placeholder="••••••••"
+              :required="true"
+              :error="errors.password_confirmation?.[0]"
+            />
           </div>
 
           <button type="submit" :disabled="loading" class="btn-primary w-full py-2.5">

@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/providers/auth_provider.dart';
+import '../../../core/widgets/widgets.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -15,7 +16,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _obscurePassword = true;
+  String? _phoneError;
+  String? _passwordError;
 
   @override
   void dispose() {
@@ -25,7 +27,16 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _submit() async {
-    if (_formKey.currentState!.validate()) {
+    setState(() {
+      _phoneError = _phoneController.text.trim().isEmpty
+          ? 'Veuillez entrer votre numéro de téléphone'
+          : null;
+      _passwordError = _passwordController.text.trim().isEmpty
+          ? 'Veuillez entrer votre mot de passe'
+          : null;
+    });
+
+    if (_phoneError == null && _passwordError == null) {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       final success = await authProvider.login(
         phone: _phoneController.text.trim(),
@@ -47,145 +58,104 @@ class _LoginScreenState extends State<LoginScreen> {
     final authProvider = Provider.of<AuthProvider>(context);
 
     return Scaffold(
-      backgroundColor: AppColors.primary,
+      backgroundColor: AppColors.gray50,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: Card(
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(24),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(32),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const Center(
-                        child: Column(
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            child: AppCard(
+              padding: const EdgeInsets.all(AppSpacing.xl),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const Center(
+                      child: Column(
+                        children: [
+                          // TontiTOGO Logo
+                          TontiTogoLogo(),
+                          SizedBox(height: AppSpacing.lg),
+                          Text(
+                            'TontiTOGO Agent',
+                            style: AppTextStyles.h2,
+                          ),
+                          SizedBox(height: AppSpacing.sm),
+                          Text(
+                            'Connectez-vous pour continuer',
+                            textAlign: TextAlign.center,
+                            style: AppTextStyles.bodyMedium,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.xl),
+                    AppTextField(
+                      label: 'Numéro de téléphone',
+                      controller: _phoneController,
+                      hintText: 'Ex: +228 90 00 00 00',
+                      keyboardType: TextInputType.phone,
+                      prefixIcon: Icons.phone,
+                      errorText: _phoneError,
+                      padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                    ),
+                    AppTextField(
+                      label: 'Mot de passe',
+                      controller: _passwordController,
+                      hintText: 'Entrez votre mot de passe',
+                      obscureText: true,
+                      prefixIcon: Icons.lock,
+                      errorText: _passwordError,
+                    ),
+                    if (authProvider.errorMessage != null) ...[
+                      const SizedBox(height: AppSpacing.md),
+                      Container(
+                        padding: const EdgeInsets.all(AppSpacing.md),
+                        decoration: BoxDecoration(
+                          color: AppColors.danger.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(AppBorderRadius.lg),
+                          border: Border.all(
+                            color: AppColors.danger.withValues(alpha: 0.3),
+                          ),
+                        ),
+                        child: Row(
                           children: [
-                            Icon(
-                              Icons.account_balance_wallet,
-                              size: 64,
-                              color: AppColors.primary,
+                            const Icon(
+                              Icons.error_outline,
+                              color: AppColors.danger,
+                              size: 20,
                             ),
-                            SizedBox(height: 12),
-                            Text(
-                              'TontiTOGO Agent',
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.gray900,
-                              ),
-                            ),
-                            SizedBox(height: 8),
-                            Text(
-                              'Connectez-vous pour continuer',
-                              style: TextStyle(
-                                color: AppColors.gray500,
+                            const SizedBox(width: AppSpacing.sm),
+                            Expanded(
+                              child: Text(
+                                authProvider.errorMessage!,
+                                style: AppTextStyles.bodyMedium.copyWith(
+                                  color: AppColors.danger,
+                                ),
                               ),
                             ),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 32),
-                      TextFormField(
-                        controller: _phoneController,
-                        keyboardType: TextInputType.phone,
-                        decoration: const InputDecoration(
-                          labelText: 'Numéro de téléphone',
-                          prefixIcon: Icon(Icons.phone),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'Veuillez entrer votre numéro de téléphone';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 16),
-                      TextFormField(
-                        controller: _passwordController,
-                        obscureText: _obscurePassword,
-                        decoration: InputDecoration(
-                          labelText: 'Mot de passe',
-                          prefixIcon: const Icon(Icons.lock),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _obscurePassword
-                                  ? Icons.visibility_off
-                                  : Icons.visibility,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _obscurePassword = !_obscurePassword;
-                              });
-                            },
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'Veuillez entrer votre mot de passe';
-                          }
-                          return null;
-                        },
-                      ),
-                      if (authProvider.errorMessage != null) ...[
-                        const SizedBox(height: 16),
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: AppColors.danger.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: AppColors.danger.withOpacity(0.3),
-                            ),
-                          ),
-                          child: Text(
-                            authProvider.errorMessage!,
-                            style: const TextStyle(
-                              color: AppColors.danger,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
-                      ],
-                      const SizedBox(height: 16),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: TextButton(
-                          onPressed: () => context.go('/forgot-password'),
-                          child: const Text('Mot de passe oublié ?'),
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      ElevatedButton(
-                        onPressed: authProvider.isLoading ? null : _submit,
-                        child: authProvider.isLoading
-                            ? const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    AppColors.white,
-                                  ),
-                                ),
-                              )
-                            : const Text(
-                                'Se connecter',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                      ),
                     ],
-                  ),
+                    const SizedBox(height: AppSpacing.sm),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: AppButton(
+                        text: 'Mot de passe oublié ?',
+                        type: AppButtonType.text,
+                        onPressed: () => context.go('/forgot-password'),
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
+                    AppButton(
+                      text: 'Se connecter',
+                      isLoading: authProvider.isLoading,
+                      onPressed: _submit,
+                      icon: Icons.arrow_forward,
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -195,3 +165,5 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
+
+

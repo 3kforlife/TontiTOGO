@@ -2,6 +2,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { authService } from '@/services/authService'
+import PasswordInput from '../../components/PasswordInput.vue'
 
 const route   = useRoute()
 const router  = useRouter()
@@ -57,13 +58,22 @@ async function submit() {
         <form v-else @submit.prevent="submit" class="space-y-4">
           <div v-if="serverError" class="p-3 bg-red-50 text-red-700 text-sm rounded-lg border border-red-100">{{ serverError }}</div>
           <div>
-            <label class="form-label">Nouveau mot de passe <span class="text-red-500">*</span></label>
-            <input v-model="form.password" type="password" placeholder="••••••••" class="form-input" required />
-            <p v-if="errors.password" class="text-red-500 text-xs mt-1">{{ errors.password[0] }}</p>
+            <PasswordInput
+              v-model="form.password"
+              label="Nouveau mot de passe"
+              placeholder="••••••••"
+              :required="true"
+              :error="errors.password?.[0]"
+            />
           </div>
           <div>
-            <label class="form-label">Confirmer le mot de passe <span class="text-red-500">*</span></label>
-            <input v-model="form.password_confirmation" type="password" placeholder="••••••••" class="form-input" required />
+            <PasswordInput
+              v-model="form.password_confirmation"
+              label="Confirmer le mot de passe"
+              placeholder="••••••••"
+              :required="true"
+              :error="errors.password_confirmation?.[0]"
+            />
           </div>
           <button type="submit" :disabled="loading" class="btn-primary w-full py-2.5">
             {{ loading ? 'Enregistrement...' : 'Changer le mot de passe' }}

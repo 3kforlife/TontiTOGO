@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { authService } from '@/services/authService'
+import TontiTogoLogo from '../../components/TontiTogoLogo.vue'
 
 const email   = ref('')
 const loading = ref(false)
@@ -26,12 +27,10 @@ async function submit() {
     <div class="w-full max-w-md">
       <div class="text-center mb-8">
         <RouterLink :to="{ name: 'home' }" class="inline-flex items-center gap-2 mb-6">
-          <div class="w-9 h-9 bg-primary-600 rounded-xl flex items-center justify-center">
-            <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-            </svg>
-          </div>
-          <span class="text-xl font-bold text-gray-900">TontiTOGO</span>
+          <TontiTogoLogo />
+          <span class="text-xl font-bold">
+            <span class="text-gray-900">Tonti</span><span class="text-primary-600">TOGO</span>
+          </span>
         </RouterLink>
         <h1 class="text-2xl font-bold text-gray-900">Mot de passe oublié</h1>
         <p class="text-gray-500 text-sm mt-1">Saisissez votre email pour recevoir un lien de réinitialisation</p>

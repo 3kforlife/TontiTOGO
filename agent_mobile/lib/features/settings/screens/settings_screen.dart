@@ -18,8 +18,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final user = authProvider.user;
 
     return Scaffold(
+      backgroundColor: AppColors.white,
       appBar: AppBar(
         title: const Text('Paramètres'),
+        centerTitle: false,
+        elevation: 0,
       ),
       body: SafeArea(
         child: ListView(
@@ -35,7 +38,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
               onTap: () {
                 // TODO: Naviguer vers l'écran de profil
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Fonctionnalité à venir')),
+                  const SnackBar(
+                    content: Text('Fonctionnalité à venir'),
+                    behavior: SnackBarBehavior.floating,
+                    margin: EdgeInsets.fromLTRB(16, 40, 16, 600),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                    ),
+                    elevation: 4,
+                  ),
                 );
               },
             ),
@@ -56,7 +67,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
               subtitle: 'Obtenir de l\'aide',
               onTap: () {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Fonctionnalité à venir')),
+                  const SnackBar(
+                    content: Text('Fonctionnalité à venir'),
+                    behavior: SnackBarBehavior.floating,
+                    margin: EdgeInsets.fromLTRB(16, 40, 16, 600),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                    ),
+                    elevation: 4,
+                  ),
                 );
               },
             ),
@@ -66,7 +85,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
               subtitle: 'Politique de confidentialité',
               onTap: () {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Fonctionnalité à venir')),
+                  const SnackBar(
+                    content: Text('Fonctionnalité à venir'),
+                    behavior: SnackBarBehavior.floating,
+                    margin: EdgeInsets.fromLTRB(16, 40, 16, 600),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                    ),
+                    elevation: 4,
+                  ),
                 );
               },
             ),
@@ -76,7 +103,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
               subtitle: 'Version 1.0.0',
               onTap: () {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('TontiTOGO Agent v1.0.0')),
+                  const SnackBar(
+                    content: Text('TontiTOGO Agent v1.0.0'),
+                    behavior: SnackBarBehavior.floating,
+                    margin: EdgeInsets.fromLTRB(16, 40, 16, 600),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                    ),
+                    elevation: 4,
+                  ),
                 );
               },
             ),
@@ -87,11 +122,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
         currentIndex: 3,
+        backgroundColor: AppColors.white,
+        elevation: 8,
+        selectedItemColor: AppColors.primary,
+        unselectedItemColor: AppColors.gray400,
+        selectedLabelStyle: const TextStyle(
+          fontWeight: FontWeight.w700,
+        ),
         onTap: (index) {
           switch (index) {
             case 0:
-              context.go('/');
+              context.go('/dashboard');
               break;
             case 1:
               context.go('/members/search');
@@ -106,19 +149,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
         },
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard),
-            label: 'Accueil',
+            icon: Icon(Icons.grid_view_outlined),
+            activeIcon: Icon(Icons.grid_view),
+            label: 'Tableau de bord',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.people),
+            icon: Icon(Icons.people_outlined),
+            activeIcon: Icon(Icons.people),
             label: 'Membres',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.receipt_long),
+            icon: Icon(Icons.receipt_long_outlined),
+            activeIcon: Icon(Icons.receipt_long),
             label: 'Cotisations',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
+            icon: Icon(Icons.settings_outlined),
+            activeIcon: Icon(Icons.settings),
             label: 'Paramètres',
           ),
         ],
@@ -140,7 +187,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 radius: 32,
                 backgroundColor: AppColors.primary,
                 child: Text(
-                  user?.firstname?.substring(0, 1).toUpperCase() ?? 'A',
+                  user?.firstName?.substring(0, 1).toUpperCase() ?? 'A',
                   style: const TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
@@ -154,7 +201,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '${user?.firstname ?? ''} ${user?.lastname ?? ''}',
+                      '${user?.firstName ?? ''} ${user?.lastName ?? ''}',
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,

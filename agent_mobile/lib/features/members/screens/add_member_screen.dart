@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:dio/dio.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/api/dio_client.dart';
+import '../../../core/widgets/widgets.dart';
 
 class AddMemberScreen extends StatefulWidget {
   const AddMemberScreen({super.key});
@@ -23,6 +23,11 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
   String? _selectedGender;
   bool _isLoading = false;
   String? _errorMessage;
+  String? _notebookNumberError;
+  String? _firstNameError;
+  String? _lastNameError;
+  String? _phoneError;
+  String? _genderError;
 
   @override
   void dispose() {
@@ -35,7 +40,29 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
   }
 
   Future<void> _submit() async {
-    if (_formKey.currentState!.validate()) {
+    setState(() {
+      _notebookNumberError = _notebookNumberController.text.trim().isEmpty
+          ? 'Veuillez entrer le numéro de carnet'
+          : null;
+      _firstNameError = _firstNameController.text.trim().isEmpty
+          ? 'Veuillez entrer le prénom'
+          : null;
+      _lastNameError = _lastNameController.text.trim().isEmpty
+          ? 'Veuillez entrer le nom'
+          : null;
+      _phoneError = _phoneController.text.trim().isEmpty
+          ? 'Veuillez entrer le numéro de téléphone'
+          : null;
+      _genderError = _selectedGender == null
+          ? 'Veuillez sélectionner le genre'
+          : null;
+    });
+
+    if (_notebookNumberError == null &&
+        _firstNameError == null &&
+        _lastNameError == null &&
+        _phoneError == null &&
+        _genderError == null) {
       setState(() {
         _isLoading = true;
         _errorMessage = null;
@@ -55,12 +82,17 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
         );
 
         if (mounted) {
-          Fluttertoast.showToast(
-            msg: response.data['message'] ?? 'Membre créé avec succès',
-            toastLength: Toast.LENGTH_LONG,
-            gravity: ToastGravity.BOTTOM,
-            backgroundColor: AppColors.success,
-            textColor: Colors.white,
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(response.data['message'] ?? 'Membre créé avec succès'),
+              backgroundColor: AppColors.success,
+              behavior: SnackBarBehavior.floating,
+              margin: const EdgeInsets.fromLTRB(16, 40, 16, 600),
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(12)),
+              ),
+              elevation: 4,
+            ),
           );
           context.pop();
         }
@@ -88,145 +120,152 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Nouveau membre'),
+      backgroundColor: AppColors.gray50,
+      appBar: const TontiAppBar(
+        title: 'Nouveau membre',
       ),
       body: SafeArea(
         child: Form(
           key: _formKey,
           child: ListView(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.all(AppSpacing.lg),
             children: [
-              TextFormField(
+              AppTextField(
+                label: 'Numéro de carnet',
                 controller: _notebookNumberController,
-                decoration: const InputDecoration(
-                  labelText: 'Numéro de carnet',
-                  prefixIcon: Icon(Icons.book),
-                ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Veuillez entrer le numéro de carnet';
-                  }
-                  return null;
-                },
+                hintText: 'Entrez le numéro de carnet',
+                prefixIcon: Icons.book,
+                errorText: _notebookNumberError,
+                padding: const EdgeInsets.only(bottom: AppSpacing.md),
               ),
-              const SizedBox(height: 16),
-              TextFormField(
+              AppTextField(
+                label: 'Prénom',
                 controller: _firstNameController,
-                decoration: const InputDecoration(
-                  labelText: 'Prénom',
-                  prefixIcon: Icon(Icons.person_outline),
-                ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Veuillez entrer le prénom';
-                  }
-                  return null;
-                },
+                hintText: 'Entrez le prénom',
+                prefixIcon: Icons.person_outline,
+                errorText: _firstNameError,
+                padding: const EdgeInsets.only(bottom: AppSpacing.md),
               ),
-              const SizedBox(height: 16),
-              TextFormField(
+              AppTextField(
+                label: 'Nom',
                 controller: _lastNameController,
-                decoration: const InputDecoration(
-                  labelText: 'Nom',
-                  prefixIcon: Icon(Icons.person),
-                ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Veuillez entrer le nom';
-                  }
-                  return null;
-                },
+                hintText: 'Entrez le nom',
+                prefixIcon: Icons.person,
+                errorText: _lastNameError,
+                padding: const EdgeInsets.only(bottom: AppSpacing.md),
               ),
-              const SizedBox(height: 16),
-              TextFormField(
+              AppTextField(
+                label: 'Téléphone',
                 controller: _phoneController,
+                hintText: 'Entrez le numéro de téléphone',
                 keyboardType: TextInputType.phone,
-                decoration: const InputDecoration(
-                  labelText: 'Téléphone',
-                  prefixIcon: Icon(Icons.phone),
-                ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Veuillez entrer le numéro de téléphone';
-                  }
-                  return null;
-                },
+                prefixIcon: Icons.phone,
+                errorText: _phoneError,
+                padding: const EdgeInsets.only(bottom: AppSpacing.md),
               ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                value: _selectedGender,
-                decoration: const InputDecoration(
-                  labelText: 'Genre',
-                  prefixIcon: Icon(Icons.wc),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.md,
                 ),
-                items: const [
-                  DropdownMenuItem(value: 'M', child: Text('Homme')),
-                  DropdownMenuItem(value: 'F', child: Text('Femme')),
-                ],
-                onChanged: (value) {
-                  setState(() {
-                    _selectedGender = value;
-                  });
-                },
-                validator: (value) {
-                  if (value == null) {
-                    return 'Veuillez sélectionner le genre';
-                  }
-                  return null;
-                },
+                decoration: BoxDecoration(
+                  color: AppColors.white,
+                  borderRadius: BorderRadius.circular(AppBorderRadius.lg),
+                  border: Border.all(
+                    color: _genderError != null
+                        ? AppColors.danger
+                        : AppColors.gray200,
+                    width: _genderError != null ? 2 : 1,
+                  ),
+                ),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButtonFormField<String>(
+                    value: _selectedGender,
+                    decoration: const InputDecoration(
+                      border: InputBorder.none,
+                      hintText: 'Sélectionnez le genre',
+                      prefixIcon: Icon(Icons.wc),
+                    ),
+                    items: const [
+                      DropdownMenuItem(value: 'M', child: Text('Homme')),
+                      DropdownMenuItem(value: 'F', child: Text('Femme')),
+                    ],
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedGender = value;
+                        if (_genderError != null) {
+                          _genderError = null;
+                        }
+                      });
+                    },
+                  ),
+                ),
               ),
-              const SizedBox(height: 16),
-              TextFormField(
+              if (_genderError != null) ...[
+                const SizedBox(height: AppSpacing.sm),
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.error_outline,
+                      color: AppColors.danger,
+                      size: 16,
+                    ),
+                    const SizedBox(width: AppSpacing.sm),
+                    Expanded(
+                      child: Text(
+                        _genderError!,
+                        style: AppTextStyles.bodySmall.copyWith(
+                          color: AppColors.danger,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+              const SizedBox(height: AppSpacing.md),
+              AppTextField(
+                label: 'Adresse',
                 controller: _addressController,
+                hintText: 'Entrez l\'adresse',
+                prefixIcon: Icons.location_on,
                 maxLines: 3,
-                decoration: const InputDecoration(
-                  labelText: 'Adresse',
-                  prefixIcon: Icon(Icons.location_on),
-                  alignLabelWithHint: true,
-                ),
               ),
               if (_errorMessage != null) ...[
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.md),
                 Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(AppSpacing.md),
                   decoration: BoxDecoration(
-                    color: AppColors.danger.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
+                    color: AppColors.danger.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(AppBorderRadius.lg),
                     border: Border.all(
-                      color: AppColors.danger.withOpacity(0.3),
+                      color: AppColors.danger.withValues(alpha: 0.3),
                     ),
                   ),
-                  child: Text(
-                    _errorMessage!,
-                    style: const TextStyle(
-                      color: AppColors.danger,
-                      fontSize: 14,
-                    ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.error_outline,
+                        color: AppColors.danger,
+                        size: 20,
+                      ),
+                      const SizedBox(width: AppSpacing.sm),
+                      Expanded(
+                        child: Text(
+                          _errorMessage!,
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            color: AppColors.danger,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
-              const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: _isLoading ? null : _submit,
-                child: _isLoading
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            AppColors.white,
-                          ),
-                        ),
-                      )
-                    : const Text(
-                        'Enregistrer',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+              const SizedBox(height: AppSpacing.lg),
+              AppButton(
+                text: 'Enregistrer',
+                isLoading: _isLoading,
+                onPressed: _submit,
+                icon: Icons.save,
               ),
             ],
           ),

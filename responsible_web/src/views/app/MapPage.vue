@@ -2,7 +2,21 @@
 import { ref, onMounted, reactive } from 'vue'
 import { useMapStore }  from '@/stores/map'
 import { agentService } from '@/services/agentService'
-import { LMap, LTileLayer, LCircleMarker, LPopup } from '@vue-leaflet/vue-leaflet'
+import { LMap, LTileLayer, LMarker, LPopup } from '@vue-leaflet/vue-leaflet'
+import L from 'leaflet'
+
+// Create custom blue pin icon
+const customPinIcon = L.divIcon({
+  className: 'custom-pin-icon',
+  html: `<svg width="32" height="40" viewBox="0 0 32 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M16 0C7.16344 0 0 7.16344 0 16C0 28 16 40 16 40C16 40 32 28 32 16C32 7.16344 24.8366 0 16 0Z" fill="#2563EB"/>
+    <circle cx="16" cy="16" r="8" fill="white"/>
+    <circle cx="16" cy="16" r="4" fill="#2563EB"/>
+  </svg>`,
+  iconSize: [32, 40],
+  iconAnchor: [16, 40],
+  popupAnchor: [0, -40],
+})
 import 'leaflet/dist/leaflet.css'
 
 const store  = useMapStore()
@@ -110,27 +124,76 @@ onMounted(async () => {
           layer-type="base"
           name="OpenStreetMap"
         />
-        <LCircleMarker
+        <LMarker
           v-for="marker in store.markers"
           :key="marker.id"
           :lat-lng="[marker.latitude, marker.longitude]"
-          :radius="8"
-          color="#16a34a"
-          fill-color="#22c55e"
-          :fill-opacity="0.8"
-          :weight="2"
+          :icon="customPinIcon"
         >
           <LPopup>
-            <div class="text-xs space-y-1 min-w-[160px]">
-              <p class="font-semibold text-gray-900 text-sm">{{ marker.member?.full_name || '—' }}</p>
-              <p class="text-gray-500">Code : {{ marker.member?.member_code || '—' }}</p>
-              <p class="text-gray-500">Tontine : {{ marker.tontine?.name || '—' }}</p>
-              <p class="font-medium text-green-700 text-sm">{{ formatAmount(marker.amount) }}</p>
-              <p class="text-gray-500">Agent : {{ marker.agent?.full_name || '—' }}</p>
-              <p class="text-gray-400">{{ formatDate(marker.collected_at) }}</p>
+            <div class="text-xs space-y-2 min-w-[220px]">
+              <!-- Agent Name -->
+              <div class="flex items-center gap-2">
+                <span class="text-gray-400">👤</span>
+                <p class="text-gray-500">
+                  <span class="font-medium text-gray-700">Agent :</span> {{ marker.agent?.full_name || '—' }}
+                </p>
+              </div>
+
+              <!-- Member Name (if available) -->
+              <div v-if="marker.member?.full_name" class="flex items-center gap-2">
+                <span class="text-gray-400">👤</span>
+                <p class="text-gray-500">
+                  <span class="font-medium text-gray-700">Membre :</span> {{ marker.member.full_name }}
+                </p>
+              </div>
+
+              <!-- Amount -->
+              <div class="flex items-center gap-2">
+                <span class="text-gray-400">💰</span>
+                <p class="text-gray-500">
+                  <span class="font-medium text-green-700">Montant :</span>
+                  <span class="font-semibold text-green-700">{{ formatAmount(marker.amount) }}</span>
+                </p>
+              </div>
+
+              <!-- Date -->
+              <div class="flex items-center gap-2">
+                <span class="text-gray-400">📅</span>
+                <p class="text-gray-500">
+                  <span class="font-medium text-gray-700">Date :</span> {{ formatDate(marker.collected_at) }}
+                </p>
+              </div>
+
+              <!-- Coordinates (clickable) -->
+              <div class="flex items-center gap-2">
+                <span class="text-gray-400">📍</span>
+                <a
+                  :href="`https://www.google.com/maps?q=${marker.latitude},${marker.longitude}`"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-primary-600 hover:text-primary-700 hover:underline font-medium"
+                >
+                  {{ marker.latitude }}, {{ marker.longitude }}
+                </a>
+              </div>
+
+              <!-- Google Maps Button -->
+              <a
+                :href="`https://www.google.com/maps?q=${marker.latitude},${marker.longitude}`"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-2 mt-2 w-full btn-primary text-xs justify-center py-1.5"
+              >
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+                  <circle cx="12" cy="10" r="3"/>
+                </svg>
+                Voir sur Google Maps
+              </a>
             </div>
           </LPopup>
-        </LCircleMarker>
+        </LMarker>
       </LMap>
     </div>
 
@@ -142,3 +205,9 @@ onMounted(async () => {
 
   </div>
 </template>
+
+<style scoped>
+.custom-pin-icon {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+</style>

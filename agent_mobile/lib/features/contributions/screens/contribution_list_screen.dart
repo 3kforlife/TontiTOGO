@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/api/dio_client.dart';
 import '../../../core/models/contribution.dart';
+import '../../../core/widgets/widgets.dart';
 
 class ContributionListScreen extends StatefulWidget {
   const ContributionListScreen({super.key});
@@ -109,8 +110,9 @@ class _ContributionListScreenState extends State<ContributionListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Cotisations'),
+      backgroundColor: AppColors.white,
+      appBar: const TontiAppBar(
+        title: 'Cotisations',
       ),
       body: SafeArea(
         child: _isLoading
@@ -121,15 +123,39 @@ class _ContributionListScreenState extends State<ContributionListScreen> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push('/contributions/add'),
-        icon: const Icon(Icons.add),
-        label: const Text('Encaisser'),
+        backgroundColor: AppColors.primary,
+        elevation: 4,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppBorderRadius.xl),
+        ),
+        icon: const Icon(
+          Icons.add,
+          color: AppColors.white,
+          size: 32,
+        ),
+        label: Text(
+          'Encaisser',
+          style: AppTextStyles.bodyLarge.copyWith(
+            color: AppColors.white,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
       ),
+
       bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
         currentIndex: 2,
+        backgroundColor: AppColors.white,
+        elevation: 8,
+        selectedItemColor: AppColors.primary,
+        unselectedItemColor: AppColors.gray400,
+        selectedLabelStyle: const TextStyle(
+          fontWeight: FontWeight.w700,
+        ),
         onTap: (index) {
           switch (index) {
             case 0:
-              context.go('/');
+              context.go('/dashboard');
               break;
             case 1:
               context.go('/members/search');
@@ -144,19 +170,23 @@ class _ContributionListScreenState extends State<ContributionListScreen> {
         },
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard),
-            label: 'Accueil',
+            icon: Icon(Icons.grid_view_outlined),
+            activeIcon: Icon(Icons.grid_view),
+            label: 'Tableau de bord',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.people),
+            icon: Icon(Icons.people_outlined),
+            activeIcon: Icon(Icons.people),
             label: 'Membres',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.receipt_long),
+            icon: Icon(Icons.receipt_long_outlined),
+            activeIcon: Icon(Icons.receipt_long),
             label: 'Cotisations',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
+            icon: Icon(Icons.settings_outlined),
+            activeIcon: Icon(Icons.settings),
             label: 'Paramètres',
           ),
         ],
@@ -166,15 +196,22 @@ class _ContributionListScreenState extends State<ContributionListScreen> {
 
   Widget _buildLoading() {
     return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.lg,
+        vertical: AppSpacing.xl,
+      ),
       itemCount: 8,
       itemBuilder: (context, index) {
         return Shimmer.fromColors(
           baseColor: AppColors.gray200,
           highlightColor: AppColors.gray100,
-          child: Card(
-            margin: const EdgeInsets.only(bottom: 8),
-            child: const ListTile(),
+          child: Container(
+            margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+            height: 70,
+            decoration: BoxDecoration(
+              color: AppColors.white,
+              borderRadius: BorderRadius.circular(AppBorderRadius.lg),
+            ),
           ),
         );
       },
@@ -184,21 +221,27 @@ class _ContributionListScreenState extends State<ContributionListScreen> {
   Widget _buildError() {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(48),
+        padding: const EdgeInsets.all(AppSpacing.xl),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline, size: 64, color: AppColors.danger),
-            const SizedBox(height: 16),
+            const AppFeatureIcon(
+              icon: Icons.error_outline,
+              size: 80,
+              iconColor: AppColors.danger,
+              backgroundColor: AppColors.danger,
+            ),
+            const SizedBox(height: AppSpacing.lg),
             Text(
               _error!,
               textAlign: TextAlign.center,
-              style: const TextStyle(color: AppColors.gray600),
+              style: AppTextStyles.bodyMedium,
             ),
-            const SizedBox(height: 24),
-            ElevatedButton(
+            const SizedBox(height: AppSpacing.xl),
+            AppButton(
+              text: 'Réessayer',
               onPressed: _loadContributions,
-              child: const Text('Réessayer'),
+              icon: Icons.refresh,
             ),
           ],
         ),
@@ -208,17 +251,21 @@ class _ContributionListScreenState extends State<ContributionListScreen> {
 
   Widget _buildContent() {
     if (_contributions.isEmpty) {
-      return const Center(
+      return Center(
         child: Padding(
-          padding: EdgeInsets.all(48),
+          padding: const EdgeInsets.all(AppSpacing.xl),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.receipt_long_outlined, size: 64, color: AppColors.gray300),
-              SizedBox(height: 16),
+              Icon(
+                Icons.receipt_long_outlined,
+                size: 80,
+                color: AppColors.gray300,
+              ),
+              const SizedBox(height: AppSpacing.lg),
               Text(
                 'Aucune cotisation enregistrée',
-                style: TextStyle(color: AppColors.gray500),
+                style: AppTextStyles.bodyMedium,
               ),
             ],
           ),
@@ -228,52 +275,37 @@ class _ContributionListScreenState extends State<ContributionListScreen> {
 
     return RefreshIndicator(
       onRefresh: _loadContributions,
-      child: ListView.builder(
-        controller: _scrollController,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-        itemCount: _contributions.length + (_isLoadingMore ? 1 : 0),
-        itemBuilder: (context, index) {
-          if (index == _contributions.length) {
-            return const Padding(
-              padding: EdgeInsets.symmetric(vertical: 16),
-              child: Center(child: CircularProgressIndicator()),
-            );
-          }
+      color: AppColors.primary,
+      child: AppCard(
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+        child: ListView.builder(
+          controller: _scrollController,
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.sm,
+          ),
+          itemCount: _contributions.length + (_isLoadingMore ? 1 : 0),
+          itemBuilder: (context, index) {
+            if (index == _contributions.length) {
+              return const Padding(
+                padding: EdgeInsets.symmetric(vertical: AppSpacing.md),
+                child: Center(child: CircularProgressIndicator()),
+              );
+            }
 
-          final contribution = _contributions[index];
-          return Card(
-            margin: const EdgeInsets.only(bottom: 8),
-            child: ListTile(
-              leading: CircleAvatar(
-                backgroundColor: contribution.settlementStatus == 'pending'
-                    ? AppColors.warning.withOpacity(0.1)
-                    : AppColors.success.withOpacity(0.1),
-                child: Icon(
-                  contribution.settlementStatus == 'pending'
-                      ? Icons.pending
-                      : Icons.check_circle,
-                  color: contribution.settlementStatus == 'pending'
-                      ? AppColors.warning
-                      : AppColors.success,
-                ),
-              ),
-              title: Text(
-                contribution.tontineParticipant?.member?.displayName ?? '',
-              ),
-              subtitle: Text(
-                '${contribution.tontineParticipant?.tontine?.name ?? ''} • ${contribution.createdAt}',
-              ),
-              trailing: Text(
-                _formatAmount(contribution.amount),
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.primary,
-                ),
-              ),
+            final contribution = _contributions[index];
+            return TransactionCard(
+              title: contribution.displayMember?.displayName ?? '',
+              subtitle:
+                  '${contribution.displayTontine?.name ?? ''} • ${contribution.createdAt}',
+              amount: _formatAmount(contribution.amount),
+              date: '',
+              type: contribution.settlementStatus == 'pending'
+                  ? TransactionType.transfer
+                  : TransactionType.deposit,
               onTap: () => context.push('/contributions/${contribution.id}'),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }

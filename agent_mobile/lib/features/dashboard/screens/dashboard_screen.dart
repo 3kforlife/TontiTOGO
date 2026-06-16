@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
+import 'package:intl/intl.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../core/api/dio_client.dart';
-import '../../../core/models/contribution.dart';
-import 'package:shimmer/shimmer.dart';
-import 'package:intl/intl.dart';
+import '../../../core/widgets/widgets.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -56,30 +56,54 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
+    final user = authProvider.user;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Tableau de bord'),
-      ),
+      backgroundColor: AppColors.white,
       body: RefreshIndicator(
         onRefresh: _loadDashboard,
+        color: AppColors.primary,
         child: _isLoading
             ? _buildLoading()
             : _error != null
                 ? _buildError()
-                : _buildContent(),
+                : _buildContent(user),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push('/contributions/add'),
-        icon: const Icon(Icons.add),
-        label: const Text('Encaisser'),
+        backgroundColor: AppColors.primary,
+        elevation: 4,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppBorderRadius.xl),
+        ),
+        icon: const Icon(
+          Icons.add,
+          color: AppColors.white,
+          size: 32,
+        ),
+        label: Text(
+          'Encaisser',
+          style: AppTextStyles.bodyLarge.copyWith(
+            color: AppColors.white,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
         currentIndex: 0,
+        backgroundColor: AppColors.white,
+        elevation: 8,
+        selectedItemColor: AppColors.primary,
+        unselectedItemColor: AppColors.gray400,
+        selectedLabelStyle: const TextStyle(
+          fontWeight: FontWeight.w700,
+        ),
         onTap: (index) {
           switch (index) {
             case 0:
-              context.go('/');
+              context.go('/dashboard');
               break;
             case 1:
               context.go('/members/search');
@@ -94,19 +118,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
         },
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard),
-            label: 'Accueil',
+            icon: Icon(Icons.grid_view_outlined),
+            activeIcon: Icon(Icons.grid_view),
+            label: 'Tableau de bord',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.people),
+            icon: Icon(Icons.people_outlined),
+            activeIcon: Icon(Icons.people),
             label: 'Membres',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.receipt_long),
+            icon: Icon(Icons.receipt_long_outlined),
+            activeIcon: Icon(Icons.receipt_long),
             label: 'Cotisations',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
+            icon: Icon(Icons.settings_outlined),
+            activeIcon: Icon(Icons.settings),
             label: 'Paramètres',
           ),
         ],
@@ -116,27 +144,82 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   Widget _buildLoading() {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(AppSpacing.lg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Shimmer.fromColors(
             baseColor: AppColors.gray200,
             highlightColor: AppColors.gray100,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 100,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    color: AppColors.white,
+                    borderRadius: BorderRadius.circular(AppBorderRadius.sm),
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                Container(
+                  width: 200,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: AppColors.white,
+                    borderRadius: BorderRadius.circular(AppBorderRadius.sm),
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                Container(
+                  width: 150,
+                  height: 20,
+                  decoration: BoxDecoration(
+                    color: AppColors.white,
+                    borderRadius: BorderRadius.circular(AppBorderRadius.sm),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: AppSpacing.xl),
+          Shimmer.fromColors(
+            baseColor: AppColors.gray200,
+            highlightColor: AppColors.gray100,
             child: GridView.count(
               shrinkWrap: true,
               crossAxisCount: 2,
-              mainAxisSpacing: 16,
-              crossAxisSpacing: 16,
-              children: List.generate(4, (_) => const Card()),
+              mainAxisSpacing: AppSpacing.md,
+              crossAxisSpacing: AppSpacing.md,
+              children: List.generate(
+                4,
+                (_) => Container(
+                  height: 180,
+                  decoration: BoxDecoration(
+                    color: AppColors.white,
+                    borderRadius: BorderRadius.circular(AppBorderRadius.xxl),
+                  ),
+                ),
+              ),
             ),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.xl),
           Shimmer.fromColors(
             baseColor: AppColors.gray200,
             highlightColor: AppColors.gray100,
             child: Column(
-              children: List.generate(5, (_) => const Card()),
+              children: List.generate(
+                5,
+                (_) => Container(
+                  height: 70,
+                  margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+                  decoration: BoxDecoration(
+                    color: AppColors.white,
+                    borderRadius: BorderRadius.circular(AppBorderRadius.lg),
+                  ),
+                ),
+              ),
             ),
           ),
         ],
@@ -147,21 +230,27 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget _buildError() {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline, size: 64, color: AppColors.danger),
-            const SizedBox(height: 16),
+            const AppFeatureIcon(
+              icon: Icons.error_outline,
+              size: 80,
+              iconColor: AppColors.danger,
+              backgroundColor: AppColors.danger,
+            ),
+            const SizedBox(height: AppSpacing.lg),
             Text(
               _error!,
               textAlign: TextAlign.center,
-              style: const TextStyle(color: AppColors.gray600),
+              style: AppTextStyles.bodyMedium,
             ),
-            const SizedBox(height: 24),
-            ElevatedButton(
+            const SizedBox(height: AppSpacing.xl),
+            AppButton(
+              text: 'Réessayer',
               onPressed: _loadDashboard,
-              child: const Text('Réessayer'),
+              icon: Icons.refresh,
             ),
           ],
         ),
@@ -169,92 +258,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _buildContent() {
+  Widget _buildContent(dynamic user) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(AppSpacing.lg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          // Header section
+          _buildHeader(user),
+          const SizedBox(height: AppSpacing.xl),
+          // Stats grid
           _buildStatsGrid(),
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.xl),
+          // Recent contributions
           _buildRecentContributions(),
+          const SizedBox(height: AppSpacing.xl * 2),
         ],
-      ),
-    );
-  }
-
-  Widget _buildStatsGrid() {
-    final items = [
-      {
-        'label': 'Aujourd\'hui',
-        'value': _formatAmount(_stats?['today_amount']),
-        'color': AppColors.primary,
-        'icon': Icons.calendar_today,
-      },
-      {
-        'label': 'Cette semaine',
-        'value': _formatAmount(_stats?['week_amount']),
-        'color': AppColors.secondary,
-        'icon': Icons.calendar_view_week,
-      },
-      {
-        'label': 'Ce mois',
-        'value': _formatAmount(_stats?['month_amount']),
-        'color': AppColors.accent,
-        'icon': Icons.calendar_month,
-      },
-      {
-        'label': 'En attente',
-        'value': _formatAmount(_stats?['pending_amount']),
-        'color': AppColors.warning,
-        'icon': Icons.pending,
-      },
-    ];
-
-    return GridView.count(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      crossAxisCount: 2,
-      mainAxisSpacing: 16,
-      crossAxisSpacing: 16,
-      children: items.map((item) => _buildStatCard(item)).toList(),
-    );
-  }
-
-  Widget _buildStatCard(Map<String, dynamic> item) {
-    return Card(
-      elevation: 0,
-      color: (item['color'] as Color).withOpacity(0.1),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(
-              item['icon'] as IconData,
-              size: 32,
-              color: item['color'] as Color,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              item['value'] as String,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: AppColors.gray800,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              item['label'] as String,
-              style: const TextStyle(
-                fontSize: 12,
-                color: AppColors.gray500,
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -263,59 +282,183 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Dernières cotisations',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: AppColors.gray800,
-          ),
+          style: AppTextStyles.h3,
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: AppSpacing.md),
         if (_recentContributions!.isEmpty)
-          const Center(
+          Center(
             child: Padding(
-              padding: EdgeInsets.all(48),
+              padding: const EdgeInsets.all(AppSpacing.xl),
               child: Column(
                 children: [
-                  Icon(Icons.receipt_long_outlined,
-                      size: 64, color: AppColors.gray300),
-                  SizedBox(height: 16),
+                  Icon(
+                    Icons.receipt_long_outlined,
+                    size: 80,
+                    color: AppColors.gray300,
+                  ),
+                  const SizedBox(height: AppSpacing.md),
                   Text(
                     'Aucune cotisation enregistrée',
-                    style: TextStyle(color: AppColors.gray500),
+                    style: AppTextStyles.bodyMedium,
                   ),
                 ],
               ),
             ),
           )
         else
-          ..._recentContributions!.map((contribution) {
-            return Card(
-              margin: const EdgeInsets.only(bottom: 8),
-              child: ListTile(
-                leading: CircleAvatar(
-                  backgroundColor: AppColors.primaryLight,
-                  child: Text(
-                    (contribution['member'] ?? '').substring(0, 1).toUpperCase(),
-                    style: const TextStyle(
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.bold,
+          AppCard(
+            padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+            child: Column(
+              children: _recentContributions!.map((contribution) {
+                return TransactionCard(
+                  title: contribution['member'] ?? '',
+                  subtitle: contribution['tontine'] ?? '',
+                  amount: _formatAmount(contribution['amount']),
+                  date: contribution['date'] ?? '',
+                  type: TransactionType.deposit,
+                  onTap: () {},
+                );
+              }).toList(),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildHeader(dynamic user) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Tableau de bord',
+              style: AppTextStyles.h3,
+            ),
+            Stack(
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: AppColors.white,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.gray900.withValues(alpha: 0.1),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: const Icon(
+                    Icons.notifications_outlined,
+                    color: AppColors.gray900,
+                  ),
+                ),
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: Container(
+                    width: 10,
+                    height: 10,
+                    decoration: BoxDecoration(
+                      color: AppColors.danger,
+                      shape: BoxShape.circle,
                     ),
                   ),
                 ),
-                title: Text(contribution['member'] ?? ''),
-                subtitle: Text(contribution['tontine'] ?? ''),
-                trailing: Text(
-                  _formatAmount(contribution['amount']),
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
+              ],
+            ),
+          ],
+        ),
+        const SizedBox(height: AppSpacing.lg),
+        Text(
+          '👋 Bonjour ${user?.firstName ?? ''}',
+          style: AppTextStyles.h2.copyWith(
+            color: AppColors.gray900,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        Text(
+          'Bienvenue dans votre espace de collecte',
+          style: AppTextStyles.bodyLarge.copyWith(
+            color: AppColors.gray500,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.md),
+        if (user?.organization?.name != null)
+          Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.md,
+              vertical: AppSpacing.sm,
+            ),
+            decoration: BoxDecoration(
+              color: AppColors.primary100,
+              borderRadius: BorderRadius.circular(AppBorderRadius.xl),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Icons.group,
+                  color: AppColors.primary,
+                  size: 20,
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                Text(
+                  user?.organization?.name ?? '',
+                  style: AppTextStyles.bodyMedium.copyWith(
                     color: AppColors.primary,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-              ),
-            );
-          }).toList(),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildStatsGrid() {
+    return GridView.count(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      crossAxisCount: 2,
+      mainAxisSpacing: AppSpacing.md,
+      crossAxisSpacing: AppSpacing.md,
+      children: [
+        AppStatCard(
+          title: 'Aujourd\'hui',
+          value: _formatAmount(_stats?['today_amount']),
+          icon: Icons.calendar_month_outlined,
+          variant: StatCardVariant.primary,
+          trailingIcon: Icons.trending_up,
+        ),
+        AppStatCard(
+          title: 'En attente',
+          value: _formatAmount(_stats?['pending_amount']),
+          icon: Icons.more_horiz,
+          variant: StatCardVariant.warning,
+          trailingIcon: Icons.schedule,
+        ),
+        AppStatCard(
+          title: 'Membres recrutés',
+          value: (_stats?['total_members'] ?? 0).toString(),
+          icon: Icons.person_add_outlined,
+          variant: StatCardVariant.info,
+          trailingIcon: Icons.group_outlined,
+        ),
+        AppStatCard(
+          title: 'Inscriptions',
+          value: (_stats?['total_enrollments'] ?? 0).toString(),
+          icon: Icons.person_add_alt_1,
+          variant: StatCardVariant.success,
+          trailingIcon: Icons.article_outlined,
+        ),
       ],
     );
   }

@@ -4,6 +4,7 @@ import { useRouter }    from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { authService }  from '@/services/authService'
 import { useToast }     from '@/composables/useToast'
+import PasswordInput    from '../../components/PasswordInput.vue'
 
 const authStore = useAuthStore()
 const router    = useRouter()
@@ -192,21 +193,27 @@ onMounted(() => syncProfileForm())
       </div>
 
       <form @submit.prevent="savePassword" class="space-y-4">
-        <div>
-          <label class="form-label">Mot de passe actuel *</label>
-          <input v-model="pwForm.current_password" type="password" class="form-input" autocomplete="current-password" />
-          <p v-if="pwErrors.current_password" class="text-red-500 text-xs mt-1">{{ pwErrors.current_password[0] }}</p>
-        </div>
-        <div>
-          <label class="form-label">Nouveau mot de passe *</label>
-          <input v-model="pwForm.password" type="password" class="form-input" autocomplete="new-password" />
-          <p v-if="pwErrors.password" class="text-red-500 text-xs mt-1">{{ pwErrors.password[0] }}</p>
-        </div>
-        <div>
-          <label class="form-label">Confirmer le nouveau mot de passe *</label>
-          <input v-model="pwForm.password_confirmation" type="password" class="form-input" autocomplete="new-password" />
-          <p v-if="pwErrors.password_confirmation" class="text-red-500 text-xs mt-1">{{ pwErrors.password_confirmation[0] }}</p>
-        </div>
+        <PasswordInput
+          v-model="pwForm.current_password"
+          label="Mot de passe actuel"
+          placeholder=""
+          :required="true"
+          :error="pwErrors.current_password?.[0]"
+        />
+        <PasswordInput
+          v-model="pwForm.password"
+          label="Nouveau mot de passe"
+          placeholder=""
+          :required="true"
+          :error="pwErrors.password?.[0]"
+        />
+        <PasswordInput
+          v-model="pwForm.password_confirmation"
+          label="Confirmer le nouveau mot de passe"
+          placeholder=""
+          :required="true"
+          :error="pwErrors.password_confirmation?.[0]"
+        />
         <div class="flex justify-end pt-1">
           <button type="submit" class="btn-primary" :disabled="savingPw">
             {{ savingPw ? 'Changement...' : 'Changer le mot de passe' }}
@@ -242,11 +249,12 @@ onMounted(() => syncProfileForm())
             <div class="bg-red-50 border border-red-200 rounded-xl p-4 text-sm text-red-700">
               <strong>Attention !</strong> Cette action supprimera définitivement votre compte et toutes les données associées : organisation, agents, membres, tontines, cotisations et versements. Cette opération est irréversible.
             </div>
-            <div>
-              <label class="form-label">Entrez votre mot de passe pour confirmer</label>
-              <input v-model="deletePassword" type="password" class="form-input" placeholder="Votre mot de passe" />
-              <p v-if="deleteError" class="text-red-500 text-xs mt-1">{{ deleteError }}</p>
-            </div>
+            <PasswordInput
+              v-model="deletePassword"
+              label="Entrez votre mot de passe pour confirmer"
+              placeholder="Votre mot de passe"
+              :error="deleteError"
+            />
             <div class="flex gap-3 pt-2">
               <button class="btn-secondary flex-1" @click="showDeleteModal = false; deletePassword = ''; deleteError = ''">
                 Annuler

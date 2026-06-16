@@ -75,8 +75,11 @@ class _MemberSearchScreenState extends State<MemberSearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.white,
       appBar: AppBar(
         title: const Text('Rechercher un membre'),
+        centerTitle: false,
+        elevation: 0,
       ),
       body: SafeArea(
         child: Column(
@@ -113,11 +116,19 @@ class _MemberSearchScreenState extends State<MemberSearchScreen> {
         label: const Text('Nouveau membre'),
       ),
       bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
         currentIndex: 1,
+        backgroundColor: AppColors.white,
+        elevation: 8,
+        selectedItemColor: AppColors.primary,
+        unselectedItemColor: AppColors.gray400,
+        selectedLabelStyle: const TextStyle(
+          fontWeight: FontWeight.w700,
+        ),
         onTap: (index) {
           switch (index) {
             case 0:
-              context.go('/');
+              context.go('/dashboard');
               break;
             case 1:
               context.go('/members/search');
@@ -132,19 +143,23 @@ class _MemberSearchScreenState extends State<MemberSearchScreen> {
         },
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard),
-            label: 'Accueil',
+            icon: Icon(Icons.grid_view_outlined),
+            activeIcon: Icon(Icons.grid_view),
+            label: 'Tableau de bord',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.people),
+            icon: Icon(Icons.people_outlined),
+            activeIcon: Icon(Icons.people),
             label: 'Membres',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.receipt_long),
+            icon: Icon(Icons.receipt_long_outlined),
+            activeIcon: Icon(Icons.receipt_long),
             label: 'Cotisations',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
+            icon: Icon(Icons.settings_outlined),
+            activeIcon: Icon(Icons.settings),
             label: 'Paramètres',
           ),
         ],

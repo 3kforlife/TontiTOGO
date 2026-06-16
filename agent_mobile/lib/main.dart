@@ -93,6 +93,7 @@ class MyApp extends StatelessWidget {
             foregroundColor: AppColors.primary,
           ),
         ),
+
       ),
       routerConfig: router,
     );

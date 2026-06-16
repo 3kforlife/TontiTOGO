@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/api/dio_client.dart';
 import '../../../core/models/tontine.dart';
+import '../../../core/widgets/widgets.dart';
 
 class EnrollMemberScreen extends StatefulWidget {
   final int memberId;
@@ -29,6 +30,8 @@ class _EnrollMemberScreenState extends State<EnrollMemberScreen> {
   bool _isLoading = true;
   bool _isSubmitting = false;
   String? _error;
+  String? _tontineError;
+  String? _amountError;
 
   @override
   void initState() {
@@ -48,7 +51,6 @@ class _EnrollMemberScreenState extends State<EnrollMemberScreen> {
       print('Response data: ${response.data}');
       print('Response type: ${response.data.runtimeType}');
 
-      // Vérifions la structure de la réponse
       final responseData = response.data;
       List tontinesData;
 
@@ -84,46 +86,75 @@ class _EnrollMemberScreenState extends State<EnrollMemberScreen> {
   }
 
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate() || _selectedTontine == null) {
-      return;
-    }
-
     setState(() {
-      _isSubmitting = true;
+      _tontineError =
+          _selectedTontine == null ? 'Veuillez sélectionner une tontine' : null;
+      if (_amountController.text.trim().isEmpty) {
+        _amountError = 'Veuillez entrer un montant';
+      } else {
+        final amount = double.tryParse(_amountController.text.trim());
+        if (amount == null) {
+          _amountError = 'Montant invalide';
+        } else if (_selectedTontine != null &&
+            amount < _selectedTontine!.minimumAmount) {
+          _amountError =
+              'Montant minimum: ${_formatAmount(_selectedTontine!.minimumAmount)}';
+        } else {
+          _amountError = null;
+        }
+      }
     });
 
-    try {
-      await _dioClient.dio.post(
-        '/members/${widget.memberId}/enroll',
-        data: {
-          'tontine_id': _selectedTontine!.id,
-          'chosen_amount': double.parse(_amountController.text.trim()),
-        },
-      );
+    if (_tontineError == null && _amountError == null) {
+      setState(() {
+        _isSubmitting = true;
+      });
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Membre inscrit avec succès !'),
-            backgroundColor: AppColors.success,
-          ),
+      try {
+        await _dioClient.dio.post(
+          '/members/${widget.memberId}/enroll',
+          data: {
+            'tontine_id': _selectedTontine!.id,
+            'chosen_amount': double.parse(_amountController.text.trim()),
+          },
         );
-        context.pop(true);
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString()),
-            backgroundColor: AppColors.danger,
-          ),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isSubmitting = false;
-        });
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Membre inscrit avec succès !'),
+              backgroundColor: AppColors.success,
+              behavior: SnackBarBehavior.floating,
+              margin: EdgeInsets.fromLTRB(16, 40, 16, 600),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(12)),
+              ),
+              elevation: 4,
+            ),
+          );
+          context.pop(true);
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(e.toString()),
+              backgroundColor: AppColors.danger,
+              behavior: SnackBarBehavior.floating,
+              margin: EdgeInsets.fromLTRB(16, 40, 16, 600),
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(12)),
+              ),
+              elevation: 4,
+            ),
+          );
+        }
+      } finally {
+        if (mounted) {
+          setState(() {
+            _isSubmitting = false;
+          });
+        }
       }
     }
   }
@@ -135,8 +166,9 @@ class _EnrollMemberScreenState extends State<EnrollMemberScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Inscrire à une tontine'),
+      backgroundColor: AppColors.gray50,
+      appBar: const TontiAppBar(
+        title: 'Inscrire à une tontine',
       ),
       body: SafeArea(
         child: _isLoading
@@ -151,21 +183,27 @@ class _EnrollMemberScreenState extends State<EnrollMemberScreen> {
   Widget _buildError() {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(48),
+        padding: const EdgeInsets.all(AppSpacing.xl),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline, size: 64, color: AppColors.danger),
-            const SizedBox(height: 16),
+            const AppFeatureIcon(
+              icon: Icons.error_outline,
+              size: 80,
+              iconColor: AppColors.danger,
+              backgroundColor: AppColors.danger,
+            ),
+            const SizedBox(height: AppSpacing.lg),
             Text(
               _error!,
               textAlign: TextAlign.center,
-              style: const TextStyle(color: AppColors.gray600),
+              style: AppTextStyles.bodyMedium,
             ),
-            const SizedBox(height: 24),
-            ElevatedButton(
+            const SizedBox(height: AppSpacing.xl),
+            AppButton(
+              text: 'Réessayer',
               onPressed: _loadTontines,
-              child: const Text('Réessayer'),
+              icon: Icons.refresh,
             ),
           ],
         ),
@@ -175,122 +213,123 @@ class _EnrollMemberScreenState extends State<EnrollMemberScreen> {
 
   Widget _buildForm() {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(AppSpacing.lg),
       child: Form(
         key: _formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Membre : ${widget.memberName}',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+            AppCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Membre : ${widget.memberName}',
+                    style: AppTextStyles.h3,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: AppSpacing.xl),
+            Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.md,
+              ),
+              decoration: BoxDecoration(
+                color: AppColors.white,
+                borderRadius: BorderRadius.circular(AppBorderRadius.lg),
+                border: Border.all(
+                  color: _tontineError != null
+                      ? AppColors.danger
+                      : AppColors.gray200,
+                  width: _tontineError != null ? 2 : 1,
+                ),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButtonFormField<Tontine>(
+                  value: _selectedTontine,
+                  decoration: const InputDecoration(
+                    border: InputBorder.none,
+                    hintText: 'Sélectionner une tontine',
+                    prefixIcon: Icon(Icons.group),
+                  ),
+                  items: _tontines.map((tontine) {
+                    return DropdownMenuItem<Tontine>(
+                      value: tontine,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            tontine.name,
+                            style: const TextStyle(fontWeight: FontWeight.w600),
+                          ),
+                          Text(
+                            '${tontine.frequencyLabel ?? tontine.frequency} • Min: ${_formatAmount(tontine.minimumAmount)}',
+                            style: AppTextStyles.bodySmall,
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedTontine = value;
+                      if (_tontineError != null) {
+                        _tontineError = null;
+                      }
+                      if (value != null) {
+                        _amountController.text = value.minimumAmount.toString();
+                      }
+                    });
+                  },
+                ),
+              ),
+            ),
+            if (_tontineError != null) ...[
+              const SizedBox(height: AppSpacing.sm),
+              Row(
+                children: [
+                  const Icon(
+                    Icons.error_outline,
+                    color: AppColors.danger,
+                    size: 16,
+                  ),
+                  const SizedBox(width: AppSpacing.sm),
+                  Expanded(
+                    child: Text(
+                      _tontineError!,
+                      style: AppTextStyles.bodySmall.copyWith(
+                        color: AppColors.danger,
                       ),
                     ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 24),
-            DropdownButtonFormField<Tontine>(
-              value: _selectedTontine,
-              decoration: InputDecoration(
-                labelText: 'Sélectionner une tontine',
-                filled: true,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              items: _tontines.map((tontine) {
-                return DropdownMenuItem<Tontine>(
-                  value: tontine,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        tontine.name,
-                        style: const TextStyle(fontWeight: FontWeight.w600),
-                      ),
-                      Text(
-                        '${tontine.frequencyLabel ?? tontine.frequency} • Min: ${_formatAmount(tontine.minimumAmount)}',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: AppColors.gray500,
-                        ),
-                      ),
-                    ],
                   ),
-                );
-              }).toList(),
-              onChanged: (value) {
-                setState(() {
-                  _selectedTontine = value;
-                  if (value != null) {
-                    _amountController.text = value.minimumAmount.toString();
-                  }
-                });
-              },
-              validator: (value) {
-                if (value == null) {
-                  return 'Veuillez sélectionner une tontine';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _amountController,
-              decoration: InputDecoration(
-                labelText: 'Montant choisi',
-                suffixText: 'FCFA',
-                filled: true,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                helperText: _selectedTontine != null
-                    ? 'Minimum: ${_formatAmount(_selectedTontine!.minimumAmount)}'
-                    : null,
+                ],
               ),
+            ],
+            const SizedBox(height: AppSpacing.md),
+            AppTextField(
+              label: 'Montant choisi',
+              controller: _amountController,
+              hintText: 'Entrez le montant',
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              errorText: _amountError,
               enabled: _selectedTontine != null,
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return 'Veuillez entrer un montant';
-                }
-                final amount = double.tryParse(value.trim());
-                if (amount == null) {
-                  return 'Montant invalide';
-                }
-                if (_selectedTontine != null &&
-                    amount < _selectedTontine!.minimumAmount) {
-                  return 'Montant minimum: ${_formatAmount(_selectedTontine!.minimumAmount)}';
-                }
-                return null;
-              },
             ),
-            const SizedBox(height: 32),
-            ElevatedButton(
-              onPressed: _isSubmitting ? null : _submit,
-              child: _isSubmitting
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          Colors.white,
-                        ),
-                      ),
-                    )
-                  : const Text('Inscrire le membre'),
+            if (_selectedTontine != null)
+              Padding(
+                padding: const EdgeInsets.only(top: AppSpacing.sm),
+                child: Text(
+                  'Minimum: ${_formatAmount(_selectedTontine!.minimumAmount)}',
+                  style: AppTextStyles.bodySmall,
+                ),
+              ),
+            const SizedBox(height: AppSpacing.xl),
+            AppButton(
+              text: 'Inscrire le membre',
+              isLoading: _isSubmitting,
+              onPressed: _submit,
+              icon: Icons.person_add,
             ),
           ],
         ),

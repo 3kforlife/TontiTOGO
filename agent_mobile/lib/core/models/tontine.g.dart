@@ -9,9 +9,9 @@ part of 'tontine.dart';
 Tontine _$TontineFromJson(Map<String, dynamic> json) => Tontine(
   id: (json['id'] as num).toInt(),
   name: json['name'] as String,
-  frequency: json['frequency'] as String,
+  frequency: json['frequency'] as String? ?? '',
   frequencyLabel: json['frequency_label'] as String?,
-  minimumAmount: (json['minimum_amount'] as num).toDouble(),
+  minimumAmount: (json['minimum_amount'] as num?)?.toDouble() ?? 0.0,
 );
 
 Map<String, dynamic> _$TontineToJson(Tontine instance) => <String, dynamic>{

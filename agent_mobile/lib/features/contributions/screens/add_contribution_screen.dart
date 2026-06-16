@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:dio/dio.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/api/dio_client.dart';
 import '../../../core/models/member.dart';
 import '../../../core/models/tontine.dart';
+import '../../../core/widgets/widgets.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:intl/intl.dart';
 
@@ -118,10 +118,17 @@ class _AddContributionScreenState extends State<AddContributionScreen> {
   Future<void> _submit() async {
     if (_formKey.currentState!.validate()) {
       if (_selectedParticipation == null) {
-        Fluttertoast.showToast(
-          msg: 'Veuillez sélectionner une tontine',
-          backgroundColor: AppColors.warning,
-          textColor: Colors.white,
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Veuillez sélectionner une tontine'),
+            backgroundColor: AppColors.warning,
+            behavior: SnackBarBehavior.floating,
+            margin: EdgeInsets.fromLTRB(16, 40, 16, 600),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(12)),
+            ),
+            elevation: 4,
+          ),
         );
         return;
       }
@@ -158,12 +165,17 @@ class _AddContributionScreenState extends State<AddContributionScreen> {
         );
 
         if (mounted) {
-          Fluttertoast.showToast(
-            msg: response.data['message'] ?? 'Cotisation enregistrée avec succès',
-            toastLength: Toast.LENGTH_LONG,
-            gravity: ToastGravity.BOTTOM,
-            backgroundColor: AppColors.success,
-            textColor: Colors.white,
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(response.data['message'] ?? 'Cotisation enregistrée avec succès'),
+              backgroundColor: AppColors.success,
+              behavior: SnackBarBehavior.floating,
+              margin: const EdgeInsets.fromLTRB(16, 40, 16, 600),
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(12)),
+              ),
+              elevation: 4,
+            ),
           );
           context.pop();
         }
@@ -180,11 +192,20 @@ class _AddContributionScreenState extends State<AddContributionScreen> {
           errorMessage = 'Vérifiez votre connexion internet';
         }
 
-        Fluttertoast.showToast(
-          msg: errorMessage,
-          backgroundColor: AppColors.danger,
-          textColor: Colors.white,
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(errorMessage),
+              backgroundColor: AppColors.danger,
+              behavior: SnackBarBehavior.floating,
+              margin: const EdgeInsets.fromLTRB(16, 40, 16, 600),
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(12)),
+              ),
+              elevation: 4,
+            ),
+          );
+        }
       } finally {
         setState(() {
           _isSubmitting = false;
@@ -196,25 +217,27 @@ class _AddContributionScreenState extends State<AddContributionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.white,
       appBar: AppBar(
         title: const Text('Encaisser une cotisation'),
+        centerTitle: false,
+        elevation: 0,
       ),
       body: SafeArea(
         child: Form(
           key: _formKey,
           child: ListView(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.all(AppSpacing.lg),
             children: [
               // Member Search
-              const Text(
+              Text(
                 'Membre',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
+                style: AppTextStyles.bodyLarge.copyWith(
                   color: AppColors.gray800,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: AppSpacing.sm),
               if (_selectedMember == null) ...[
                 SearchBar(
                   controller: _searchController,
@@ -230,20 +253,25 @@ class _AddContributionScreenState extends State<AddContributionScreen> {
                       ),
                   ],
                   elevation: WidgetStateProperty.all(1),
-                  padding:
-                      WidgetStateProperty.all(const EdgeInsets.symmetric(horizontal: 16)),
+                  padding: WidgetStateProperty.all(
+                    const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                  ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.md),
                 if (_isSearching) _buildSearchLoading(),
                 if (_hasSearched && !_isSearching && _members.isEmpty)
                   _buildSearchEmpty(),
                 if (_hasSearched && !_isSearching && _members.isNotEmpty)
                   ..._members.map((member) {
-                    return Card(
-                      margin: const EdgeInsets.only(bottom: 8),
+                    return AppCard(
+                      margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: AppSpacing.sm,
+                        horizontal: AppSpacing.sm,
+                      ),
                       child: ListTile(
                         leading: CircleAvatar(
-                          backgroundColor: AppColors.primaryLight,
+                          backgroundColor: AppColors.primary100,
                           child: Text(
                             member.displayName.substring(0, 1).toUpperCase(),
                             style: const TextStyle(
@@ -260,8 +288,12 @@ class _AddContributionScreenState extends State<AddContributionScreen> {
                     );
                   }).toList(),
               ] else ...[
-                Card(
-                  color: AppColors.primaryLight,
+                AppCard(
+                  backgroundColor: AppColors.primary100,
+                  padding: const EdgeInsets.symmetric(
+                    vertical: AppSpacing.sm,
+                    horizontal: AppSpacing.sm,
+                  ),
                   child: ListTile(
                     leading: CircleAvatar(
                       backgroundColor: AppColors.primary,
@@ -287,34 +319,35 @@ class _AddContributionScreenState extends State<AddContributionScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: AppSpacing.xl),
 
                 // Tontine Selection
-                const Text(
+                Text(
                   'Tontine',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
+                  style: AppTextStyles.bodyLarge.copyWith(
                     color: AppColors.gray800,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: AppSpacing.sm),
                 if (_isLoading) _buildParticipationsLoading(),
                 if (!_isLoading && _participations.isEmpty)
                   Center(
                     child: Padding(
-                      padding: const EdgeInsets.all(48),
+                      padding: const EdgeInsets.all(AppSpacing.xl),
                       child: Column(
                         children: [
                           const Icon(Icons.wallet_outlined,
                               size: 64, color: AppColors.gray300),
-                          const SizedBox(height: 16),
-                          const Text(
+                          const SizedBox(height: AppSpacing.md),
+                          Text(
                             'Aucune tontine active',
-                            style: TextStyle(color: AppColors.gray500),
+                            style: AppTextStyles.bodyMedium.copyWith(
+                              color: AppColors.gray500,
+                            ),
                           ),
-                          const SizedBox(height: 24),
-                          ElevatedButton.icon(
+                          const SizedBox(height: AppSpacing.xl),
+                          AppButton(
                             onPressed: () async {
                               final result = await context.push<bool?>(
                                 '/members/${_selectedMember!.id}/enroll?name=${Uri.encodeComponent(_selectedMember!.displayName)}',
@@ -323,8 +356,8 @@ class _AddContributionScreenState extends State<AddContributionScreen> {
                                 _selectMember(_selectedMember!);
                               }
                             },
-                            icon: const Icon(Icons.add_card),
-                            label: const Text('Inscrire à une tontine'),
+                            text: 'Inscrire à une tontine',
+                            icon: Icons.add_card,
                           ),
                         ],
                       ),
@@ -334,10 +367,14 @@ class _AddContributionScreenState extends State<AddContributionScreen> {
                   ..._participations.map((participation) {
                     final isSelected =
                         _selectedParticipation?.participantId == participation.participantId;
-                    return Card(
-                      margin: const EdgeInsets.only(bottom: 8),
-                      color: isSelected
-                          ? AppColors.primaryLight.withOpacity(0.5)
+                    return AppCard(
+                      margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: AppSpacing.sm,
+                        horizontal: AppSpacing.sm,
+                      ),
+                      backgroundColor: isSelected
+                          ? AppColors.primary100
                           : null,
                       child: ListTile(
                         title: Text(participation.tontine.name),
@@ -351,10 +388,9 @@ class _AddContributionScreenState extends State<AddContributionScreen> {
                               label: Text(
                                 participation.tontine.frequencyLabel ?? '',
                               ),
-                              backgroundColor: AppColors.primaryLight,
-                              labelStyle: const TextStyle(
+                              backgroundColor: AppColors.primary100,
+                              labelStyle: AppTextStyles.bodySmall.copyWith(
                                 color: AppColors.primary,
-                                fontSize: 12,
                               ),
                             ),
                           ],
@@ -372,17 +408,15 @@ class _AddContributionScreenState extends State<AddContributionScreen> {
                       ),
                     );
                   }).toList(),
-                const SizedBox(height: 24),
+                const SizedBox(height: AppSpacing.xl),
 
                 // Amount
-                TextFormField(
+                AppTextField(
                   controller: _amountController,
                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  decoration: const InputDecoration(
-                    labelText: 'Montant',
-                    prefixIcon: Icon(Icons.money),
-                    suffixText: 'FCFA',
-                  ),
+                  label: 'Montant',
+                  prefixIcon: Icons.money,
+                  suffixText: 'FCFA',
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
                       return 'Veuillez entrer le montant';
@@ -394,29 +428,13 @@ class _AddContributionScreenState extends State<AddContributionScreen> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: AppSpacing.xl),
 
                 // Submit Button
-                ElevatedButton(
+                AppButton(
                   onPressed: _isSubmitting ? null : _submit,
-                  child: _isSubmitting
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              AppColors.white,
-                            ),
-                          ),
-                        )
-                      : const Text(
-                          'Enregistrer la cotisation',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                  text: 'Enregistrer la cotisation',
+                  isLoading: _isSubmitting,
                 ),
               ],
             ],

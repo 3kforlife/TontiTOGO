@@ -134,75 +134,87 @@ onMounted(() => store.fetchAll())
       </button>
     </div>
 
-    <!-- Tableau -->
-    <div class="card p-0 overflow-hidden">
-      <div v-if="store.loading" class="p-6 space-y-3">
-        <div v-for="i in 6" :key="i" class="h-12 bg-gray-50 rounded-lg animate-pulse" />
+    <!-- Cards Grid -->
+    <div class="space-y-6">
+      <div v-if="store.loading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div v-for="i in 6" :key="i" class="card p-6">
+          <div class="flex items-center gap-4 mb-4">
+            <div class="w-14 h-14 rounded-full bg-gray-100 animate-pulse"></div>
+            <div class="flex-1 space-y-2">
+              <div class="h-4 bg-gray-100 rounded w-3/4 animate-pulse"></div>
+              <div class="h-3 bg-gray-100 rounded w-1/2 animate-pulse"></div>
+            </div>
+          </div>
+          <div class="space-y-3">
+            <div class="h-3 bg-gray-100 rounded animate-pulse"></div>
+            <div class="h-3 bg-gray-100 rounded w-5/6 animate-pulse"></div>
+          </div>
+          <div class="mt-4 h-10 bg-gray-100 rounded-lg animate-pulse"></div>
+        </div>
       </div>
 
-      <div v-else-if="!store.agents.length" class="flex flex-col items-center justify-center py-16 text-gray-300">
-        <svg class="w-12 h-12 mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.582-7 8-7s8 3 8 7"/></svg>
-        <p class="text-sm">Aucun agent enregistré</p>
-        <button class="btn-primary mt-4 text-xs" @click="openCreate">Ajouter un agent</button>
+      <div v-else-if="!store.agents.length" class="card flex flex-col items-center justify-center py-16 text-gray-300">
+        <svg class="w-16 h-16 mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.582-7 8-7s8 3 8 7"/></svg>
+        <p class="text-base">Aucun agent enregistré</p>
+        <button class="btn-primary mt-5 text-sm" @click="openCreate">Ajouter un agent</button>
       </div>
 
-      <table v-else class="w-full text-sm">
-        <thead class="bg-gray-50 border-b border-gray-100">
-          <tr class="text-xs text-gray-400 uppercase">
-            <th class="px-4 py-3 text-left font-medium">Agent</th>
-            <th class="px-4 py-3 text-left font-medium hidden sm:table-cell">Téléphone</th>
-            <th class="px-4 py-3 text-center font-medium hidden md:table-cell">Cotisations</th>
-            <th class="px-4 py-3 text-center font-medium">Statut</th>
-            <th class="px-4 py-3 text-right font-medium">Actions</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-50">
-          <tr v-for="agent in store.agents" :key="agent.id" class="hover:bg-gray-50/50 transition-colors">
-            <!-- Nom + avatar -->
-            <td class="px-4 py-3">
-              <div class="flex items-center gap-3">
-                <img v-if="agent.avatar_url" :src="agent.avatar_url" class="w-8 h-8 rounded-full object-cover flex-shrink-0" />
-                <div v-else class="w-8 h-8 rounded-full bg-primary-100 text-primary-700 text-xs font-semibold flex items-center justify-center flex-shrink-0">
-                  {{ agent.full_name?.charAt(0).toUpperCase() }}
-                </div>
-                <div>
-                  <p class="font-medium text-gray-900">{{ agent.full_name }}</p>
-                  <p class="text-xs text-gray-400">{{ agent.email || '—' }}</p>
-                </div>
+      <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div v-for="agent in store.agents" :key="agent.id" class="card group hover:shadow-lg transition-shadow duration-300">
+          <!-- Card Header: Avatar + Name + Status -->
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-4">
+              <img v-if="agent.avatar_url" :src="agent.avatar_url" class="w-14 h-14 rounded-full object-cover flex-shrink-0" />
+              <div v-else class="w-14 h-14 rounded-full bg-primary-100 text-primary-700 text-lg font-semibold flex items-center justify-center flex-shrink-0">
+                {{ agent.full_name?.charAt(0).toUpperCase() }}
               </div>
-            </td>
-            <td class="px-4 py-3 text-gray-500 hidden sm:table-cell">{{ agent.phone }}</td>
-            <td class="px-4 py-3 text-center hidden md:table-cell">
-              <span class="font-semibold text-gray-900">{{ agent.total_contributions ?? '—' }}</span>
-            </td>
-            <td class="px-4 py-3 text-center">
-              <button
-                :class="agent.status === 'active' ? 'badge-green' : 'badge-red'"
-                @click="handleToggle(agent)"
-                title="Cliquer pour changer"
-              >
-                {{ agent.status === 'active' ? 'Actif' : 'Suspendu' }}
-              </button>
-            </td>
-            <td class="px-4 py-3">
-              <div class="flex items-center justify-end gap-1">
-                <button class="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700" title="Performance" @click="openPerformance(agent)">
-                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
-                </button>
-                <button class="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-blue-600" title="Modifier" @click="openEdit(agent)">
-                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                </button>
-                <button class="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-red-600" title="Supprimer" @click="openDelete(agent)">
-                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-                </button>
+              <div class="flex-1 min-w-0">
+                <p class="font-semibold text-gray-900 truncate">{{ agent.full_name }}</p>
+                <p class="text-sm text-gray-500 truncate">{{ agent.email || '—' }}</p>
               </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+            </div>
+            <button
+              :class="agent.status === 'active' ? 'badge-green' : 'badge-red'"
+              @click="handleToggle(agent)"
+              title="Cliquer pour changer"
+              class="shrink-0"
+            >
+              {{ agent.status === 'active' ? 'Actif' : 'Suspendu' }}
+            </button>
+          </div>
+
+          <!-- Card Body: Contact Info & Stats -->
+          <div class="space-y-3 mb-4">
+            <div class="flex items-center gap-2 text-gray-600">
+              <svg class="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
+              <span class="text-sm">{{ agent.phone }}</span>
+            </div>
+            <div class="flex items-center gap-2 text-gray-600">
+              <svg class="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6M23 11h-6"/></svg>
+              <span class="text-sm">
+                <span class="font-semibold text-gray-900">{{ agent.total_contributions ?? '—' }}</span> cotisations
+              </span>
+            </div>
+          </div>
+
+          <!-- Card Actions -->
+          <div class="flex items-center gap-2 pt-3 border-t border-gray-100">
+            <button class="flex-1 py-2.5 text-sm font-medium text-gray-700 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors flex items-center justify-center gap-2" title="Performance" @click="openPerformance(agent)">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
+              Performance
+            </button>
+            <button class="py-2.5 px-3 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Modifier" @click="openEdit(agent)">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </button>
+            <button class="py-2.5 px-3 text-sm font-medium text-gray-700 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Supprimer" @click="openDelete(agent)">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
 
       <!-- Pagination -->
-      <div v-if="store.lastPage > 1" class="flex items-center justify-between px-4 py-3 border-t border-gray-100">
+      <div v-if="store.lastPage > 1" class="flex items-center justify-between px-4 py-3 card">
         <p class="text-xs text-gray-400">Page {{ store.currentPage }} / {{ store.lastPage }}</p>
         <div class="flex gap-1">
           <button :disabled="store.currentPage === 1" class="btn-secondary text-xs px-3 py-1.5 disabled:opacity-40" @click="store.setPage(store.currentPage - 1); store.fetchAll()">←</button>

@@ -14,9 +14,11 @@ class Contribution {
   @JsonKey(name: 'settlement_status')
   final String? settlementStatus;
   @JsonKey(name: 'tontine_participant_id')
-  final int tontineParticipantId;
+  final int? tontineParticipantId;
   @JsonKey(name: 'tontine_participant')
   final TontineParticipant? tontineParticipant;
+  final Member? member;
+  final Tontine? tontine;
   @JsonKey(name: 'created_at')
   final String? createdAt;
 
@@ -27,27 +29,72 @@ class Contribution {
     this.latitude,
     this.longitude,
     this.settlementStatus,
-    required this.tontineParticipantId,
+    this.tontineParticipantId,
     this.tontineParticipant,
+    this.member,
+    this.tontine,
     this.createdAt,
   });
 
-  factory Contribution.fromJson(Map<String, dynamic> json) =>
-      Contribution(
-        id: (json['id'] as num?)?.toInt() ?? 0,
-        reference: json['reference'] as String? ?? '',
-        amount: (json['amount'] as num?)?.toDouble() ?? 0.0,
-        latitude: (json['latitude'] as num?)?.toDouble(),
-        longitude: (json['longitude'] as num?)?.toDouble(),
-        settlementStatus: json['settlement_status'] as String?,
-        tontineParticipantId: (json['tontine_participant_id'] as num?)?.toInt() ?? 0,
-        tontineParticipant: json['tontine_participant'] == null
-            ? null
-            : TontineParticipant.fromJson(
-              json['tontine_participant'] as Map<String, dynamic>,
-            ),
-        createdAt: json['created_at'] as String?,
+  // Helper getters to unify access
+  Member? get displayMember =>
+      member ?? tontineParticipant?.member;
+
+  Tontine? get displayTontine =>
+      tontine ?? tontineParticipant?.tontine;
+
+  factory Contribution.fromJson(Map<String, dynamic> json) {
+    // Handle both cases: with tontine_participant OR direct member/tontine
+    Member? member;
+    Tontine? tontine;
+    TontineParticipant? tontineParticipant;
+
+    if (json['tontine_participant'] != null) {
+      tontineParticipant = TontineParticipant.fromJson(
+        json['tontine_participant'] as Map<String, dynamic>,
       );
+      member = tontineParticipant.member;
+      tontine = tontineParticipant.tontine;
+    } else {
+      // Direct member and tontine (from dashboard or resource)
+      if (json['member'] != null) {
+        member = Member.fromJson(json['member'] as Map<String, dynamic>);
+      } else if (json['member'] is String) {
+        // If it's just the full name string (like dashboard recent contributions)
+        member = Member(
+          id: 0,
+          memberCode: '',
+          firstname: '',
+          lastname: '',
+          fullName: json['member'] as String,
+          phone: '',
+        );
+      }
+
+      if (json['tontine'] != null) {
+        if (json['tontine'] is String) {
+          // If it's just the name string (like dashboard recent contributions)
+          tontine = Tontine(id: 0, name: json['tontine'] as String);
+        } else {
+          tontine = Tontine.fromJson(json['tontine'] as Map<String, dynamic>);
+        }
+      }
+    }
+
+    return Contribution(
+      id: (json['id'] as num?)?.toInt() ?? 0,
+      reference: json['reference'] as String? ?? '',
+      amount: (json['amount'] as num?)?.toDouble() ?? 0.0,
+      latitude: (json['latitude'] as num?)?.toDouble(),
+      longitude: (json['longitude'] as num?)?.toDouble(),
+      settlementStatus: json['settlement_status'] as String?,
+      tontineParticipantId: (json['tontine_participant_id'] as num?)?.toInt(),
+      tontineParticipant: tontineParticipant,
+      member: member,
+      tontine: tontine,
+      createdAt: json['created_at'] as String?,
+    );
+  }
 
   Map<String, dynamic> toJson() => _$ContributionToJson(this);
 }

@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/providers/auth_provider.dart';
+import '../../../core/widgets/widgets.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({super.key});
@@ -15,8 +16,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   final _formKey = GlobalKey<FormState>();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  bool _obscurePassword = true;
-  bool _obscureConfirmPassword = true;
+  String? _passwordError;
+  String? _confirmPasswordError;
 
   @override
   void dispose() {
@@ -26,7 +27,31 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   }
 
   Future<void> _submit() async {
-    if (_formKey.currentState!.validate()) {
+    setState(() {
+      if (_passwordController.text.trim().isEmpty) {
+        _passwordError = 'Veuillez entrer un mot de passe';
+      } else if (_passwordController.text.trim().length < 8) {
+        _passwordError = 'Le mot de passe doit contenir au moins 8 caractères';
+      } else if (!RegExp(r'(?=.*[a-z])(?=.*[A-Z])').hasMatch(_passwordController.text.trim())) {
+        _passwordError = 'Le mot de passe doit contenir au moins une lettre majuscule et une lettre minuscule';
+      } else if (!RegExp(r'(?=.*\d)').hasMatch(_passwordController.text.trim())) {
+        _passwordError = 'Le mot de passe doit contenir au moins un chiffre';
+      } else if (!RegExp(r'(?=.*[@$!%*#?&_\-+=^~])').hasMatch(_passwordController.text.trim())) {
+        _passwordError = 'Le mot de passe doit contenir au moins un caractère spécial (@ \$ ! % * # ? & _ - + = ^ ~)';
+      } else {
+        _passwordError = null;
+      }
+
+      if (_confirmPasswordController.text.trim().isEmpty) {
+        _confirmPasswordError = 'Veuillez confirmer votre mot de passe';
+      } else if (_confirmPasswordController.text.trim() != _passwordController.text.trim()) {
+        _confirmPasswordError = 'Les mots de passe ne correspondent pas';
+      } else {
+        _confirmPasswordError = null;
+      }
+    });
+
+    if (_passwordError == null && _confirmPasswordError == null) {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       final success = await authProvider.changePassword(
         password: _passwordController.text.trim(),
@@ -44,150 +69,95 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     final authProvider = Provider.of<AuthProvider>(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Changer de mot de passe'),
+      backgroundColor: AppColors.gray50,
+      appBar: const TontiAppBar(
+        title: 'Changer de mot de passe',
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(AppSpacing.lg),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Icon(
-                  Icons.lock_reset,
-                  size: 80,
-                  color: AppColors.primary,
-                ),
-                const SizedBox(height: 16),
-                const Text(
-                  'Changement obligatoire',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.gray900,
+                const Center(
+                  child: Column(
+                    children: [
+                      AppFeatureIcon(
+                        icon: Icons.lock_reset,
+                        size: 80,
+                      ),
+                      SizedBox(height: AppSpacing.lg),
+                      Text(
+                        'Changement obligatoire',
+                        textAlign: TextAlign.center,
+                        style: AppTextStyles.h2,
+                      ),
+                      SizedBox(height: AppSpacing.sm),
+                      Text(
+                        'Veuillez choisir un nouveau mot de passe pour sécuriser votre compte.',
+                        textAlign: TextAlign.center,
+                        style: AppTextStyles.bodyMedium,
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 8),
-                const Text(
-                  'Veuillez choisir un nouveau mot de passe pour sécuriser votre compte.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: AppColors.gray500,
-                  ),
-                ),
-                const SizedBox(height: 32),
-                TextFormField(
+                const SizedBox(height: AppSpacing.xl),
+                AppTextField(
+                  label: 'Nouveau mot de passe',
                   controller: _passwordController,
-                  obscureText: _obscurePassword,
-                  decoration: InputDecoration(
-                    labelText: 'Nouveau mot de passe',
-                    prefixIcon: const Icon(Icons.lock),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscurePassword
-                            ? Icons.visibility_off
-                            : Icons.visibility,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _obscurePassword = !_obscurePassword;
-                        });
-                      },
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Veuillez entrer un mot de passe';
-                    }
-                    if (value.trim().length < 8) {
-                      return 'Le mot de passe doit contenir au moins 8 caractères';
-                    }
-                    if (!RegExp(r'(?=.*[a-z])(?=.*[A-Z])').hasMatch(value.trim())) {
-                      return 'Le mot de passe doit contenir au moins une lettre majuscule et une lettre minuscule';
-                    }
-                    if (!RegExp(r'(?=.*\d)').hasMatch(value.trim())) {
-                      return 'Le mot de passe doit contenir au moins un chiffre';
-                    }
-                    if (!RegExp(r'(?=.*[@$!%*#?&_\-+=^~])').hasMatch(value.trim())) {
-                      return 'Le mot de passe doit contenir au moins un caractère spécial (@ \$ ! % * # ? & _ - + = ^ ~)';
-                    }
-                    return null;
-                  },
+                  hintText: 'Entrez votre nouveau mot de passe',
+                  obscureText: true,
+                  prefixIcon: Icons.lock,
+                  errorText: _passwordError,
+                  padding: const EdgeInsets.only(bottom: AppSpacing.md),
                 ),
-                const SizedBox(height: 16),
-                TextFormField(
+                AppTextField(
+                  label: 'Confirmer le mot de passe',
                   controller: _confirmPasswordController,
-                  obscureText: _obscureConfirmPassword,
-                  decoration: InputDecoration(
-                    labelText: 'Confirmer le mot de passe',
-                    prefixIcon: const Icon(Icons.lock_outline),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscureConfirmPassword
-                            ? Icons.visibility_off
-                            : Icons.visibility,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _obscureConfirmPassword = !_obscureConfirmPassword;
-                        });
-                      },
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Veuillez confirmer votre mot de passe';
-                    }
-                    if (value.trim() != _passwordController.text.trim()) {
-                      return 'Les mots de passe ne correspondent pas';
-                    }
-                    return null;
-                  },
+                  hintText: 'Confirmez votre nouveau mot de passe',
+                  obscureText: true,
+                  prefixIcon: Icons.lock_outline,
+                  errorText: _confirmPasswordError,
                 ),
                 if (authProvider.errorMessage != null) ...[
-                  const SizedBox(height: 16),
+                  const SizedBox(height: AppSpacing.md),
                   Container(
-                    padding: const EdgeInsets.all(12),
+                    padding: const EdgeInsets.all(AppSpacing.md),
                     decoration: BoxDecoration(
-                      color: AppColors.danger.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(12),
+                      color: AppColors.danger.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(AppBorderRadius.lg),
                       border: Border.all(
-                        color: AppColors.danger.withOpacity(0.3),
+                        color: AppColors.danger.withValues(alpha: 0.3),
                       ),
                     ),
-                    child: Text(
-                      authProvider.errorMessage!,
-                      style: const TextStyle(
-                        color: AppColors.danger,
-                        fontSize: 14,
-                      ),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.error_outline,
+                          color: AppColors.danger,
+                          size: 20,
+                        ),
+                        const SizedBox(width: AppSpacing.sm),
+                        Expanded(
+                          child: Text(
+                            authProvider.errorMessage!,
+                            style: AppTextStyles.bodyMedium.copyWith(
+                              color: AppColors.danger,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
-                const SizedBox(height: 24),
-                ElevatedButton(
-                  onPressed: authProvider.isLoading ? null : _submit,
-                  child: authProvider.isLoading
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              AppColors.white,
-                            ),
-                          ),
-                        )
-                      : const Text(
-                          'Changer le mot de passe',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                const SizedBox(height: AppSpacing.lg),
+                AppButton(
+                  text: 'Changer le mot de passe',
+                  isLoading: authProvider.isLoading,
+                  onPressed: _submit,
+                  icon: Icons.check,
                 ),
               ],
             ),

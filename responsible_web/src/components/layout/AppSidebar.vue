@@ -11,7 +11,7 @@ const authStore = useAuthStore()
 
 const navItems = [
   { name: 'Tableau de bord',    routeName: 'dashboard',     icon: 'grid' },
-  { name: 'Agents',             routeName: 'agents',        icon: 'users' },
+  { name: 'Agents collecteurs',             routeName: 'agents',        icon: 'users' },
   { name: 'Membres',            routeName: 'members',       icon: 'person' },
   { name: 'Tontines',           routeName: 'tontines',      icon: 'bank' },
   { name: 'Cotisations',        routeName: 'contributions', icon: 'cash' },
@@ -113,7 +113,7 @@ function isActive(routeName) {
     <!-- Bouton Déconnexion -->
     <div class="p-3 border-t border-gray-100">
       <button
-        class="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-medium
+        class="flex items-center justify-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-medium
                bg-primary-600 text-white hover:bg-red-600 transition-colors duration-200"
         @click="authStore.logout().then(() => $router.replace({ name: 'login' }))"
       >

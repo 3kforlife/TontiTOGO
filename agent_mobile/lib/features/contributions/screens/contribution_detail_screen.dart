@@ -187,14 +187,14 @@ class _ContributionDetailScreenState extends State<ContributionDetailScreen> {
                   icon: Icons.person,
                   label: 'Membre',
                   value:
-                      _contribution!.tontineParticipant?.member?.displayName ?? '',
+                      _contribution!.displayMember?.displayName ?? '',
                 ),
                 const SizedBox(height: 12),
                 _buildInfoRow(
                   icon: Icons.wallet,
                   label: 'Tontine',
                   value:
-                      _contribution!.tontineParticipant?.tontine?.name ?? '',
+                      _contribution!.displayTontine?.name ?? '',
                 ),
                 const SizedBox(height: 12),
                 _buildInfoRow(
