@@ -22,6 +22,7 @@ class UserResource extends JsonResource
             'status_label'         => $this->status->label(),
             'avatar_url'           => $this->avatar_url,
             'must_change_password' => $this->must_change_password,
+            'total_contributions'  => $this->whenCounted('contributions'),
             'organization'         => $this->whenLoaded('organization', fn() => [
                 'id'   => $this->organization->id,
                 'name' => $this->organization->name,

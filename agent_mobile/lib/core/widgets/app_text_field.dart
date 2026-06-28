@@ -86,24 +86,26 @@ class _AppTextFieldState extends State<AppTextField> {
             ),
           ),
           const SizedBox(height: AppSpacing.sm),
-          Container(
+            AnimatedContainer(
+            duration: AppDurations.fast,
+            curve: AppCurves.standard,
             decoration: BoxDecoration(
-              color: widget.enabled ?? true ? AppColors.white : AppColors.gray100,
-              borderRadius: BorderRadius.circular(AppBorderRadius.lg),
+              color: widget.enabled ?? true ? AppColors.white : AppColors.gray50,
+              borderRadius: BorderRadius.circular(AppBorderRadius.xl),
               border: Border.all(
                 color: widget.errorText != null
                     ? AppColors.danger
                     : _isFocused
                         ? AppColors.primary
-                        : AppColors.gray200,
-                width: _isFocused || widget.errorText != null ? 2 : 1,
+                        : AppColors.gray200.withValues(alpha: 0.6),
+                width: _isFocused || widget.errorText != null ? 1.5 : 1,
               ),
               boxShadow: _isFocused
                   ? [
                       BoxShadow(
-                        color: AppColors.primary.withValues(alpha: 0.1),
-                        blurRadius: 8,
-                        offset: const Offset(0, 0),
+                        color: AppColors.primary.withValues(alpha: 0.15),
+                        blurRadius: 16,
+                        offset: const Offset(0, 6),
                       ),
                     ]
                   : null,

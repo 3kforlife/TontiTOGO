@@ -39,9 +39,9 @@ class AppColors {
   // Neutral
   static const white = Color(0xFFFFFFFF);
   static const black = Color(0xFF000000);
-  static const gray50 = Color(0xFFF9FAFB);
-  static const gray100 = Color(0xFFF3F4F6);
-  static const gray200 = Color(0xFFE5E7EB);
+  static const gray50 = Color(0xFFF7F9F8);
+  static const gray100 = Color(0xFFF0F3F1);
+  static const gray200 = Color(0xFFE2E8E4);
   static const gray300 = Color(0xFFD1D5DB);
   static const gray400 = Color(0xFF9CA3AF);
   static const gray500 = Color(0xFF6B7280);
@@ -71,54 +71,54 @@ class AppBorderRadius {
 class AppShadows {
   static const List<BoxShadow> sm = [
     BoxShadow(
-      color: Color(0x0F000000),
-      blurRadius: 4,
-      offset: Offset(0, 2),
+      color: Color(0x0A0F172A),
+      blurRadius: 8,
+      offset: Offset(0, 3),
     ),
   ];
 
   static const List<BoxShadow> md = [
     BoxShadow(
-      color: Color(0x1A000000),
-      blurRadius: 8,
-      offset: Offset(0, 4),
+      color: Color(0x0D0F172A),
+      blurRadius: 18,
+      offset: Offset(0, 7),
     ),
   ];
 
   static const List<BoxShadow> lg = [
     BoxShadow(
-      color: Color(0x14000000),
-      blurRadius: 16,
-      offset: Offset(0, 8),
+      color: Color(0x100F172A),
+      blurRadius: 28,
+      offset: Offset(0, 12),
     ),
   ];
 
   static const List<BoxShadow> primary = [
     BoxShadow(
-      color: Color(0x3D10B981),
-      blurRadius: 20,
-      offset: Offset(0, 8),
+      color: Color(0x3310B981),
+      blurRadius: 24,
+      offset: Offset(0, 10),
     ),
   ];
 }
 
 class AppTextStyles {
   static const TextStyle h1 = TextStyle(
-    fontSize: 32,
+    fontSize: 30,
     fontWeight: FontWeight.w800,
     height: 1.2,
     color: AppColors.gray900,
   );
 
   static const TextStyle h2 = TextStyle(
-    fontSize: 24,
+    fontSize: 23,
     fontWeight: FontWeight.w800,
     height: 1.2,
     color: AppColors.gray900,
   );
 
   static const TextStyle h3 = TextStyle(
-    fontSize: 20,
+    fontSize: 19,
     fontWeight: FontWeight.w700,
     height: 1.3,
     color: AppColors.gray900,

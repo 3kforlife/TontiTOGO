@@ -92,7 +92,7 @@ class AgentManagementController extends ApiController
             // Le mot de passe temporaire est retourné dans la réponse pour affichage immédiat.
 
             return $this->created([
-                'agent'          => new UserResource($agent),
+                'agent'          => new UserResource($agent->loadCount('contributions')),
                 'credentials'    => [
                     'full_name'      => $agent->full_name,
                     'email'          => $agent->email,
@@ -119,7 +119,10 @@ class AgentManagementController extends ApiController
                 $data['avatar_url'] = $this->cloudinary->upload($request->file('avatar'), 'tontitogo/agents');
             }
             $agent->update($data);
-            return $this->success(new UserResource($agent->fresh()), 'Agent mis à jour avec succès.');
+            return $this->success(
+                new UserResource($agent->fresh()->loadCount('contributions')),
+                'Agent mis à jour avec succès.'
+            );
         });
     }
 
@@ -133,7 +136,7 @@ class AgentManagementController extends ApiController
         $agent     = $this->findAgent($request, $id);
         $newStatus = $agent->status === UserStatus::Active ? UserStatus::Suspended : UserStatus::Active;
         $agent->update(['status' => $newStatus]);
-        return $this->success(new UserResource($agent->fresh()),
+        return $this->success(new UserResource($agent->fresh()->loadCount('contributions')),
             "L'agent a été " . ($newStatus === UserStatus::Active ? 'réactivé' : 'suspendu') . ' avec succès.');
     }
 

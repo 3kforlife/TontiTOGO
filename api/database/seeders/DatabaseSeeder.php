@@ -13,6 +13,10 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             MemberSeeder::class,
             TontineSeeder::class,
+            ContributionSeeder::class,
+            DailySettlementSeeder::class,
+            SettingSeeder::class,
+            SmsLogSeeder::class,
         ]);
     }
 }

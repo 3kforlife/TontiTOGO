@@ -29,7 +29,9 @@ class AppCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
+      child: AnimatedContainer(
+        duration: AppDurations.medium,
+        curve: AppCurves.standard,
         width: width,
         height: height,
         padding: padding,
@@ -37,11 +39,11 @@ class AppCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: backgroundColor ?? AppColors.white,
           gradient: gradient,
-          borderRadius: BorderRadius.circular(AppBorderRadius.xxl),
+          borderRadius: BorderRadius.circular(AppBorderRadius.xl),
           boxShadow: boxShadow ?? AppShadows.lg,
           border: Border.all(
-            color: AppColors.gray100,
-            width: 1,
+            color: AppColors.gray200.withValues(alpha: 0.5),
+            width: 0.5,
           ),
         ),
         child: child,

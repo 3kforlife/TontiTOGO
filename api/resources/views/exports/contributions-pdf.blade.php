@@ -16,6 +16,7 @@
             font-size: 10px;
             color: #212121;
             background: #fff;
+            padding: 22px;
         }
 
         /* ── En-tête du document ── */

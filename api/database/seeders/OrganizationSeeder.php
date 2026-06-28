@@ -9,8 +9,9 @@ class OrganizationSeeder extends Seeder
 {
     public function run(): void
     {
-        Organization::create([
-            'name' => 'Tontine des Femmes du Marché Adawlato',
-        ]);
+        Organization::updateOrCreate(
+            ['name' => 'Tontine Solidaire de Lomé'],
+            []
+        );
     }
 }

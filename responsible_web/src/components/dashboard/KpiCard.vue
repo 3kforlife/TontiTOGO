@@ -19,9 +19,9 @@ const colors = {
 </script>
 
 <template>
-  <div class="card flex items-center gap-4">
+  <div class="card flex items-center gap-4 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200">
     <!-- Icône -->
-    <div :class="['w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0', colors[color]]">
+    <div :class="['w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 ring-1 ring-inset ring-black/5', colors[color]]">
       <!-- cash -->
       <svg v-if="icon === 'cash'" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="3"/>
@@ -60,8 +60,8 @@ const colors = {
 
     <!-- Valeur -->
     <div class="min-w-0">
-      <p class="text-xs text-gray-400 font-medium truncate">{{ label }}</p>
-      <p class="text-xl font-bold text-gray-900 mt-0.5">{{ value }}</p>
+      <p class="text-xs text-gray-500 font-semibold truncate">{{ label }}</p>
+      <p class="text-2xl font-bold tracking-tight text-gray-950 mt-0.5">{{ value }}</p>
     </div>
   </div>
 </template>

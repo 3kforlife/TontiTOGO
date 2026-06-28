@@ -121,19 +121,30 @@ class _EnrollMemberScreenState extends State<EnrollMemberScreen> {
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Membre inscrit avec succès !'),
+            SnackBar(
+              content: Row(
+                children: [
+                  const Icon(Icons.check_circle, color: Colors.white, size: 20),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'Membre inscrit avec succès !',
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ],
+              ),
               backgroundColor: AppColors.success,
               behavior: SnackBarBehavior.floating,
-              margin: EdgeInsets.fromLTRB(16, 40, 16, 600),
-              shape: RoundedRectangleBorder(
+              margin: const EdgeInsets.fromLTRB(16, 40, 16, 600),
+              shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(12)),
               ),
               elevation: 4,
-              duration: Duration(seconds: 2),
+              duration: const Duration(seconds: 2),
             ),
           );
-          await Future.delayed(const Duration(milliseconds: 500));
+          await Future.delayed(const Duration(milliseconds: 2100));
           if (mounted) {
             context.pop(true);
           }

@@ -110,6 +110,25 @@ class ContributionController extends ApiController
             );
         }
 
+        if ($request->amount < $participant->chosen_amount) {
+            return $this->error(
+                "Le montant est inférieur au montant choisi par le membre ({$participant->chosen_amount} FCFA).",
+                422
+            );
+        }
+
+        $today = now()->toDateString();
+        $existingContribution = Contribution::where('tontine_participant_id', $participant->id)
+            ->whereDate('created_at', $today)
+            ->first();
+
+        if ($existingContribution) {
+            return $this->error(
+                'Une cotisation a déjà été enregistrée pour ce membre aujourd\'hui. Une seule cotisation par jour est autorisée.',
+                422
+            );
+        }
+
         $contribution = DB::transaction(fn() => Contribution::create([
             'tontine_participant_id' => $participant->id,
             'user_id'               => $agent->id,

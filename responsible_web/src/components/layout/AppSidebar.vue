@@ -30,40 +30,40 @@ function isActive(routeName) {
   <!-- Sidebar desktop (fixe) + mobile (drawer) -->
   <aside
     :class="[
-      'fixed inset-y-0 left-0 z-30 flex flex-col bg-white border-r border-gray-100 transition-all duration-300 ease-in-out',
+      'fixed inset-y-0 left-0 z-30 flex flex-col bg-white/95 border-r border-gray-200/70 transition-all duration-300 ease-in-out backdrop-blur-xl',
       'w-64 lg:w-64 lg:translate-x-0 lg:static lg:z-auto',
       open ? 'translate-x-0 shadow-2xl' : '-translate-x-full',
     ]"
   >
     <!-- Logo + Nom organisation -->
-    <div class="flex items-center gap-3 px-5 py-5 border-b border-gray-100">
+    <div class="flex items-center gap-3.5 px-5 py-5 border-b border-gray-200/70">
       <!-- Avatar organisation (initial) -->
-      <div class="w-9 h-9 rounded-xl bg-primary-600 flex items-center justify-center text-white font-bold text-base flex-shrink-0">
+      <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white font-bold text-base flex-shrink-0 shadow-lg shadow-primary-600/20 ring-1 ring-white/60">
         {{ authStore.organizationName.charAt(0).toUpperCase() || 'T' }}
       </div>
       <div class="overflow-hidden">
-        <p class="text-sm font-semibold text-gray-800 truncate leading-tight">
+        <p class="text-sm font-bold text-gray-900 truncate leading-tight tracking-tight">
           {{ authStore.organizationName || 'Mon Organisation' }}
         </p>
-        <p class="text-xs text-gray-400">Responsable</p>
+        <p class="text-xs text-gray-500 mt-0.5">Espace responsable</p>
       </div>
     </div>
 
     <!-- Navigation -->
-    <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-0.5">
+    <nav class="flex-1 overflow-y-auto px-3 py-5 space-y-1">
       <RouterLink
         v-for="item in navItems"
         :key="item.routeName"
         :to="{ name: item.routeName }"
         :class="[
-          'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors duration-150',
+          'group flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200',
           isActive(item.routeName)
-            ? 'bg-primary-50 text-primary-700'
-            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
+            ? 'bg-primary-600 text-white shadow-md shadow-primary-600/15'
+            : 'text-gray-600 hover:bg-gray-100/80 hover:text-gray-950 hover:translate-x-0.5',
         ]"
       >
         <!-- Icônes SVG inline -->
-        <span class="w-5 h-5 flex-shrink-0 opacity-80">
+        <span :class="['w-5 h-5 flex-shrink-0 transition-opacity', isActive(item.routeName) ? 'opacity-100' : 'opacity-70 group-hover:opacity-100']">
           <!-- grid -->
           <svg v-if="item.icon === 'grid'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
             <rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/>
@@ -111,10 +111,11 @@ function isActive(routeName) {
     </nav>
 
     <!-- Bouton Déconnexion -->
-    <div class="p-3 border-t border-gray-100">
+    <div class="p-3.5 border-t border-gray-200/70">
       <button
-        class="flex items-center justify-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-medium
-               bg-primary-600 text-white hover:bg-red-600 transition-colors duration-200"
+        class="flex items-center justify-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-semibold
+               bg-gray-900 text-white hover:bg-red-600 hover:-translate-y-0.5 active:translate-y-0
+               shadow-sm hover:shadow-md transition-all duration-200"
         @click="authStore.logout().then(() => $router.replace({ name: 'login' }))"
       >
         <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">

@@ -66,7 +66,7 @@ class _AppButtonState extends State<AppButton> {
           _isPressed ? 2 : 0,
           0,
         ),
-        height: widget.height ?? 56,
+        height: widget.height ?? 54,
         width: widget.width ?? double.infinity,
         decoration: _buildDecoration(isActuallyDisabled),
         padding: const EdgeInsets.symmetric(
@@ -96,15 +96,14 @@ class _AppButtonState extends State<AppButton> {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
-          borderRadius: BorderRadius.circular(AppBorderRadius.xl),
+          borderRadius: BorderRadius.circular(AppBorderRadius.lg),
           boxShadow: isDisabled
               ? []
               : [
                   BoxShadow(
                     color: AppColors.primary.withValues(alpha: 0.3),
-                    blurRadius: _isPressed ? 8 : 20,
-                    spreadRadius: _isPressed ? 0 : 2,
-                    offset: Offset(0, _isPressed ? 2 : 8),
+                    blurRadius: _isPressed ? 8 : 16,
+                    offset: Offset(0, _isPressed ? 2 : 7),
                   ),
                 ],
         );
@@ -114,7 +113,7 @@ class _AppButtonState extends State<AppButton> {
           border: Border.all(
             color: isDisabled ? AppColors.gray200 : AppColors.gray200,
           ),
-          borderRadius: BorderRadius.circular(AppBorderRadius.xl),
+          borderRadius: BorderRadius.circular(AppBorderRadius.lg),
           boxShadow: isDisabled
               ? []
               : _isPressed
@@ -124,7 +123,7 @@ class _AppButtonState extends State<AppButton> {
       case AppButtonType.danger:
         return BoxDecoration(
           color: isDisabled ? AppColors.gray300 : AppColors.danger,
-          borderRadius: BorderRadius.circular(AppBorderRadius.xl),
+          borderRadius: BorderRadius.circular(AppBorderRadius.lg),
           boxShadow: isDisabled
               ? []
               : [

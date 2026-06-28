@@ -5,16 +5,16 @@ const { toasts, remove } = useToast()
 
 <template>
   <Teleport to="body">
-    <div class="fixed top-4 right-4 z-[100] flex flex-col gap-2 w-80">
+    <div class="fixed top-4 right-4 z-[100] flex flex-col gap-2.5 w-[calc(100%-2rem)] max-w-80">
       <TransitionGroup name="toast">
         <div
           v-for="t in toasts"
           :key="t.id"
           :class="[
-            'flex items-start gap-3 p-4 rounded-xl shadow-lg text-sm font-medium cursor-pointer',
-            t.type === 'success' ? 'bg-green-600 text-white' :
-            t.type === 'error'   ? 'bg-red-600 text-white'   :
-                                   'bg-gray-800 text-white',
+            'flex items-start gap-3 p-4 rounded-2xl shadow-xl ring-1 ring-white/20 text-sm font-semibold cursor-pointer backdrop-blur-xl',
+            t.type === 'success' ? 'bg-green-700/95 text-white' :
+            t.type === 'error'   ? 'bg-red-700/95 text-white'   :
+                                   'bg-gray-900/95 text-white',
           ]"
           @click="remove(t.id)"
         >

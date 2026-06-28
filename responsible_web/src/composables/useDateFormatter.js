@@ -4,15 +4,29 @@ export function useDateFormatter() {
 
     let dateObj
 
-    // Si la date est au format "d/m/Y" (ex: "25/06/2026")
-    if (typeof d === 'string' && d.includes('/')) {
-      const [day, month, year] = d.split('/').map(Number)
-      dateObj = new Date(year, month - 1, day)
+    // Formats API : "d/m/Y" ou "d/m/Y H:i".
+    if (typeof d === 'string') {
+      const match = d.match(
+        /^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/
+      )
+
+      if (match) {
+        const [, day, month, year, hours = 0, minutes = 0, seconds = 0] = match
+        dateObj = new Date(
+          Number(year),
+          Number(month) - 1,
+          Number(day),
+          Number(hours),
+          Number(minutes),
+          Number(seconds)
+        )
+      } else {
+        dateObj = new Date(d)
+      }
     } else {
       dateObj = new Date(d)
     }
 
-    // Vérifier si la date est valide
     if (isNaN(dateObj.getTime())) return '—'
 
     if (includeTime) {

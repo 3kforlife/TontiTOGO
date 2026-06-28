@@ -167,7 +167,18 @@ class _AddContributionScreenState extends State<AddContributionScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(response.data['message'] ?? 'Cotisation enregistrée avec succès'),
+              content: Row(
+                children: [
+                  const Icon(Icons.check_circle, color: Colors.white, size: 20),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      response.data['message'] ?? 'Cotisation enregistrée avec succès',
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ],
+              ),
               backgroundColor: AppColors.success,
               behavior: SnackBarBehavior.floating,
               margin: const EdgeInsets.fromLTRB(16, 40, 16, 600),
@@ -178,9 +189,9 @@ class _AddContributionScreenState extends State<AddContributionScreen> {
               duration: const Duration(seconds: 2),
             ),
           );
-          await Future.delayed(const Duration(milliseconds: 500));
+          await Future.delayed(const Duration(milliseconds: 2100));
           if (mounted) {
-            context.pop();
+            context.pop(true);
           }
         }
       } catch (e) {
@@ -428,6 +439,9 @@ class _AddContributionScreenState extends State<AddContributionScreen> {
                     final amount = double.tryParse(value.trim());
                     if (amount == null || amount <= 0) {
                       return 'Montant invalide';
+                    }
+                    if (_selectedParticipation != null && amount < _selectedParticipation!.chosenAmount) {
+                      return 'Montant minimum: ${_formatAmount(_selectedParticipation!.chosenAmount)}';
                     }
                     return null;
                   },

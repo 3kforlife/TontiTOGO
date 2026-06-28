@@ -157,13 +157,13 @@ onMounted(async () => {
                 </p>
               </div>
 
-              <!-- Date -->
-              <div class="flex items-center gap-2">
-                <span class="text-gray-400">📅</span>
-                <p class="text-gray-500">
-                  <span class="font-medium text-gray-700">Date :</span> {{ formatDate(marker.collected_at) }}
-                </p>
-              </div>
+               <!-- Date -->
+               <div class="flex items-center gap-2">
+                 <span class="text-gray-400">📅</span>
+                 <p class="text-gray-500">
+                   <span class="font-medium text-gray-700">Date :</span> {{ formatDate(marker.created_at) }}
+                 </p>
+               </div>
 
               <!-- Coordinates (clickable) -->
               <div class="flex items-center gap-2">

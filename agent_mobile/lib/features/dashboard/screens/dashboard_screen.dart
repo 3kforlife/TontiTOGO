@@ -90,54 +90,86 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: 0,
-        backgroundColor: AppColors.white,
-        elevation: 8,
-        selectedItemColor: AppColors.primary,
-        unselectedItemColor: AppColors.gray400,
-        selectedLabelStyle: const TextStyle(
-          fontWeight: FontWeight.w700,
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(24),
+            topRight: Radius.circular(24),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.gray900.withValues(alpha: 0.08),
+              blurRadius: 20,
+              offset: const Offset(0, -4),
+            ),
+          ],
         ),
-        onTap: (index) {
-          switch (index) {
-            case 0:
-              context.go('/dashboard');
-              break;
-            case 1:
-              context.go('/members/search');
-              break;
-            case 2:
-              context.go('/contributions');
-              break;
-            case 3:
-              context.go('/settings');
-              break;
-          }
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.grid_view_outlined),
-            activeIcon: Icon(Icons.grid_view),
-            label: 'Tableau de bord',
+        child: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          currentIndex: 0,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          selectedItemColor: AppColors.primary,
+          unselectedItemColor: AppColors.gray400,
+          selectedLabelStyle: const TextStyle(
+            fontWeight: FontWeight.w700,
+            fontSize: 12,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.people_outlined),
-            activeIcon: Icon(Icons.people),
-            label: 'Membres',
+          unselectedLabelStyle: const TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 11,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.receipt_long_outlined),
-            activeIcon: Icon(Icons.receipt_long),
-            label: 'Cotisations',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings_outlined),
-            activeIcon: Icon(Icons.settings),
-            label: 'Paramètres',
-          ),
-        ],
+          onTap: (index) {
+            switch (index) {
+              case 0:
+                context.go('/dashboard');
+                break;
+              case 1:
+                context.go('/members/search');
+                break;
+              case 2:
+                context.go('/contributions');
+                break;
+              case 3:
+                context.go('/settings');
+                break;
+            }
+          },
+          items: [
+            BottomNavigationBarItem(
+              icon: _buildNavIcon(0, Icons.grid_view, Icons.grid_view_outlined),
+              label: 'Tableau de bord',
+            ),
+            BottomNavigationBarItem(
+              icon: _buildNavIcon(1, Icons.people, Icons.people_outlined),
+              label: 'Membres',
+            ),
+            BottomNavigationBarItem(
+              icon: _buildNavIcon(2, Icons.receipt_long, Icons.receipt_long_outlined),
+              label: 'Cotisations',
+            ),
+            BottomNavigationBarItem(
+              icon: _buildNavIcon(3, Icons.settings, Icons.settings_outlined),
+              label: 'Paramètres',
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavIcon(int index, IconData activeIcon, IconData inactiveIcon) {
+    final isActive = index == 0;
+    return Container(
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: isActive ? AppColors.primary100 : Colors.transparent,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Icon(
+        isActive ? activeIcon : inactiveIcon,
+        color: isActive ? AppColors.primary : AppColors.gray400,
       ),
     );
   }

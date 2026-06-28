@@ -12,53 +12,64 @@ class TontineSeeder extends Seeder
 {
     public function run(): void
     {
-        $org     = Organization::first();
-        $members = Member::all();
+        $organization = Organization::where('name', 'Tontine Solidaire de Lomé')->firstOrFail();
+        $members = Member::where('organization_id', $organization->id)
+            ->where('status', 'active')
+            ->orderBy('id')
+            ->get();
 
-        // Tontine journalière
-        $tontineDaily = Tontine::create([
-            'organization_id' => $org->id,
-            'name'            => 'Tontine Journalière Marché',
-            'minimum_amount'  => 500,
-            'frequency'       => 'daily',
-            'start_date'      => now()->startOfYear(),
-            'end_date'        => now()->endOfYear(),
-            'status'          => 'active',
-        ]);
+        $definitions = [
+            [
+                'name' => 'Tontine Journalière du Marché',
+                'minimum_amount' => 500,
+                'frequency' => 'daily',
+                'members' => $members,
+                'chosen_amount' => 1000,
+            ],
+            [
+                'name' => 'Tontine Hebdomadaire des Commerçants',
+                'minimum_amount' => 5000,
+                'frequency' => 'weekly',
+                'members' => $members->take(14),
+                'chosen_amount' => 7500,
+            ],
+            [
+                'name' => 'Tontine Mensuelle Projets',
+                'minimum_amount' => 20000,
+                'frequency' => 'monthly',
+                'members' => $members->take(10),
+                'chosen_amount' => 25000,
+            ],
+        ];
 
-        // Tontine mensuelle
-        $tontineMonthly = Tontine::create([
-            'organization_id' => $org->id,
-            'name'            => 'Tontine Mensuelle Commerçants',
-            'minimum_amount'  => 5000,
-            'frequency'       => 'monthly',
-            'start_date'      => now()->startOfYear(),
-            'end_date'        => null,
-            'status'          => 'active',
-        ]);
+        foreach ($definitions as $definition) {
+            $tontine = Tontine::updateOrCreate(
+                [
+                    'organization_id' => $organization->id,
+                    'name' => $definition['name'],
+                ],
+                [
+                    'minimum_amount' => $definition['minimum_amount'],
+                    'frequency' => $definition['frequency'],
+                    'start_date' => now()->subMonths(6)->startOfMonth(),
+                    'end_date' => now()->addMonths(6)->endOfMonth(),
+                    'status' => 'active',
+                ]
+            );
 
-        // Inscrire tous les membres dans la tontine journalière
-        foreach ($members as $member) {
-            TontineParticipant::create([
-                'tontine_id'    => $tontineDaily->id,
-                'member_id'     => $member->id,
-                'chosen_amount' => 500,
-                'joined_at'     => now()->startOfYear(),
-                'status'        => 'active',
-            ]);
+            foreach ($definition['members'] as $index => $member) {
+                TontineParticipant::updateOrCreate(
+                    [
+                        'tontine_id' => $tontine->id,
+                        'member_id' => $member->id,
+                    ],
+                    [
+                        'chosen_amount' => $definition['chosen_amount'] + (($index % 3) * $definition['minimum_amount']),
+                        'joined_at' => now()->subMonths(5)->addDays($index),
+                        'status' => 'active',
+                    ]
+                );
+            }
         }
-
-        // Inscrire les 4 premiers membres dans la tontine mensuelle
-        foreach ($members->take(4) as $member) {
-            TontineParticipant::create([
-                'tontine_id'    => $tontineMonthly->id,
-                'member_id'     => $member->id,
-                'chosen_amount' => 10000,
-                'joined_at'     => now()->startOfYear(),
-                'status'        => 'active',
-            ]);
-        }
-
-        $this->command->info('✅ 2 tontines créées avec participants.');
     }
 }

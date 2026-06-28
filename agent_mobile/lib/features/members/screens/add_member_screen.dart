@@ -84,7 +84,18 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(response.data['message'] ?? 'Membre créé avec succès'),
+              content: Row(
+                children: [
+                  const Icon(Icons.check_circle, color: Colors.white, size: 20),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      response.data['message'] ?? 'Membre créé avec succès',
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ],
+              ),
               backgroundColor: AppColors.success,
               behavior: SnackBarBehavior.floating,
               margin: const EdgeInsets.fromLTRB(16, 40, 16, 600),
@@ -95,9 +106,9 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
               duration: const Duration(seconds: 2),
             ),
           );
-          await Future.delayed(const Duration(milliseconds: 500));
+          await Future.delayed(const Duration(milliseconds: 2100));
           if (mounted) {
-            context.pop();
+            context.pop(true);
           }
         }
       } catch (e) {
@@ -134,105 +145,160 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
           child: ListView(
             padding: const EdgeInsets.all(AppSpacing.lg),
             children: [
-              AppTextField(
-                label: 'Numéro de carnet',
-                controller: _notebookNumberController,
-                hintText: 'Entrez le numéro de carnet',
-                prefixIcon: Icons.book,
-                errorText: _notebookNumberError,
-                padding: const EdgeInsets.only(bottom: AppSpacing.md),
-              ),
-              AppTextField(
-                label: 'Prénom',
-                controller: _firstNameController,
-                hintText: 'Entrez le prénom',
-                prefixIcon: Icons.person_outline,
-                errorText: _firstNameError,
-                padding: const EdgeInsets.only(bottom: AppSpacing.md),
-              ),
-              AppTextField(
-                label: 'Nom',
-                controller: _lastNameController,
-                hintText: 'Entrez le nom',
-                prefixIcon: Icons.person,
-                errorText: _lastNameError,
-                padding: const EdgeInsets.only(bottom: AppSpacing.md),
-              ),
-              AppTextField(
-                label: 'Téléphone',
-                controller: _phoneController,
-                hintText: 'Entrez le numéro de téléphone',
-                keyboardType: TextInputType.phone,
-                prefixIcon: Icons.phone,
-                errorText: _phoneError,
-                padding: const EdgeInsets.only(bottom: AppSpacing.md),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.md,
+              // Info Card
+              AppCard(
+                gradient: LinearGradient(
+                  colors: [AppColors.primary100, AppColors.primaryLight],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
-                decoration: BoxDecoration(
-                  color: AppColors.white,
-                  borderRadius: BorderRadius.circular(AppBorderRadius.lg),
-                  border: Border.all(
-                    color: _genderError != null
-                        ? AppColors.danger
-                        : AppColors.gray200,
-                    width: _genderError != null ? 2 : 1,
-                  ),
-                ),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButtonFormField<String>(
-                    value: _selectedGender,
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      hintText: 'Sélectionnez le genre',
-                      prefixIcon: Icon(Icons.wc),
-                    ),
-                    items: const [
-                      DropdownMenuItem(value: 'M', child: Text('Homme')),
-                      DropdownMenuItem(value: 'F', child: Text('Femme')),
-                    ],
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedGender = value;
-                        if (_genderError != null) {
-                          _genderError = null;
-                        }
-                      });
-                    },
-                  ),
-                ),
-              ),
-              if (_genderError != null) ...[
-                const SizedBox(height: AppSpacing.sm),
-                Row(
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                margin: const EdgeInsets.only(bottom: AppSpacing.xl),
+                child: Row(
                   children: [
-                    const Icon(
-                      Icons.error_outline,
-                      color: AppColors.danger,
-                      size: 16,
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.3),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: const Icon(
+                        Icons.person_add,
+                        color: AppColors.primary,
+                        size: 28,
+                      ),
                     ),
-                    const SizedBox(width: AppSpacing.sm),
+                    const SizedBox(width: AppSpacing.md),
                     Expanded(
-                      child: Text(
-                        _genderError!,
-                        style: AppTextStyles.bodySmall.copyWith(
-                          color: AppColors.danger,
-                        ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Enregistrement membre',
+                            style: AppTextStyles.h3.copyWith(
+                              color: AppColors.primary,
+                              fontSize: 16,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Remplissez les informations du membre',
+                            style: AppTextStyles.bodySmall.copyWith(
+                              color: AppColors.primary700,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
-              ],
-              const SizedBox(height: AppSpacing.md),
+              ),
+
+              // Form Fields
+              AppTextField(
+                label: 'Numéro de carnet',
+                controller: _notebookNumberController,
+                hintText: 'Ex: CARNET-001',
+                prefixIcon: Icons.badge,
+                errorText: _notebookNumberError,
+                padding: const EdgeInsets.only(bottom: AppSpacing.md),
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: AppTextField(
+                      label: 'Prénom',
+                      controller: _firstNameController,
+                      hintText: 'Entrez le prénom',
+                      prefixIcon: Icons.person_outline,
+                      errorText: _firstNameError,
+                      padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.md),
+                  Expanded(
+                    child: AppTextField(
+                      label: 'Nom',
+                      controller: _lastNameController,
+                      hintText: 'Entrez le nom',
+                      prefixIcon: Icons.person,
+                      errorText: _lastNameError,
+                      padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                    ),
+                  ),
+                ],
+              ),
+              AppTextField(
+                label: 'Téléphone',
+                controller: _phoneController,
+                hintText: '228 90 00 00 00',
+                keyboardType: TextInputType.phone,
+                prefixIcon: Icons.phone_android,
+                errorText: _phoneError,
+                padding: const EdgeInsets.only(bottom: AppSpacing.md),
+              ),
+
+              // Gender Selection Card
+              AppCard(
+                padding: const EdgeInsets.all(AppSpacing.md),
+                margin: const EdgeInsets.only(bottom: AppSpacing.md),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Genre',
+                      style: AppTextStyles.bodyLarge.copyWith(
+                        color: AppColors.gray700,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildGenderOption('M', 'Homme', Icons.male),
+                        ),
+                        const SizedBox(width: AppSpacing.md),
+                        Expanded(
+                          child: _buildGenderOption('F', 'Femme', Icons.female),
+                        ),
+                      ],
+                    ),
+                    if (_genderError != null) ...[
+                      const SizedBox(height: AppSpacing.sm),
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.error_outline,
+                            color: AppColors.danger,
+                            size: 16,
+                          ),
+                          const SizedBox(width: AppSpacing.sm),
+                          Expanded(
+                            child: Text(
+                              _genderError!,
+                              style: AppTextStyles.bodySmall.copyWith(
+                                color: AppColors.danger,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+
               AppTextField(
                 label: 'Adresse',
                 controller: _addressController,
-                hintText: 'Entrez l\'adresse',
-                prefixIcon: Icons.location_on,
+                hintText: 'Entrez l\'adresse (optionnel)',
+                prefixIcon: Icons.location_on_outlined,
                 maxLines: 3,
+                padding: const EdgeInsets.only(bottom: AppSpacing.md),
               ),
+
+              // Error Message
               if (_errorMessage != null) ...[
                 const SizedBox(height: AppSpacing.md),
                 Container(
@@ -257,6 +323,7 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
                           _errorMessage!,
                           style: AppTextStyles.bodyMedium.copyWith(
                             color: AppColors.danger,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
@@ -264,15 +331,68 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
                   ),
                 ),
               ],
-              const SizedBox(height: AppSpacing.lg),
+
+              const SizedBox(height: AppSpacing.xl),
+
+              // Submit Button
               AppButton(
-                text: 'Enregistrer',
+                text: 'Enregistrer le membre',
                 isLoading: _isLoading,
                 onPressed: _submit,
-                icon: Icons.save,
+                icon: Icons.check_circle,
               ),
+              const SizedBox(height: AppSpacing.lg),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGenderOption(String value, String label, IconData icon) {
+    final isSelected = _selectedGender == value;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedGender = value;
+          if (_genderError != null) {
+            _genderError = null;
+          }
+        });
+      },
+      child: AnimatedContainer(
+        duration: AppDurations.fast,
+        curve: AppCurves.standard,
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.md,
+        ),
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.primary100 : AppColors.white,
+          borderRadius: BorderRadius.circular(AppBorderRadius.lg),
+          border: Border.all(
+            color: isSelected ? AppColors.primary : AppColors.gray200,
+            width: isSelected ? 2 : 1,
+          ),
+          boxShadow: isSelected ? AppShadows.sm : null,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              color: isSelected ? AppColors.primary : AppColors.gray500,
+              size: 20,
+            ),
+            const SizedBox(width: AppSpacing.sm),
+            Text(
+              label,
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: isSelected ? AppColors.primary : AppColors.gray700,
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+              ),
+            ),
+          ],
         ),
       ),
     );

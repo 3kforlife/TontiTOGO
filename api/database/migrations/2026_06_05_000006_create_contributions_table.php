@@ -17,6 +17,7 @@ return new class extends Migration
             $table->decimal('latitude', 10, 8)->nullable();
             $table->decimal('longitude', 11, 8)->nullable();
             $table->enum('settlement_status', ['pending', 'settled'])->default('pending');
+            $table->unique(['tontine_participant_id', 'created_at'], 'contributions_participant_date_unique');
             $table->timestamps();
         });
     }
