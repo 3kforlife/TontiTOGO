@@ -41,7 +41,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   const SnackBar(
                     content: Text('Fonctionnalité à venir'),
                     behavior: SnackBarBehavior.floating,
-                    margin: EdgeInsets.fromLTRB(16, 40, 16, 600),
+                    margin: EdgeInsets.fromLTRB(16, 0, 16, 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(12)),
                     ),
@@ -70,7 +70,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   const SnackBar(
                     content: Text('Fonctionnalité à venir'),
                     behavior: SnackBarBehavior.floating,
-                    margin: EdgeInsets.fromLTRB(16, 40, 16, 600),
+                    margin: EdgeInsets.fromLTRB(16, 0, 16, 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(12)),
                     ),
@@ -88,7 +88,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   const SnackBar(
                     content: Text('Fonctionnalité à venir'),
                     behavior: SnackBarBehavior.floating,
-                    margin: EdgeInsets.fromLTRB(16, 40, 16, 600),
+                    margin: EdgeInsets.fromLTRB(16, 0, 16, 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(12)),
                     ),
@@ -106,7 +106,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   const SnackBar(
                     content: Text('TontiTOGO Agent v1.0.0'),
                     behavior: SnackBarBehavior.floating,
-                    margin: EdgeInsets.fromLTRB(16, 40, 16, 600),
+                    margin: EdgeInsets.fromLTRB(16, 0, 16, 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(12)),
                     ),

@@ -462,6 +462,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       crossAxisCount: 2,
       mainAxisSpacing: AppSpacing.md,
       crossAxisSpacing: AppSpacing.md,
+      childAspectRatio: 0.95,   // < 1 = plus haut que large, donne plus de place au contenu
       children: [
         AppStatCard(
           title: 'Aujourd\'hui',

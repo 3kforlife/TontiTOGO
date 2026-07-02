@@ -5,7 +5,7 @@ namespace App\Jobs;
 use App\Models\Organization;
 use App\Models\SmsLog;
 use App\Models\TontineParticipant;
-use App\Services\TermiiService;
+use App\Services\NghCorpService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -26,7 +26,7 @@ class SendReminderSmsJob implements ShouldQueue
         private readonly int $organizationId
     ) {}
 
-    public function handle(TermiiService $termii): void
+    public function handle(NghCorpService $termii): void
     {
         $organization = Organization::find($this->organizationId);
 

@@ -136,7 +136,7 @@ class _EnrollMemberScreenState extends State<EnrollMemberScreen> {
               ),
               backgroundColor: AppColors.success,
               behavior: SnackBarBehavior.floating,
-              margin: const EdgeInsets.fromLTRB(16, 40, 16, 600),
+              margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
               shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(12)),
               ),
@@ -156,7 +156,7 @@ class _EnrollMemberScreenState extends State<EnrollMemberScreen> {
               content: Text(e.toString()),
               backgroundColor: AppColors.danger,
               behavior: SnackBarBehavior.floating,
-              margin: EdgeInsets.fromLTRB(16, 40, 16, 600),
+              margin: EdgeInsets.fromLTRB(16, 0, 16, 16),
               shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(12)),
               ),
@@ -261,12 +261,15 @@ class _EnrollMemberScreenState extends State<EnrollMemberScreen> {
                 ),
               ),
               child: DropdownButtonHideUnderline(
-                child: DropdownButtonFormField<Tontine>(
+                child: DropdownButton<Tontine>(
                   value: _selectedTontine,
-                  decoration: const InputDecoration(
-                    border: InputBorder.none,
-                    hintText: 'Sélectionner une tontine',
-                    prefixIcon: Icon(Icons.group),
+                  isExpanded: true,          // ← empêche le overflow horizontal
+                  hint: const Row(
+                    children: [
+                      Icon(Icons.group, color: AppColors.gray400, size: 20),
+                      SizedBox(width: AppSpacing.sm),
+                      Text('Sélectionner une tontine'),
+                    ],
                   ),
                   items: _tontines.map((tontine) {
                     return DropdownMenuItem<Tontine>(
@@ -278,10 +281,12 @@ class _EnrollMemberScreenState extends State<EnrollMemberScreen> {
                           Text(
                             tontine.name,
                             style: const TextStyle(fontWeight: FontWeight.w600),
+                            overflow: TextOverflow.ellipsis,
                           ),
                           Text(
                             '${tontine.frequencyLabel ?? tontine.frequency} • Min: ${_formatAmount(tontine.minimumAmount)}',
                             style: AppTextStyles.bodySmall,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ],
                       ),
@@ -290,9 +295,7 @@ class _EnrollMemberScreenState extends State<EnrollMemberScreen> {
                   onChanged: (value) {
                     setState(() {
                       _selectedTontine = value;
-                      if (_tontineError != null) {
-                        _tontineError = null;
-                      }
+                      if (_tontineError != null) _tontineError = null;
                       if (value != null) {
                         _amountController.text = value.minimumAmount.toString();
                       }

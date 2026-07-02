@@ -98,7 +98,7 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
               ),
               backgroundColor: AppColors.success,
               behavior: SnackBarBehavior.floating,
-              margin: const EdgeInsets.fromLTRB(16, 40, 16, 600),
+              margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
               shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(12)),
               ),
@@ -364,7 +364,7 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
         duration: AppDurations.fast,
         curve: AppCurves.standard,
         padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.md,
+          horizontal: AppSpacing.sm,   // md → sm pour éviter le débordement droit
           vertical: AppSpacing.md,
         ),
         decoration: BoxDecoration(

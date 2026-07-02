@@ -377,6 +377,25 @@
                 ]
             }
         },
+        "/api/agent/tontines": {
+            "get": {
+                "tags": [
+                    "Agent - Membres"
+                ],
+                "summary": "Liste des tontines actives de l'organisation",
+                "operationId": "f506fb7004a83c9445db00ac349fd56d",
+                "responses": {
+                    "200": {
+                        "description": "Liste des tontines actives"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
         "/api/agent/members/search": {
             "get": {
                 "tags": [
@@ -1045,12 +1064,7 @@
                     "403": {
                         "description": "Lien invalide ou expiré"
                     }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
+                }
             }
         },
         "/api/responsible/map/markers": {

@@ -51,7 +51,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Termii — Passerelle SMS (Moov / Yas Togo)
+    | NGH Corp — Passerelle SMS (Moov / Yas Togo) — Fournisseur principal
+    |--------------------------------------------------------------------------
+    */
+    'nghcorp' => [
+        'api_key'    => env('NGHCORP_API_KEY'),
+        'api_secret' => env('NGHCORP_API_SECRET'),
+        'base_url'   => env('NGHCORP_BASE_URL', 'https://extranet.nghcorp.net'),
+        'verify_ssl' => env('NGHCORP_VERIFY_SSL', true),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Termii — Passerelle SMS (conservé en backup)
     |--------------------------------------------------------------------------
     */
     'termii' => [

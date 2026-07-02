@@ -123,7 +123,7 @@ class _AddContributionScreenState extends State<AddContributionScreen> {
             content: Text('Veuillez sélectionner une tontine'),
             backgroundColor: AppColors.warning,
             behavior: SnackBarBehavior.floating,
-            margin: EdgeInsets.fromLTRB(16, 40, 16, 600),
+            margin: EdgeInsets.fromLTRB(16, 0, 16, 16),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(12)),
             ),
@@ -181,7 +181,7 @@ class _AddContributionScreenState extends State<AddContributionScreen> {
               ),
               backgroundColor: AppColors.success,
               behavior: SnackBarBehavior.floating,
-              margin: const EdgeInsets.fromLTRB(16, 40, 16, 600),
+              margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
               shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(12)),
               ),
@@ -213,7 +213,7 @@ class _AddContributionScreenState extends State<AddContributionScreen> {
               content: Text(errorMessage),
               backgroundColor: AppColors.danger,
               behavior: SnackBarBehavior.floating,
-              margin: const EdgeInsets.fromLTRB(16, 40, 16, 600),
+              margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
               shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(12)),
               ),

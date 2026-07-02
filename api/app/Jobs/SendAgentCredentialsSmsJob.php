@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Services\TermiiService;
+use App\Services\NghCorpService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -23,7 +23,7 @@ class SendAgentCredentialsSmsJob implements ShouldQueue
         private readonly string $tempPassword,
     ) {}
 
-    public function handle(TermiiService $termii): void
+    public function handle(NghCorpService $termii): void
     {
         $sent = $termii->sendAgentCredentials(
             $this->phone,

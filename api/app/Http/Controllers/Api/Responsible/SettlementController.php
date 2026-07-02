@@ -124,7 +124,7 @@ class SettlementController extends ApiController
 
             $settlement->load(['agent:id,firstname,lastname,avatar_url', 'validatedByResponsible:id,firstname,lastname']);
 
-            if ($status === SettlementStatus::Discrepancy) {
+            /*if ($status === SettlementStatus::Discrepancy) {
                 SendSettlementAlertSmsJob::dispatch(
                     $responsible->phone,
                     $agent->full_name,
@@ -132,7 +132,7 @@ class SettlementController extends ApiController
                     (float) $receivedAmount,
                     $request->date_settled
                 );
-            }
+            }*/
 
             return $this->created(
                 new DailySettlementResource($settlement),

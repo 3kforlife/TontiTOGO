@@ -6,7 +6,7 @@ use App\Enums\UserRole;
 use App\Http\Controllers\Api\ApiController;
 use App\Models\User;
 use App\Rules\PasswordRules;
-use App\Services\TermiiService;
+use App\Services\NghCorpService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -23,7 +23,7 @@ class AgentPasswordResetController extends ApiController
     private const CACHE_PREFIX = 'agent_otp_reset_';
 
     public function __construct(
-        private readonly TermiiService $termii
+        private readonly NghCorpService $termii
     ) {}
 
     // -------------------------------------------------------

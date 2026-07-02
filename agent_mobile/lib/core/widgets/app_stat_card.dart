@@ -36,34 +36,36 @@ class AppStatCard extends StatelessWidget {
 
     return AppCard(
       onTap: onTap,
-      padding: const EdgeInsets.all(AppSpacing.lg),
+      padding: const EdgeInsets.all(AppSpacing.sm),   // lg → sm
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              // Icône principale réduite
               Container(
-                width: 64,
-                height: 64,
+                width: 40,          // 64 → 40
+                height: 40,         // 64 → 40
                 decoration: BoxDecoration(
                   color: colors.background,
-                  borderRadius: BorderRadius.circular(AppBorderRadius.lg),
+                  borderRadius: BorderRadius.circular(AppBorderRadius.md),
                   border: Border.all(
                     color: colors.icon.withValues(alpha: 0.2),
-                    width: 2,
+                    width: 1.5,
                   ),
                 ),
                 child: Icon(
                   icon,
                   color: colors.icon,
-                  size: 32,
+                  size: 20,          // 32 → 20
                 ),
               ),
               if (trailingIcon != null)
                 Container(
-                  width: 44,
-                  height: 44,
+                  width: 28,         // 44 → 28
+                  height: 28,        // 44 → 28
                   decoration: BoxDecoration(
                     color: colors.background,
                     shape: BoxShape.circle,
@@ -71,23 +73,30 @@ class AppStatCard extends StatelessWidget {
                   child: Icon(
                     trailingIcon,
                     color: colors.icon,
-                    size: 24,
+                    size: 14,         // 24 → 14
                   ),
                 ),
             ],
           ),
-          const SizedBox(height: AppSpacing.md),
+          const SizedBox(height: AppSpacing.xs),   // md → xs
           Text(
             title,
-            style: AppTextStyles.bodyLarge.copyWith(
+            style: AppTextStyles.bodySmall.copyWith(  // bodySmall → bodyMedium
               color: AppColors.gray500,
             ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
-          const SizedBox(height: AppSpacing.xs),
-          Text(
-            value,
-            style: AppTextStyles.h2.copyWith(
-              color: AppColors.gray900,
+          const SizedBox(height: 2),
+          Flexible(
+            child: Text(
+              value,
+              style: AppTextStyles.h3.copyWith(
+                color: AppColors.gray900,
+                fontSize: 18,                           // 13 → 15
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],

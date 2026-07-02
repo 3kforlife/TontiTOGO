@@ -63,7 +63,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
             content: Text('Mot de passe réinitialisé avec succès !'),
             backgroundColor: AppColors.success,
             behavior: SnackBarBehavior.floating,
-            margin: EdgeInsets.fromLTRB(16, 40, 16, 600),
+            margin: EdgeInsets.fromLTRB(16, 0, 16, 16),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(12)),
             ),

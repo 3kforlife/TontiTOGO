@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Services\TermiiService;
+use App\Services\NghCorpService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -25,7 +25,7 @@ class SendSettlementAlertSmsJob implements ShouldQueue
         private readonly string $date,
     ) {}
 
-    public function handle(TermiiService $termii): void
+    public function handle(NghCorpService $termii): void
     {
         $sent = $termii->sendSettlementDiscrepancyAlert(
             $this->responsiblePhone,
