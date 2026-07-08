@@ -78,7 +78,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           TontiTogoLogo(),
                           SizedBox(height: AppSpacing.lg),
                           Text(
-                            'TontiTOGO Agent',
+                            'Connexion',
                             style: AppTextStyles.h2,
                           ),
                           SizedBox(height: AppSpacing.sm),
@@ -94,7 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     AppTextField(
                       label: 'Numéro de téléphone',
                       controller: _phoneController,
-                      hintText: 'Ex: +228 90 00 00 00',
+                      hintText: 'votre numéro de téléphone',
                       keyboardType: TextInputType.phone,
                       prefixIcon: Icons.phone,
                       errorText: _phoneError,
@@ -103,7 +103,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     AppTextField(
                       label: 'Mot de passe',
                       controller: _passwordController,
-                      hintText: 'Entrez votre mot de passe',
+                      hintText: 'votre mot de passe',
                       obscureText: true,
                       prefixIcon: Icons.lock,
                       errorText: _passwordError,

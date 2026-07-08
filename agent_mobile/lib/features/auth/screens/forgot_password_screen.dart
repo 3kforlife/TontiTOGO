@@ -88,7 +88,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     AppTextField(
                       label: 'Numéro de téléphone',
                       controller: _phoneController,
-                      hintText: 'Ex: +228 90 00 00 00',
+                      hintText: 'numéro de téléphone',
                       keyboardType: TextInputType.phone,
                       prefixIcon: Icons.phone,
                       errorText: _phoneError,

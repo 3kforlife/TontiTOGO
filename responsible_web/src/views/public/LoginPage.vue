@@ -59,7 +59,7 @@ async function submit() {
         <form @submit.prevent="submit" class="space-y-4">
           <!-- Email -->
           <div>
-            <label class="form-label">Adresse e-mail <span class="text-red-500">*</span></label>
+            <label class="form-label">Adresse email <span class="text-red-500">*</span></label>
             <input v-model="form.login" type="text" placeholder="votre email" class="form-input" required />
             <p v-if="errors.login" class="text-red-500 text-xs mt-1">{{ errors.login[0] }}</p>
           </div>

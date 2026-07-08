@@ -198,7 +198,7 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
               AppTextField(
                 label: 'Numéro de carnet',
                 controller: _notebookNumberController,
-                hintText: 'Ex: CARNET-001',
+                hintText: 'Le numéro du carnet',
                 prefixIcon: Icons.badge,
                 errorText: _notebookNumberError,
                 padding: const EdgeInsets.only(bottom: AppSpacing.md),
@@ -231,7 +231,7 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
               AppTextField(
                 label: 'Téléphone',
                 controller: _phoneController,
-                hintText: '228 90 00 00 00',
+                hintText: 'numéro de téléphone',
                 keyboardType: TextInputType.phone,
                 prefixIcon: Icons.phone_android,
                 errorText: _phoneError,
@@ -292,7 +292,7 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
               AppTextField(
                 label: 'Adresse',
                 controller: _addressController,
-                hintText: 'Entrez l\'adresse (optionnel)',
+                hintText: 'Entrez l\'adresse',
                 prefixIcon: Icons.location_on_outlined,
                 maxLines: 3,
                 padding: const EdgeInsets.only(bottom: AppSpacing.md),

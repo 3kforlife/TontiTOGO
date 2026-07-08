@@ -27,12 +27,8 @@ class AuthProvider extends ChangeNotifier {
     final token = await SecureStorage.read(AppConstants.tokenKey);
     final userJson = await SecureStorage.read(AppConstants.userKey);
 
-    print('--- DEBUG AUTH PROVIDER ---');
-    print('token: $token');
-    print('userJson: $userJson');
     if (token != null && userJson != null) {
       final decoded = json.decode(userJson);
-      print('decoded user: $decoded');
       _user = User.fromJson(decoded);
       _isAuthenticated = true;
       notifyListeners();
