@@ -128,7 +128,7 @@ onMounted(() => store.fetchAll())
         <h1 class="text-xl font-bold text-gray-900">Membres</h1>
         <p class="text-sm text-gray-400 mt-0.5">{{ store.total }} membre{{ store.total > 1 ? 's' : '' }} enregistré{{ store.total > 1 ? 's' : '' }}</p>
       </div>
-      <button class="btn-primary" @click="openCreate">
+      <button class="btn-primary cursor-pointer" @click="openCreate">
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         Nouveau membre
       </button>
@@ -147,7 +147,7 @@ onMounted(() => store.fetchAll())
         <option value="active">Actif</option>
         <option value="suspended">Suspendu</option>
       </select>
-      <button class="btn-secondary" @click="applyFilters">Filtrer</button>
+      <button class="btn-secondary cursor-pointer" @click="applyFilters">Filtrer</button>
     </div>
 
     <!-- Tableau -->
@@ -159,7 +159,7 @@ onMounted(() => store.fetchAll())
       <div v-else-if="!store.members.length" class="flex flex-col items-center justify-center py-16 text-gray-300">
         <svg class="w-12 h-12 mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/><path d="M16 3.13a4 4 0 010 7.75"/><path d="M21 21v-2a4 4 0 00-3-3.87"/></svg>
         <p class="text-sm">Aucun membre enregistré</p>
-        <button class="btn-primary mt-4 text-xs" @click="openCreate">Ajouter un membre</button>
+        <button class="btn-primary mt-4 text-xs cursor-pointer" @click="openCreate">Ajouter un membre</button>
       </div>
 
       <table v-else class="w-full text-sm">
@@ -187,7 +187,7 @@ onMounted(() => store.fetchAll())
             </td>
             <td class="px-4 py-3 text-center">
               <button
-                :class="member.status === 'active' ? 'badge-green' : 'badge-red'"
+                :class="member.status === 'active' ? 'badge-green cursor-pointer' : 'badge-red cursor-pointer' "
                 @click="handleToggle(member)"
                 title="Cliquer pour changer le statut"
               >
@@ -197,13 +197,13 @@ onMounted(() => store.fetchAll())
             <td class="px-4 py-3 text-gray-400 text-xs hidden lg:table-cell">{{ formatDate(member.created_at) }}</td>
             <td class="px-4 py-3">
               <div class="flex items-center justify-end gap-1">
-                <button class="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700" title="Détails" @click="openDetail(member)">
+                <button class="p-1.5 rounded-lg cursor-pointer hover:bg-gray-100 text-gray-400 hover:text-gray-700" title="Détails" @click="openDetail(member)">
                   <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                 </button>
-                <button class="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-blue-600" title="Modifier" @click="openEdit(member)">
+                <button class="p-1.5 rounded-lg cursor-pointer hover:bg-gray-100 text-gray-400 hover:text-blue-600" title="Modifier" @click="openEdit(member)">
                   <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                 </button>
-                <button class="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-red-600" title="Supprimer" @click="openDelete(member)">
+                <button class="p-1.5 rounded-lg cursor-pointer hover:bg-gray-100 text-gray-400 hover:text-red-600" title="Supprimer" @click="openDelete(member)">
                   <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
                 </button>
               </div>
@@ -216,9 +216,9 @@ onMounted(() => store.fetchAll())
       <div v-if="store.lastPage > 1" class="flex items-center justify-between px-4 py-3 border-t border-gray-100">
         <p class="text-xs text-gray-400">Page {{ store.currentPage }} / {{ store.lastPage }}</p>
         <div class="flex gap-1">
-          <button :disabled="store.currentPage === 1" class="btn-secondary text-xs px-3 py-1.5 disabled:opacity-40"
+          <button :disabled="store.currentPage === 1" class="btn-secondary text-xs px-3 py-1.5 disabled:opacity-40 cursor-pointer"
             @click="store.setPage(store.currentPage - 1); store.fetchAll(currentParams())">←</button>
-          <button :disabled="store.currentPage === store.lastPage" class="btn-secondary text-xs px-3 py-1.5 disabled:opacity-40"
+          <button :disabled="store.currentPage === store.lastPage" class="btn-secondary text-xs px-3 py-1.5 disabled:opacity-40 cursor-pointer"
             @click="store.setPage(store.currentPage + 1); store.fetchAll(currentParams())">→</button>
         </div>
       </div>
@@ -230,7 +230,7 @@ onMounted(() => store.fetchAll())
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md">
           <div class="flex items-center justify-between p-5 border-b border-gray-100">
             <h2 class="font-semibold text-gray-900">Nouveau membre</h2>
-            <button @click="showCreate = false" class="p-1 hover:bg-gray-100 rounded-lg">
+            <button @click="showCreate = false" class="p-1 cursor-pointer hover:bg-gray-100 rounded-lg">
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
           </div>
@@ -269,8 +269,8 @@ onMounted(() => store.fetchAll())
               <input v-model="form.address" class="form-input" placeholder="adresse" required />
             </div>
             <div class="flex gap-3 pt-2">
-              <button type="button" class="btn-secondary flex-1" @click="showCreate = false">Annuler</button>
-              <button type="submit" :disabled="submitting" class="btn-primary flex-1">
+              <button type="button" class="btn-secondary flex-1 cursor-pointer" @click="showCreate = false">Annuler</button>
+              <button type="submit" :disabled="submitting" class="btn-primary flex-1 cursor-pointer">
                 {{ submitting ? 'Création...' : 'Créer le membre' }}
               </button>
             </div>
@@ -285,7 +285,7 @@ onMounted(() => store.fetchAll())
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md">
           <div class="flex items-center justify-between p-5 border-b border-gray-100">
             <h2 class="font-semibold text-gray-900">Modifier le membre</h2>
-            <button @click="showEdit = false" class="p-1 hover:bg-gray-100 rounded-lg">
+            <button @click="showEdit = false" class="p-1 cursor-pointer hover:bg-gray-100 rounded-lg">
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
           </div>
@@ -324,8 +324,8 @@ onMounted(() => store.fetchAll())
               <input v-model="form.address" class="form-input" />
             </div>
             <div class="flex gap-3 pt-2">
-              <button type="button" class="btn-secondary flex-1" @click="showEdit = false">Annuler</button>
-              <button type="submit" :disabled="submitting" class="btn-primary flex-1">
+              <button type="button" class="btn-secondary flex-1 cursor-pointer" @click="showEdit = false">Annuler</button>
+              <button type="submit" :disabled="submitting" class="btn-primary flex-1 cursor-pointer">
                 {{ submitting ? 'Enregistrement...' : 'Enregistrer' }}
               </button>
             </div>
@@ -340,7 +340,7 @@ onMounted(() => store.fetchAll())
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">
           <div class="flex items-center justify-between p-5 border-b border-gray-100 flex-shrink-0">
             <h2 class="font-semibold text-gray-900">Détails du membre</h2>
-            <button @click="showDetail = false" class="p-1 hover:bg-gray-100 rounded-lg">
+            <button @click="showDetail = false" class="p-1 cursor-pointer hover:bg-gray-100 rounded-lg">
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
           </div>
@@ -403,7 +403,7 @@ onMounted(() => store.fetchAll())
             </div>
           </div>
           <div class="p-4 border-t border-gray-100 flex-shrink-0">
-            <button class="btn-secondary w-full" @click="showDetail = false">Fermer</button>
+            <button class="btn-secondary w-full cursor-pointer" @click="showDetail = false">Fermer</button>
           </div>
         </div>
       </div>
@@ -416,8 +416,8 @@ onMounted(() => store.fetchAll())
           <h2 class="font-semibold text-gray-900 mb-2">Supprimer le membre ?</h2>
           <p class="text-sm text-gray-500 mb-5">Cette action est irréversible. Le membre <strong>{{ targetMember?.full_name }}</strong> sera supprimé.</p>
           <div class="flex gap-3">
-            <button class="btn-secondary flex-1" @click="showDeleteConfirm = false">Annuler</button>
-            <button class="btn-danger flex-1" @click="confirmDelete">Supprimer</button>
+            <button class="btn-secondary flex-1 cursor-pointer" @click="showDeleteConfirm = false">Annuler</button>
+            <button class="btn-danger flex-1 cursor-pointer" @click="confirmDelete">Supprimer</button>
           </div>
         </div>
       </div>

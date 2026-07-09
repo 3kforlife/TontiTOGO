@@ -90,7 +90,7 @@ onMounted(async () => {
         </select>
       </div>
       <div class="flex gap-2">
-        <button class="btn-primary flex items-center gap-2" @click="applyFilters" :disabled="store.loading">
+        <button class="btn-primary flex items-center gap-2 cursor-pointer" @click="applyFilters" :disabled="store.loading">
           <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           Actualiser
         </button>

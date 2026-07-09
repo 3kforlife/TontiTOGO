@@ -128,7 +128,7 @@ onMounted(() => store.fetchAll())
         <h1 class="text-xl font-bold text-gray-900">Agents collecteurs</h1>
         <p class="text-sm text-gray-400 mt-0.5">{{ store.total }} agent{{ store.total > 1 ? 's' : '' }} enregistré{{ store.total > 1 ? 's' : '' }}</p>
       </div>
-      <button class="btn-primary" @click="openCreate">
+      <button class="btn-primary cursor-pointer" @click="openCreate">
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         Nouvel agent
       </button>
@@ -156,7 +156,7 @@ onMounted(() => store.fetchAll())
       <div v-else-if="!store.agents.length" class="card flex flex-col items-center justify-center py-16 text-gray-300">
         <svg class="w-16 h-16 mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.582-7 8-7s8 3 8 7"/></svg>
         <p class="text-base">Aucun agent enregistré</p>
-        <button class="btn-primary mt-5 text-sm" @click="openCreate">Ajouter un agent</button>
+        <button class="btn-primary mt-5 text-sm cursor-pointer" @click="openCreate">Ajouter un agent</button>
       </div>
 
       <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -177,7 +177,7 @@ onMounted(() => store.fetchAll())
               :class="agent.status === 'active' ? 'badge-green' : 'badge-red'"
               @click="handleToggle(agent)"
               title="Cliquer pour changer"
-              class="shrink-0"
+              class="shrink-0 cursor-pointer"
             >
               {{ agent.status === 'active' ? 'Actif' : 'Suspendu' }}
             </button>
@@ -199,14 +199,14 @@ onMounted(() => store.fetchAll())
 
           <!-- Card Actions -->
           <div class="flex items-center gap-2 pt-3 border-t border-gray-100">
-            <button class="flex-1 py-2.5 text-sm font-medium text-gray-700 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors flex items-center justify-center gap-2" title="Performance" @click="openPerformance(agent)">
+            <button class="flex-1 py-2.5 text-sm font-medium text-gray-700 cursor-pointer hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors flex items-center justify-center gap-2" title="Performance" @click="openPerformance(agent)">
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
               Performance
             </button>
-            <button class="py-2.5 px-3 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Modifier" @click="openEdit(agent)">
+            <button class="py-2.5 px-3 text-sm font-medium text-gray-700 cursor-pointer hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Modifier" @click="openEdit(agent)">
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
             </button>
-            <button class="py-2.5 px-3 text-sm font-medium text-gray-700 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Supprimer" @click="openDelete(agent)">
+            <button class="py-2.5 px-3 text-sm font-medium text-gray-700 cursor-pointer hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Supprimer" @click="openDelete(agent)">
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
             </button>
           </div>
@@ -262,8 +262,8 @@ onMounted(() => store.fetchAll())
               <p v-if="errors.avatar" class="text-red-500 text-xs mt-1">{{ errors.avatar[0] }}</p>
             </div>
             <div class="flex gap-3 pt-2">
-              <button type="button" class="btn-secondary flex-1" @click="showCreate = false">Annuler</button>
-              <button type="submit" :disabled="submitting" class="btn-primary flex-1">
+              <button type="button" class="btn-secondary flex-1 cursor-pointer" @click="showCreate = false">Annuler</button>
+              <button type="submit" :disabled="submitting" class="btn-primary flex-1 cursor-pointer">
                 {{ submitting ? 'Création...' : 'Créer l\'agent' }}
               </button>
             </div>
@@ -307,8 +307,8 @@ onMounted(() => store.fetchAll())
               <input type="file" accept="image/*" class="form-input" @change="e => avatar = e.target.files[0]" />
             </div>
             <div class="flex gap-3 pt-2">
-              <button type="button" class="btn-secondary flex-1" @click="showEdit = false">Annuler</button>
-              <button type="submit" :disabled="submitting" class="btn-primary flex-1">
+              <button type="button" class="btn-secondary flex-1 cursor-pointer" @click="showEdit = false">Annuler</button>
+              <button type="submit" :disabled="submitting" class="btn-primary flex-1 cursor-pointer">
                 {{ submitting ? 'Enregistrement...' : 'Enregistrer' }}
               </button>
             </div>
@@ -371,8 +371,8 @@ onMounted(() => store.fetchAll())
           <h2 class="font-semibold text-gray-900 mb-2">Supprimer l'agent ?</h2>
           <p class="text-sm text-gray-500 mb-5">Cette action est irréversible. L'agent <strong>{{ targetAgent?.full_name }}</strong> sera supprimé.</p>
           <div class="flex gap-3">
-            <button class="btn-secondary flex-1" @click="showDeleteConfirm = false">Annuler</button>
-            <button class="btn-danger flex-1" @click="confirmDelete">Supprimer</button>
+            <button class="btn-secondary flex-1 cursor-pointer" @click="showDeleteConfirm = false">Annuler</button>
+            <button class="btn-danger flex-1 cursor-pointer" @click="confirmDelete">Supprimer</button>
           </div>
         </div>
       </div>
@@ -427,7 +427,7 @@ onMounted(() => store.fetchAll())
 
             <!-- Bouton copier -->
             <button
-              class="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 border-dashed text-sm font-medium transition-colors"
+              class="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 border-dashed text-sm font-medium transition-colors cursor-pointer"
               :class="copied ? 'border-green-400 text-green-600 bg-green-50' : 'border-gray-200 text-gray-500 hover:border-primary-300 hover:text-primary-600'"
               @click="copyCredentials"
             >
@@ -439,7 +439,7 @@ onMounted(() => store.fetchAll())
 
           <!-- Pied -->
           <div class="p-4 border-t border-gray-100">
-            <button class="btn-primary w-full" @click="showCredentials = false; newCredentials = null">
+            <button class="btn-primary w-full cursor-pointer" @click="showCredentials = false; newCredentials = null">
               J'ai bien noté les identifiants
             </button>
           </div>

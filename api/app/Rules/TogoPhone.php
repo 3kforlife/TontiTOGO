@@ -11,7 +11,7 @@ class TogoPhone implements ValidationRule
     
     private const VALID_PREFIXES = [
         // Moov Money
-        '79', '96', '97', '98', '99',
+        '78', '79', '96', '97', '98', '99',
         // Yas Togo
         '70', '71', '72', '73', '90', '91', '92', '93'
     ];

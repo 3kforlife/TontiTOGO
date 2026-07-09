@@ -64,7 +64,7 @@ onMounted(() => store.fetchAll())
         <h1 class="text-xl font-bold text-gray-900">SMS</h1>
         <p class="text-sm text-gray-400 mt-0.5">Journal des messages envoyés</p>
       </div>
-      <button class="btn-primary flex items-center gap-2" :disabled="store.sending" @click="handleSendReminders">
+      <button class="btn-primary flex items-center gap-2 cursor-pointer" :disabled="store.sending" @click="handleSendReminders">
         <svg v-if="!store.sending" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
         <svg v-else class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-dasharray="56" stroke-dashoffset="14"/></svg>
         {{ store.sending ? 'Envoi en cours...' : 'Envoyer rappels maintenant' }}
@@ -95,7 +95,7 @@ onMounted(() => store.fetchAll())
         <option value="confirmation">Confirmation</option>
         <option value="reminder">Rappel</option>
       </select>
-      <button class="btn-secondary" @click="filters.status = ''; filters.type = ''; applyFilters()">Réinitialiser</button>
+      <button class="btn-secondary cursor-pointer" @click="filters.status = ''; filters.type = ''; applyFilters()">Réinitialiser</button>
     </div>
 
     <!-- Tableau -->
@@ -146,9 +146,9 @@ onMounted(() => store.fetchAll())
       <div v-if="store.lastPage > 1" class="flex items-center justify-between px-4 py-3 border-t border-gray-100">
         <p class="text-xs text-gray-400">Page {{ store.currentPage }} / {{ store.lastPage }}</p>
         <div class="flex gap-1">
-          <button :disabled="store.currentPage === 1" class="btn-secondary text-xs px-3 py-1.5 disabled:opacity-40"
+          <button :disabled="store.currentPage === 1" class="btn-secondary text-xs px-3 py-1.5 disabled:opacity-40 cursor-pointer"
             @click="store.setPage(store.currentPage - 1); store.fetchAll(cleanFilters())">←</button>
-          <button :disabled="store.currentPage === store.lastPage" class="btn-secondary text-xs px-3 py-1.5 disabled:opacity-40"
+          <button :disabled="store.currentPage === store.lastPage" class="btn-secondary text-xs px-3 py-1.5 disabled:opacity-40 cursor-pointer"
             @click="store.setPage(store.currentPage + 1); store.fetchAll(cleanFilters())">→</button>
         </div>
       </div>
@@ -160,7 +160,7 @@ onMounted(() => store.fetchAll())
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md">
           <div class="flex items-center justify-between p-5 border-b border-gray-100">
             <h2 class="font-semibold text-gray-900">Détail du SMS</h2>
-            <button @click="showDetail = false" class="p-1 hover:bg-gray-100 rounded-lg">
+            <button @click="showDetail = false" class="p-1 cursor-pointer hover:bg-gray-100 rounded-lg">
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
           </div>
@@ -188,7 +188,7 @@ onMounted(() => store.fetchAll())
             </div>
           </div>
           <div class="p-4 border-t border-gray-100">
-            <button class="btn-secondary w-full" @click="showDetail = false">Fermer</button>
+            <button class="btn-secondary w-full cursor-pointer" @click="showDetail = false">Fermer</button>
           </div>
         </div>
       </div>

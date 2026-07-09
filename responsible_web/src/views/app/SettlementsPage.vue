@@ -107,15 +107,15 @@ function switchTab(tab) {
     <div class="flex gap-1 bg-gray-100 rounded-xl p-1 w-fit">
       <button
         @click="switchTab('pending')"
-        :class="['px-4 py-1.5 rounded-lg text-sm font-medium transition-colors',
-          activeTab === 'pending' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700']"
+        :class="['px-4 py-1.5 rounded-lg text-sm font-medium transition-colors cursor-pointer',
+          activeTab === 'pending' ? 'bg-white text-gray-900 shadow-sm cursor-pointer' : 'text-gray-500 hover:text-gray-700 cursor-pointer']"
       >
         Clôture du jour
       </button>
       <button
         @click="switchTab('history')"
-        :class="['px-4 py-1.5 rounded-lg text-sm font-medium transition-colors',
-          activeTab === 'history' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700']"
+        :class="['px-4 py-1.5 rounded-lg text-sm font-medium transition-colors cursor-pointer',
+          activeTab === 'history' ? 'bg-white text-gray-900 shadow-sm cursor-pointer' : 'text-gray-500 hover:text-gray-700 cursor-pointer']"
       >
         Historique
       </button>
@@ -159,7 +159,7 @@ function switchTab(tab) {
           </div>
           <button
             v-if="!agent.already_settled"
-            class="btn-primary w-full text-sm"
+            class="btn-primary w-full text-sm cursor-pointer"
             @click="openValidate(agent)"
           >
             Valider le versement
@@ -184,7 +184,7 @@ function switchTab(tab) {
           <option value="validated">Validé</option>
           <option value="discrepancy">Écart</option>
         </select>
-        <button class="btn-primary" @click="applyHistFilters">Filtrer</button>
+        <button class="btn-primary cursor-pointer" @click="applyHistFilters">Filtrer</button>
       </div>
 
       <!-- Tableau historique -->
@@ -235,9 +235,9 @@ function switchTab(tab) {
         <div v-if="store.lastPage > 1" class="flex items-center justify-between px-4 py-3 border-t border-gray-100">
           <p class="text-xs text-gray-400">Page {{ store.currentPage }} / {{ store.lastPage }}</p>
           <div class="flex gap-1">
-            <button :disabled="store.currentPage === 1" class="btn-secondary text-xs px-3 py-1.5 disabled:opacity-40"
+            <button :disabled="store.currentPage === 1" class="btn-secondary text-xs px-3 py-1.5 disabled:opacity-40 cursor-pointer"
               @click="store.setPage(store.currentPage - 1); applyHistFilters()">←</button>
-            <button :disabled="store.currentPage === store.lastPage" class="btn-secondary text-xs px-3 py-1.5 disabled:opacity-40"
+            <button :disabled="store.currentPage === store.lastPage" class="btn-secondary text-xs px-3 py-1.5 disabled:opacity-40 cursor-pointer"
               @click="store.setPage(store.currentPage + 1); applyHistFilters()">→</button>
           </div>
         </div>
@@ -250,7 +250,7 @@ function switchTab(tab) {
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md">
           <div class="flex items-center justify-between p-5 border-b border-gray-100">
             <h2 class="font-semibold text-gray-900">Valider le versement</h2>
-            <button @click="showValidate = false" class="p-1 hover:bg-gray-100 rounded-lg">
+            <button @click="showValidate = false" class="p-1 cursor-pointer hover:bg-gray-100 rounded-lg">
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
           </div>
@@ -273,8 +273,8 @@ function switchTab(tab) {
                 <textarea v-model="validateForm.notes" class="form-input min-h-[80px] resize-none" placeholder="Observations éventuelles..." />
               </div>
               <div class="flex gap-3 pt-2">
-                <button type="button" class="btn-secondary flex-1" @click="showValidate = false">Annuler</button>
-                <button type="submit" :disabled="submitting" class="btn-primary flex-1">
+                <button type="button" class="btn-secondary flex-1 cursor-pointer" @click="showValidate = false">Annuler</button>
+                <button type="submit" :disabled="submitting" class="btn-primary flex-1 cursor-pointer">
                   {{ submitting ? 'Validation...' : 'Confirmer' }}
                 </button>
               </div>

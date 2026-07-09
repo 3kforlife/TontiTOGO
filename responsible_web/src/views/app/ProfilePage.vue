@@ -175,7 +175,7 @@ onMounted(() => syncProfileForm())
           <p v-if="profileErrors.phone" class="text-red-500 text-xs mt-1">{{ profileErrors.phone[0] }}</p>
         </div>
         <div class="flex justify-end pt-1">
-          <button type="submit" class="btn-primary" :disabled="savingProfile">
+          <button type="submit" class="btn-primary cursor-pointer" :disabled="savingProfile">
             {{ savingProfile ? 'Enregistrement...' : 'Enregistrer' }}
           </button>
         </div>
@@ -215,7 +215,7 @@ onMounted(() => syncProfileForm())
           :error="pwErrors.password_confirmation?.[0]"
         />
         <div class="flex justify-end pt-1">
-          <button type="submit" class="btn-primary" :disabled="savingPw">
+          <button type="submit" class="btn-primary cursor-pointer" :disabled="savingPw">
             {{ savingPw ? 'Changement...' : 'Changer le mot de passe' }}
           </button>
         </div>
@@ -229,7 +229,7 @@ onMounted(() => syncProfileForm())
         La suppression de votre compte est <strong>irréversible</strong>. Toutes vos données (organisation, agents, membres, tontines, cotisations) seront définitivement supprimées.
       </p>
       <div>
-        <button class="btn-danger" @click="showDeleteModal = true">
+        <button class="btn-danger cursor-pointer" @click="showDeleteModal = true">
           Supprimer mon compte
         </button>
       </div>
@@ -241,7 +241,7 @@ onMounted(() => syncProfileForm())
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md">
           <div class="flex items-center justify-between p-5 border-b border-gray-100">
             <h2 class="font-semibold text-red-700">Supprimer mon compte</h2>
-            <button @click="showDeleteModal = false" class="p-1 hover:bg-gray-100 rounded-lg">
+            <button @click="showDeleteModal = false" class="p-1 cursor-pointer hover:bg-gray-100 rounded-lg">
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
           </div>
@@ -256,10 +256,10 @@ onMounted(() => syncProfileForm())
               :error="deleteError"
             />
             <div class="flex gap-3 pt-2">
-              <button class="btn-secondary flex-1" @click="showDeleteModal = false; deletePassword = ''; deleteError = ''">
+              <button class="btn-secondary flex-1 cursor-pointer" @click="showDeleteModal = false; deletePassword = ''; deleteError = ''">
                 Annuler
               </button>
-              <button class="btn-danger flex-1" :disabled="deletingAccount || !deletePassword" @click="confirmDeleteAccount">
+              <button class="btn-danger flex-1 cursor-pointer" :disabled="deletingAccount || !deletePassword" @click="confirmDeleteAccount">
                 {{ deletingAccount ? 'Suppression...' : 'Supprimer définitivement' }}
               </button>
             </div>

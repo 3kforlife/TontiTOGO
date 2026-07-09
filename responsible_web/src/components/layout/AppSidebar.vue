@@ -114,7 +114,7 @@ function isActive(routeName) {
     <div class="p-3.5 border-t border-gray-200/70">
       <button
         class="flex items-center justify-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-semibold
-               bg-gray-900 text-white hover:bg-red-600 hover:-translate-y-0.5 active:translate-y-0
+               bg-gray-900 text-white cursor-pointer hover:bg-red-600 hover:-translate-y-0.5 active:translate-y-0
                shadow-sm hover:shadow-md transition-all duration-200"
         @click="authStore.logout().then(() => $router.replace({ name: 'login' }))"
       >

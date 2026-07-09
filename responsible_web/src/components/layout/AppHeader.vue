@@ -26,7 +26,7 @@ const router    = useRouter()
 
     <!-- Profil à droite -->
     <button
-      class="flex items-center gap-3 rounded-xl px-2 py-1.5 hover:bg-gray-100/80 transition-colors group"
+      class="flex items-center gap-3 rounded-xl px-2 py-1.5 cursor-pointer hover:bg-gray-100/80 transition-colors group"
       @click="router.push({ name: 'profile' })"
     >
       <span class="text-sm font-semibold text-gray-700 group-hover:text-primary-700 transition-colors hidden sm:block">

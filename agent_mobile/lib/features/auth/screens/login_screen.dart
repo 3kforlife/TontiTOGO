@@ -94,7 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     AppTextField(
                       label: 'Numéro de téléphone',
                       controller: _phoneController,
-                      hintText: 'votre numéro de téléphone',
+                      hintText: '99 66 32 24',
                       keyboardType: TextInputType.phone,
                       prefixIcon: Icons.phone,
                       errorText: _phoneError,
@@ -103,7 +103,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     AppTextField(
                       label: 'Mot de passe',
                       controller: _passwordController,
-                      hintText: 'votre mot de passe',
+                      hintText: '**********',
                       obscureText: true,
                       prefixIcon: Icons.lock,
                       errorText: _passwordError,
