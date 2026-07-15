@@ -19,7 +19,8 @@ return new class extends Migration
             $table->enum('status', ['active', 'suspended'])->default('active');
             $table->string('password');
             $table->boolean('must_change_password')->default(false);
-            $table->string('avatar_url')->nullable(); 
+            $table->string('avatar_url')->nullable();
+            $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();
