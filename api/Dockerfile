@@ -54,6 +54,11 @@ COPY . .
 # Autoloader optimisé pour la production
 RUN composer dump-autoload --optimize --no-dev
 
+# Publier les assets Swagger UI dans public/ (au moment du build)
+RUN php artisan vendor:publish \
+    --provider="L5Swagger\L5SwaggerServiceProvider" \
+    --force 2>/dev/null || true
+
 # Permissions sur le dossier storage et bootstrap/cache
 RUN mkdir -p storage/logs \
              storage/framework/cache/data \

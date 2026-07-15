@@ -35,6 +35,10 @@ return [
         ],
     ],
 
+    'brevo' => [
+        'key' => env('BREVO_KEY'),
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Cloudinary — Stockage média externe
