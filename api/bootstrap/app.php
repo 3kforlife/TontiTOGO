@@ -19,7 +19,8 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->api(prepend: [
-            \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+            // EnsureFrontendRequestsAreStateful retiré — API pure Bearer token,
+            // pas de session SPA. Ce middleware causait CSRF token mismatch en prod.
         ]);
 
         $middleware->alias([

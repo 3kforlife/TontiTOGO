@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AppConstants {
-  static const String apiBaseUrl = 'http://localhost:8000';
+  static const String apiBaseUrl = 'https://tontitogo.onrender.com';
   static const String tokenKey = 'auth_token';
   static const String userKey = 'auth_user';
 
