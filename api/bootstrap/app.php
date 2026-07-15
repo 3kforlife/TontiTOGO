@@ -13,14 +13,13 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // CORS doit être le premier middleware pour toutes les requêtes
+        // CORS en premier — doit s'exécuter même si une exception est levée
         $middleware->prepend([
             \Illuminate\Http\Middleware\HandleCors::class,
         ]);
 
         $middleware->api(prepend: [
-            // EnsureFrontendRequestsAreStateful retiré — API pure Bearer token,
-            // pas de session SPA. Ce middleware causait CSRF token mismatch en prod.
+            // EnsureFrontendRequestsAreStateful retiré — API pure Bearer token
         ]);
 
         $middleware->alias([

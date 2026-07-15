@@ -61,7 +61,7 @@ return [
     | URL de l'application Vue.js. Utilisée pour construire les liens dans
     | les e-mails de vérification et de réinitialisation de mot de passe.
     */
-    'frontend_url' => env('FRONTEND_URL', 'https://tontitogo-responsable.vercel.app/'),
+    'frontend_url' => env('FRONTEND_URL', 'https://tontitogo-responsable.vercel.app'),
 
     /*
     |--------------------------------------------------------------------------
