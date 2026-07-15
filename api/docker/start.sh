@@ -15,14 +15,7 @@ mkdir -p storage/logs \
 
 chmod -R 777 storage bootstrap/cache
 
-# 1. Publier les assets Swagger UI dans public/
-# Nécessaire car le dossier vendor n'est pas servi directement par Nginx
-php artisan vendor:publish \
-    --provider="L5Swagger\L5SwaggerServiceProvider" \
-    --tag="l5-swagger-assets" \
-    --force 2>/dev/null || echo "Swagger assets déjà publiés ou non disponibles"
-
-# 2. Vider les caches
+# 1. Vider les caches
 php artisan config:clear
 php artisan route:clear
 php artisan view:clear

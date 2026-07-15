@@ -18,13 +18,15 @@ class DatabaseTokenRepository extends BaseDatabaseTokenRepository
     public function create(CanResetPasswordContract $user)
     {
         $email = $user->getEmailForPasswordReset();
-        $phone = $user->getPhoneForPasswordReset() ?? null;
+        $this->currentPhone = $user->getPhoneForPasswordReset() ?? null;
 
         $this->deleteExisting($user);
 
         $token = $this->createNewToken();
 
-        $this->getTable()->insert($this->getPayload($email, $phone, $token));
+        $this->getTable()->insert($this->getPayload($email, $token));
+
+        $this->currentPhone = null;
 
         return $token;
     }
@@ -50,17 +52,14 @@ class DatabaseTokenRepository extends BaseDatabaseTokenRepository
 
     /**
      * Build the record payload for the table.
-     *
-     * @param  string|null  $email
-     * @param  string|null  $phone
-     * @param  string  $token
-     * @return array
+     * Signature compatible avec le parent Laravel — $phone passé via propriété.
      */
-    protected function getPayload($email, $phone, $token)
+    protected function getPayload($email, $token): array
     {
+        // $phone est récupéré via une propriété temporaire définie dans create()
         return [
             'email'      => $email,
-            'phone'      => $phone,
+            'phone'      => $this->currentPhone ?? null,
             'token'      => $this->hasher->make($token),
             'created_at' => new Carbon(),
         ];

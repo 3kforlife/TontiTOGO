@@ -54,10 +54,14 @@ COPY . .
 # Autoloader optimisé pour la production
 RUN composer dump-autoload --optimize --no-dev
 
-# Publier les assets Swagger UI dans public/ (au moment du build)
-RUN php artisan vendor:publish \
-    --provider="L5Swagger\L5SwaggerServiceProvider" \
-    --force 2>/dev/null || true
+# Copier les assets Swagger UI dans public/ manuellement
+# (vendor:publish avec le tag l5-swagger-assets n'est pas disponible dans cette version)
+RUN mkdir -p public/docs/asset && \
+    cp vendor/swagger-api/swagger-ui/dist/swagger-ui.css public/docs/asset/ && \
+    cp vendor/swagger-api/swagger-ui/dist/swagger-ui-bundle.js public/docs/asset/ && \
+    cp vendor/swagger-api/swagger-ui/dist/swagger-ui-standalone-preset.js public/docs/asset/ && \
+    cp vendor/swagger-api/swagger-ui/dist/favicon-16x16.png public/docs/asset/ && \
+    cp vendor/swagger-api/swagger-ui/dist/favicon-32x32.png public/docs/asset/ 2>/dev/null || true
 
 # Permissions sur le dossier storage et bootstrap/cache
 RUN mkdir -p storage/logs \
