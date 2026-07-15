@@ -49,6 +49,12 @@ return [
             'local_domain' => env('MAIL_EHLO_DOMAIN', parse_url((string) env('APP_URL', 'http://localhost'), PHP_URL_HOST)),
         ],
 
+        // Brevo API HTTP — contourne le blocage SMTP des hébergeurs cloud
+        'brevo' => [
+            'transport' => 'brevo',
+            'key'       => env('BREVO_KEY'),
+        ],
+
         'ses' => [
             'transport' => 'ses',
         ],
