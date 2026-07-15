@@ -13,6 +13,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Render est derrière un reverse proxy — on fait confiance à tous les proxies
+        // pour que HTTPS soit correctement détecté et que APP_URL soit bien https://
+        $middleware->trustProxies(at: '*');
+
         // CORS en premier — doit s'exécuter même si une exception est levée
         $middleware->prepend([
             \Illuminate\Http\Middleware\HandleCors::class,

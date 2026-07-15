@@ -5,6 +5,10 @@ echo "==> TontiTOGO API — Démarrage sur Render"
 
 cd /var/www/html
 
+# Activer l'affichage des erreurs PHP pour diagnostiquer
+php -r "echo 'PHP OK: ' . PHP_VERSION . PHP_EOL;"
+php artisan --version || echo "ERREUR: artisan ne fonctionne pas"
+
 # Créer et fixer les permissions sur tous les dossiers storage nécessaires
 mkdir -p storage/logs \
          storage/framework/cache/data \
