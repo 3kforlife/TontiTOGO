@@ -50,25 +50,28 @@ Route::prefix('responsible')->name('responsible.')->group(function () {
             ->middleware('signed')
             ->name('verification.verify');
 
-        // Tableau de bord
-        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        // ── Routes nécessitant un email vérifié ──────────────────────────────
+        Route::middleware(['verified'])->group(function () {
 
-        // Gestion des Agents
-        Route::apiResource('agents', AgentManagementController::class);
-        Route::patch('agents/{agent}/toggle-status', [AgentManagementController::class, 'toggleStatus'])
-            ->name('agents.toggle-status');
+            // Tableau de bord
+            Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-        // Gestion des Membres
-        Route::apiResource('members', MemberManagementController::class);
-        Route::patch('members/{member}/toggle-status', [MemberManagementController::class, 'toggleStatus'])
-            ->name('members.toggle-status');
+            // Gestion des Agents
+            Route::apiResource('agents', AgentManagementController::class);
+            Route::patch('agents/{agent}/toggle-status', [AgentManagementController::class, 'toggleStatus'])
+                ->name('agents.toggle-status');
 
-        // Gestion des Tontines
-        Route::apiResource('tontines', TontineManagementController::class);
-        Route::post('tontines/{tontine}/participants', [TontineManagementController::class, 'addParticipant'])
-            ->name('tontines.participants.add');
-        Route::delete('tontines/{tontine}/participants/{participant}', [TontineManagementController::class, 'removeParticipant'])
-            ->name('tontines.participants.remove');
+            // Gestion des Membres
+            Route::apiResource('members', MemberManagementController::class);
+            Route::patch('members/{member}/toggle-status', [MemberManagementController::class, 'toggleStatus'])
+                ->name('members.toggle-status');
+
+            // Gestion des Tontines
+            Route::apiResource('tontines', TontineManagementController::class);
+            Route::post('tontines/{tontine}/participants', [TontineManagementController::class, 'addParticipant'])
+                ->name('tontines.participants.add');
+            Route::delete('tontines/{tontine}/participants/{participant}', [TontineManagementController::class, 'removeParticipant'])
+                ->name('tontines.participants.remove');
 
         // Cotisations (journal + exports)
         Route::get('/contributions',              [ResponsibleContributionController::class, 'index'])->name('contributions.index');
@@ -92,8 +95,10 @@ Route::prefix('responsible')->name('responsible.')->group(function () {
         // Paramètres
         Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
         Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');
-    });
-});
+
+        }); // fin groupe verified
+    }); // fin groupe auth:sanctum + role:responsible
+}); // fin prefix responsible
 
 // =========================================================================
 // DOMAINE AGENT MOBILE — Application Flutter

@@ -28,12 +28,18 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     const status = error.response?.status
+    const action = error.response?.data?.action
 
-    // 401 → token expiré ou invalide → retour à la connexion
+    // 401 → token expiré → retour connexion
     if (status === 401) {
       localStorage.removeItem('token')
       localStorage.removeItem('user')
       router.replace({ name: 'login' })
+    }
+
+    // 403 email_not_verified → rediriger vers page de vérification email
+    if (status === 403 && action === 'email_not_verified') {
+      router.replace({ name: 'email-pending' })
     }
 
     return Promise.reject(error)

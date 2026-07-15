@@ -41,6 +41,12 @@ const router = createRouter({
           path: 'verify-email',
           name: 'verify-email',
           component: () => import('../views/public/EmailVerifyPage.vue')
+        },
+        {
+          path: 'email-pending',
+          name: 'email-pending',
+          component: () => import('../views/public/EmailPendingPage.vue'),
+          meta: { requiresAuth: true }
         }
       ]
     },
