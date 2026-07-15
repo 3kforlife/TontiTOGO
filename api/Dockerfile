@@ -55,8 +55,13 @@ COPY . .
 RUN composer dump-autoload --optimize --no-dev
 
 # Permissions sur le dossier storage et bootstrap/cache
-RUN mkdir -p storage/logs storage/framework/{cache,sessions,views} bootstrap/cache \
- && chmod -R 775 storage bootstrap/cache \
+RUN mkdir -p storage/logs \
+             storage/framework/cache/data \
+             storage/framework/sessions \
+             storage/framework/views \
+             storage/api-docs \
+             bootstrap/cache \
+ && chmod -R 777 storage bootstrap/cache \
  && chown -R www-data:www-data storage bootstrap/cache
 
 # ── Stage de production ──────────────────────────────────────────────────────
@@ -101,8 +106,14 @@ COPY docker/start.sh /start.sh
 RUN chmod +x /start.sh
 
 # Permissions finales
-RUN chown -R www-data:www-data /var/www/html \
- && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+RUN mkdir -p /var/www/html/storage/logs \
+             /var/www/html/storage/framework/cache/data \
+             /var/www/html/storage/framework/sessions \
+             /var/www/html/storage/framework/views \
+             /var/www/html/storage/api-docs \
+             /var/www/html/bootstrap/cache \
+ && chmod -R 777 /var/www/html/storage /var/www/html/bootstrap/cache \
+ && chown -R www-data:www-data /var/www/html
 
 EXPOSE 8080
 

@@ -2,7 +2,11 @@ import axios from 'axios'
 import router from '@/router'
 
 const api = axios.create({
-  baseURL: '/api/responsible',
+  // En production (Vercel) : VITE_API_URL pointe vers l'API Render
+  // En développement : le proxy Vite redirige /api → localhost:8000
+  baseURL: import.meta.env.VITE_API_URL
+    ? import.meta.env.VITE_API_URL + '/api/responsible'
+    : '/api/responsible',
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json',
