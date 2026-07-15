@@ -57,6 +57,7 @@ return [
     'nghcorp' => [
         'api_key'    => env('NGHCORP_API_KEY'),
         'api_secret' => env('NGHCORP_API_SECRET'),
+        'sender_id'  => env('NGHCORP_SENDER_ID'),
         'base_url'   => env('NGHCORP_BASE_URL', 'https://extranet.nghcorp.net'),
         'verify_ssl' => env('NGHCORP_VERIFY_SSL', true),
     ],

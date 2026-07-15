@@ -370,40 +370,24 @@ class _DashboardScreenState extends State<DashboardScreen> {
               'Tableau de bord',
               style: AppTextStyles.h3,
             ),
-            Stack(
-              children: [
-                Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: AppColors.white,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.gray900.withValues(alpha: 0.1),
-                        blurRadius: 12,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: AppColors.white,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.gray900.withValues(alpha: 0.1),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
                   ),
-                  child: const Icon(
-                    Icons.notifications_outlined,
-                    color: AppColors.gray900,
-                  ),
-                ),
-                Positioned(
-                  top: 8,
-                  right: 8,
-                  child: Container(
-                    width: 10,
-                    height: 10,
-                    decoration: BoxDecoration(
-                      color: AppColors.danger,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                ),
-              ],
+                ],
+              ),
+              child: const Icon(
+                Icons.account_circle_outlined,
+                color: AppColors.primary,
+              ),
             ),
           ],
         ),

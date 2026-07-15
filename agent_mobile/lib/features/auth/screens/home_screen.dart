@@ -229,14 +229,11 @@ class _HomeScreenState extends State<HomeScreen>
 
               const SizedBox(height: AppSpacing.xl),  // xl → md
 
-              // Login Button
+              // Login Button avec effet de scale au tap
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-                child: AppButton(
-                  text: 'Se connecter',
+                child: _AnimatedLoginButton(
                   onPressed: () => context.go('/login'),
-                  icon: Icons.login,
-                  height: 52,   // 56 → 52
                 ),
               ),
 
@@ -251,6 +248,97 @@ class _HomeScreenState extends State<HomeScreen>
               ),
 
               const SizedBox(height: AppSpacing.md),  // xl → md
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ── Bouton "Se connecter" avec effet scale + haptic ─────────────────────
+class _AnimatedLoginButton extends StatefulWidget {
+  final VoidCallback onPressed;
+  const _AnimatedLoginButton({required this.onPressed});
+
+  @override
+  State<_AnimatedLoginButton> createState() => _AnimatedLoginButtonState();
+}
+
+class _AnimatedLoginButtonState extends State<_AnimatedLoginButton>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _ctrl;
+  late Animation<double> _scale;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 90),
+      reverseDuration: const Duration(milliseconds: 180),
+      lowerBound: 0.0,
+      upperBound: 1.0,
+    );
+    _scale = Tween<double>(begin: 1.0, end: 0.94).animate(
+      CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  void _onTapDown(TapDownDetails _) => _ctrl.forward();
+
+  void _onTapUp(TapUpDetails _) async {
+    await Future.delayed(const Duration(milliseconds: 80));
+    _ctrl.reverse();
+    widget.onPressed();
+  }
+
+  void _onTapCancel() => _ctrl.reverse();
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: _onTapDown,
+      onTapUp: _onTapUp,
+      onTapCancel: _onTapCancel,
+      child: AnimatedBuilder(
+        animation: _scale,
+        builder: (_, child) => Transform.scale(
+          scale: _scale.value,
+          child: child,
+        ),
+        child: Container(
+          height: 52,
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [AppColors.primary, AppColors.primaryDark],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(AppBorderRadius.lg),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withValues(alpha: 0.4),
+                blurRadius: 16,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.login, color: AppColors.white, size: 20),
+              const SizedBox(width: AppSpacing.sm),
+              Text(
+                'Se connecter',
+                style: AppTextStyles.button.copyWith(color: AppColors.white),
+              ),
             ],
           ),
         ),

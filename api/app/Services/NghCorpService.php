@@ -8,29 +8,27 @@ use Illuminate\Support\Facades\Log;
 /**
  * Service SMS NGH Corp — TontiTOGO
  *
- * Documentation : https://extranet.nghcorp.net/api/
+ * Architecture identique à TermiiService.
+ * Le Sender ID est déclaré dans .env (NGHCORP_SENDER_ID) et doit
+ * être pré-approuvé par NGH Corp dans votre espace client.
  *
- * Endpoints utilisés :
+ * Endpoints :
  *   POST /api/send-sms      → envoi unitaire
  *   POST /api/send-multiple → envoi en masse
  *   POST /api/balance       → solde du compte
- *
- * Authentification : api_key + api_secret dans le payload JSON.
- *
- * Sender ID : prend le nom de l'organisation pour chaque envoi.
- *   - Limité à 11 caractères alphanumériques (contrainte opérateur).
- *   - Tronqué et nettoyé automatiquement si nécessaire.
  */
 class NghCorpService
 {
     private string $apiKey;
     private string $apiSecret;
+    private string $senderId;
     private string $baseUrl;
 
     public function __construct()
     {
         $this->apiKey    = config('services.nghcorp.api_key');
         $this->apiSecret = config('services.nghcorp.api_secret');
+        $this->senderId  = config('services.nghcorp.sender_id');
         $this->baseUrl   = rtrim(config('services.nghcorp.base_url', 'https://extranet.nghcorp.net'), '/');
     }
 
@@ -39,22 +37,20 @@ class NghCorpService
     // -------------------------------------------------------
 
     /**
-     * Envoie un SMS unitaire.
+     * Envoie un SMS unitaire vers un numéro togolais.
      *
-     * @param  string  $phone            Numéro togolais (ex: 90123456 ou 22890123456)
-     * @param  string  $message          Texte du SMS
-     * @param  string  $organizationName Sender ID affiché (nom de l'organisation)
+     * @param  string  $phone    Numéro (ex: 90123456 ou 22890123456)
+     * @param  string  $message  Texte du SMS
      */
-    public function send(string $phone, string $message, string $organizationName = 'TontiTOGO'): bool
+    public function send(string $phone, string $message): bool
     {
         $to        = $this->formatPhone($phone);
-        $senderId  = $this->formatSenderId($organizationName);
-        $reference = (string) time();
+        $reference = (string) time() . rand(1000, 9999);
 
         $payload = [
             'api_key'    => $this->apiKey,
             'api_secret' => $this->apiSecret,
-            'from'       => $senderId,
+            'from'       => $this->senderId,
             'to'         => (int) $to,
             'text'       => $message,
             'reference'  => $reference,
@@ -64,14 +60,12 @@ class NghCorpService
             $response = Http::withHeaders(['Content-Type' => 'application/json'])
                 ->withOptions($this->httpOptions())
                 ->post("{$this->baseUrl}/api/send-sms", $payload);
-            
+
             $body = $response->json();
 
-            // Succès : status 200
             if (isset($body['status']) && (int) $body['status'] === 200) {
                 Log::info('NGH Corp SMS envoyé', [
                     'to'         => $to,
-                    'sender_id'  => $senderId,
                     'message_id' => $body['messageid'] ?? null,
                     'credits'    => $body['credits'] ?? null,
                 ]);
@@ -79,10 +73,10 @@ class NghCorpService
             }
 
             Log::error('NGH Corp SMS échoué', [
-                'to'         => $to,
-                'status'     => $body['status'] ?? $response->status(),
-                'status_desc'=> $body['status_desc'] ?? null,
-                'response'   => $body,
+                'to'          => $to,
+                'status'      => $body['status'] ?? $response->status(),
+                'status_desc' => $body['status_desc'] ?? null,
+                'response'    => $body,
             ]);
             return false;
 
@@ -97,15 +91,12 @@ class NghCorpService
 
     /**
      * Envoie un SMS en masse vers plusieurs numéros.
-     * Utilise l'endpoint /api/send-multiple de NGH Corp.
      *
-     * @param  string[]  $phones           Tableau de numéros
-     * @param  string    $message          Texte commun
-     * @param  string    $organizationName Sender ID
+     * @param  string[]  $phones   Tableau de numéros
+     * @param  string    $message  Texte commun à tous
      */
-    public function sendBulk(array $phones, string $message, string $organizationName = 'TontiTOGO'): bool
+    public function sendBulk(array $phones, string $message): bool
     {
-        $senderId  = $this->formatSenderId($organizationName);
         $formatted = array_map(fn(string $p) => $this->formatPhone($p), $phones);
 
         $payload = [
@@ -115,7 +106,7 @@ class NghCorpService
             ],
             'messages' => [
                 [
-                    'from'    => $senderId,
+                    'from'    => $this->senderId,
                     'to'      => $formatted,
                     'content' => $message,
                 ],
@@ -129,7 +120,6 @@ class NghCorpService
 
             $results = $response->json();
 
-            // L'API retourne un tableau de résultats par numéro
             $allOk = collect((array) $results)->every(
                 fn($r) => isset($r['status']) && (int) $r['status'] === 200
             );
@@ -183,7 +173,7 @@ class NghCorpService
      * "[Org] : Bonjour [Membre], votre cotisation de [Montant] FCFA
      *  pour aujourd'hui a bien été enregistrée. Réf: [Reference]."
      */
-    public function sendContributionConfirmation (
+    public function sendContributionConfirmation(
         string $phone,
         string $memberName,
         float  $amount,
@@ -191,11 +181,11 @@ class NghCorpService
         string $organizationName = 'TontiTOGO'
     ): bool {
         $formattedAmount = number_format($amount, 0, ',', ' ');
-        $message = "Bonjour {$memberName}, votre cotisation"
+        $message = "{$organizationName} : Bonjour {$memberName}, votre cotisation"
                  . " de {$formattedAmount} FCFA pour aujourd'hui a bien ete enregistree."
                  . " Ref: {$reference}.";
 
-        return $this->send($phone, $message, $organizationName);
+        return $this->send($phone, $message);
     }
 
     /**
@@ -211,7 +201,7 @@ class NghCorpService
         $message = "{$organizationName} Bonjour {$memberName}, nous vous rappelons"
                  . " que votre cotisation du jour est attendue. Merci.";
 
-        return $this->send($phone, $message, $organizationName);
+        return $this->send($phone, $message);
     }
 
     /**
@@ -222,31 +212,29 @@ class NghCorpService
         string $agentName,
         float  $expected,
         float  $received,
-        string $date,
-        string $organizationName = 'TontiTOGO'
+        string $date
     ): bool {
         $diff    = number_format(abs($received - $expected), 0, ',', ' ');
-        $message = "{$organizationName} ALERTE: Ecart de {$diff} FCFA pour l'agent {$agentName}"
+        $message = "TontiTOGO ALERTE: Ecart de {$diff} FCFA pour l'agent {$agentName}"
                  . " le {$date}. Attendu: " . number_format($expected, 0, ',', ' ')
                  . " FCFA. Recu: " . number_format($received, 0, ',', ' ') . " FCFA.";
 
-        return $this->send($phone, $message, $organizationName);
+        return $this->send($phone, $message);
     }
 
     /**
-     * SMS d'identifiants envoyé à un nouvel agent (si encore utilisé).
+     * SMS d'identifiants pour un nouvel agent.
      */
     public function sendAgentCredentials(
         string $phone,
         string $agentName,
-        string $tempPassword,
-        string $organizationName = 'TontiTOGO'
+        string $tempPassword
     ): bool {
-        $message = "{$organizationName}: Bienvenue {$agentName}! Votre compte agent a ete cree."
+        $message = "TontiTOGO: Bienvenue {$agentName}! Votre compte agent a ete cree."
                  . " Tel: {$phone} / MDP temp: {$tempPassword}"
                  . " Changez votre mot de passe a la 1ere connexion.";
 
-        return $this->send($phone, $message, $organizationName);
+        return $this->send($phone, $message);
     }
 
     // -------------------------------------------------------
@@ -254,7 +242,7 @@ class NghCorpService
     // -------------------------------------------------------
 
     /**
-     * Normalise un numéro togolais au format international sans + (228XXXXXXXX).
+     * Normalise un numéro togolais au format international 228XXXXXXXX.
      */
     private function formatPhone(string $phone): string
     {
@@ -268,30 +256,13 @@ class NghCorpService
     }
 
     /**
-     * Formate le Sender ID pour NGH Corp.
-     * Contrainte opérateur : max 11 caractères alphanumériques, pas d'espaces.
-     * Ex: "Tontine Solidarité" → "TontineSol"
-     */
-    private function formatSenderId(string $name): string
-    {
-        // Supprimer les accents
-        $clean = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $name);
-
-        // Supprimer tout caractère non alphanumérique
-        $clean = preg_replace('/[^A-Za-z0-9]/', '', $clean);
-
-        // Tronquer à 11 caractères
-        return substr($clean, 0, 11);
-    }
-
-    /**
-     * Options Guzzle/cURL pour contourner les problèmes SSL en dev local.
-     * Contrôlé via NGHCORP_VERIFY_SSL=false dans .env uniquement en local.
+     * Options Guzzle/cURL.
+     * NGHCORP_VERIFY_SSL=false uniquement en développement local sur Windows.
      */
     private function httpOptions(): array
     {
         if (app()->isLocal() && ! config('services.nghcorp.verify_ssl', true)) {
-            return ['verify' => false]; // DEV uniquement
+            return ['verify' => false];
         }
 
         $cacertPath = storage_path('app/cacert.pem');

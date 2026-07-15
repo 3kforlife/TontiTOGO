@@ -272,12 +272,18 @@ class _MemberDetailScreenState extends State<MemberDetailScreen> {
                     ),
                   ],
                 ),
-                trailing: ElevatedButton.icon(
-                  onPressed: () => context.push(
-                    '/contributions/add?memberId=${widget.memberId}&participationId=${participation.participantId}',
+                trailing: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: AppColors.primary100,
+                    shape: BoxShape.circle,
                   ),
-                  icon: const Icon(Icons.payment),
-                  label: const Text('Encaisser'),
+                  child: const Icon(
+                    Icons.savings,
+                    color: AppColors.primary,
+                    size: 20,
+                  ),
                 ),
               ),
             );
