@@ -1,35 +1,31 @@
-<script setup>import { ref, onMounted } from 'vue'
+<script setup>
+import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-import axios from 'axios'
 
 const route     = useRoute()
 const router    = useRouter()
 const authStore = useAuthStore()
-const status    = ref('loading') // loading | success | error
+const status    = ref('loading')
 const message   = ref('')
 
 async function verifyEmail(backendUrl) {
   try {
-    await axios.get(backendUrl)
+    // L'URL est celle du backend Render — appel direct avec Bearer token
+    const token = localStorage.getItem('token')
+    const { default: axios } = await import('axios')
+    await axios.get(backendUrl, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    })
 
-    // Si l'utilisateur est connecté, rafraîchir ses infos
-    if (authStore.isAuthenticated) {
-      await authStore.fetchMe()
-    }
+    // Rafraîchir le user → email_verified_at est maintenant rempli
+    await authStore.fetchMe()
 
     status.value  = 'success'
     message.value = 'Adresse e-mail vérifiée avec succès !'
-    
-    // Nettoyer le localStorage
     localStorage.removeItem('pendingEmailVerificationUrl')
 
-    // Rediriger vers le dashboard si connecté, sinon vers la connexion
-    if (authStore.isAuthenticated) {
-      setTimeout(() => router.replace({ name: 'dashboard' }), 2000)
-    } else {
-      setTimeout(() => router.replace({ name: 'login' }), 2000)
-    }
+    setTimeout(() => router.replace({ name: 'dashboard' }), 1500)
   } catch (err) {
     status.value  = 'error'
     message.value = err.response?.data?.message || 'Le lien est invalide ou a expiré.'
@@ -47,11 +43,11 @@ onMounted(async () => {
   if (authStore.isAuthenticated) {
     await verifyEmail(backendUrl)
   } else {
-    // Stocke l'URL pour la vérifier après la connexion
+    // Stocker l'URL pour après la connexion
     localStorage.setItem('pendingEmailVerificationUrl', backendUrl)
-    status.value = 'info'
-    message.value = 'Veuillez vous connecter pour vérifier votre adresse e-mail.'
-    setTimeout(() => router.replace({ name: 'login' }), 3000)
+    status.value  = 'info'
+    message.value = 'Veuillez vous connecter pour finaliser la vérification.'
+    setTimeout(() => router.replace({ name: 'login' }), 2500)
   }
 })
 </script>

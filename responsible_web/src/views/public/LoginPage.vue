@@ -20,6 +20,18 @@ async function submit() {
 
   try {
     await authStore.login(form)
+
+    // Rafraîchir le user depuis le serveur pour avoir email_verified_at à jour
+    await authStore.fetchMe()
+
+    // Si un lien de vérification email est en attente, l'exécuter
+    const pendingUrl = localStorage.getItem('pendingEmailVerificationUrl')
+    if (pendingUrl) {
+      localStorage.removeItem('pendingEmailVerificationUrl')
+      router.replace({ name: 'verify-email', query: { url: pendingUrl } })
+      return
+    }
+
     router.replace({ name: 'dashboard' })
   } catch (err) {
     if (err.response?.status === 422) {
