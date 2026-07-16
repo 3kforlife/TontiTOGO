@@ -98,7 +98,7 @@ class DashboardController extends ApiController
         )
             ->where('created_at', '>=', now()->subMonths(5)->startOfMonth())
             ->select(
-                DB::raw("DATE_FORMAT(created_at, '%Y-%m') as month"),
+                DB::raw("TO_CHAR(created_at, 'YYYY-MM') as month"),
                 DB::raw('SUM(amount) as total')
             )
             ->groupBy('month')
