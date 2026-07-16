@@ -33,11 +33,11 @@ class SmsController extends ApiController
         $query = SmsLog::forOrganization($orgId)->orderByDesc('created_at');
 
         if ($status = $request->query('status')) {
-            $query->where('status', SmsStatus::from($status));
+            $query->where('status', SmsStatus::from($status)->value);
         }
 
         if ($type = $request->query('type')) {
-            $query->where('type', SmsType::from($type));
+            $query->where('type', SmsType::from($type)->value);
         }
 
         $logs = $query->paginate(6);

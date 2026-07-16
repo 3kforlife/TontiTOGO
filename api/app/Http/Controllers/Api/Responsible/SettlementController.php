@@ -47,7 +47,7 @@ class SettlementController extends ApiController
         }
 
         if ($status = $request->query('status')) {
-            $query->where('status', SettlementStatus::from($status));
+            $query->where('status', SettlementStatus::from($status)->value);
         }
 
         $settlements = $query->paginate(6);

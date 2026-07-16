@@ -54,12 +54,12 @@ class DailySettlement extends Model
 
     public function scopeValidated(Builder $query): Builder
     {
-        return $query->where('status', SettlementStatus::Validated);
+        return $query->where('status', SettlementStatus::Validated->value);
     }
 
     public function scopeWithDiscrepancy(Builder $query): Builder
     {
-        return $query->where('status', SettlementStatus::Discrepancy);
+        return $query->where('status', SettlementStatus::Discrepancy->value);
     }
 
     public function scopeForAgent(Builder $query, int $agentId): Builder

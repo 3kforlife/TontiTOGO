@@ -52,12 +52,12 @@ class TontineParticipant extends Model
 
     public function scopeActive(Builder $query): Builder
     {
-        return $query->where('status', ParticipantStatus::Active);
+        return $query->where('status', ParticipantStatus::Active->value);
     }
 
     public function scopeCancelled(Builder $query): Builder
     {
-        return $query->where('status', ParticipantStatus::Cancelled);
+        return $query->where('status', ParticipantStatus::Cancelled->value);
     }
 
     // Helpers

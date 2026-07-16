@@ -43,7 +43,7 @@ class ContributionController extends ApiController
             ->orderByDesc('created_at');
 
         if ($status = $request->query('settlement_status')) {
-            $query->where('settlement_status', ContributionSettlementStatus::from($status));
+            $query->where('settlement_status', ContributionSettlementStatus::from($status)->value);
         }
 
         if ($date = $request->query('date')) {

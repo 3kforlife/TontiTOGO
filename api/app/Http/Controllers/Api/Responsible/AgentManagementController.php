@@ -113,7 +113,7 @@ class AgentManagementController extends ApiController
         $agent = $this->findAgent($request, $id);
         return DB::transaction(function () use ($request, $agent) {
             $data = $request->only(['firstname', 'lastname', 'email', 'phone']);
-            if ($request->filled('status')) $data['status'] = UserStatus::from($request->status);
+            if ($request->filled('status')) $data['status'] = UserStatus::from($request->status)->value;
             if ($request->hasFile('avatar')) {
                 if ($agent->avatar_url) $this->cloudinary->delete($this->cloudinary->extractPublicId($agent->avatar_url));
                 $data['avatar_url'] = $this->cloudinary->upload($request->file('avatar'), 'tontitogo/agents');

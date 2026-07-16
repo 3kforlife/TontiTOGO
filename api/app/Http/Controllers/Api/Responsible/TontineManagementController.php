@@ -37,7 +37,7 @@ class TontineManagementController extends ApiController
             ->withCount(['participants', 'activeParticipants']);
 
         if ($status = $request->query('status')) {
-            $query->where('status', TontineStatus::from($status));
+            $query->where('status', \App\Enums\TontineStatus::from($status)->value);
         }
 
         if ($search = $request->query('search')) {

@@ -48,12 +48,12 @@ class Contribution extends Model
 
     public function scopePending(Builder $query): Builder
     {
-        return $query->where('settlement_status', ContributionSettlementStatus::Pending);
+        return $query->where('settlement_status', ContributionSettlementStatus::Pending->value);
     }
 
     public function scopeSettled(Builder $query): Builder
     {
-        return $query->where('settlement_status', ContributionSettlementStatus::Settled);
+        return $query->where('settlement_status', ContributionSettlementStatus::Settled->value);
     }
 
     public function scopeCollectedToday(Builder $query): Builder

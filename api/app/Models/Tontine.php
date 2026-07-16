@@ -52,7 +52,7 @@ class Tontine extends Model
     public function activeParticipants(): HasMany
     {
         return $this->hasMany(TontineParticipant::class)
-            ->where('status', \App\Enums\ParticipantStatus::Active);
+            ->where('status', \App\Enums\ParticipantStatus::Active->value);
     }
 
     public function contributions(): HasManyThrough
@@ -64,12 +64,12 @@ class Tontine extends Model
 
     public function scopeActive(Builder $query): Builder
     {
-        return $query->where('status', TontineStatus::Active);
+        return $query->where('status', TontineStatus::Active->value);
     }
 
     public function scopeClosed(Builder $query): Builder
     {
-        return $query->where('status', TontineStatus::Closed);
+        return $query->where('status', TontineStatus::Closed->value);
     }
 
     public function scopeForOrganization(Builder $query, int $organizationId): Builder

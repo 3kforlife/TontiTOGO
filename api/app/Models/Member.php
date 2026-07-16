@@ -58,12 +58,12 @@ class Member extends Model
 
     public function scopeActive(Builder $query): Builder
     {
-        return $query->where('status', MemberStatus::Active);
+        return $query->where('status', MemberStatus::Active->value);
     }
 
     public function scopeSuspended(Builder $query): Builder
     {
-        return $query->where('status', MemberStatus::Suspended);
+        return $query->where('status', MemberStatus::Suspended->value);
     }
 
     public function scopeForOrganization(Builder $query, int $organizationId): Builder

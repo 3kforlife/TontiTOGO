@@ -42,22 +42,22 @@ class SmsLog extends Model
 
     public function scopeSent(Builder $query): Builder
     {
-        return $query->where('status', SmsStatus::Sent);
+        return $query->where('status', SmsStatus::Sent->value);
     }
 
     public function scopeFailed(Builder $query): Builder
     {
-        return $query->where('status', SmsStatus::Failed);
+        return $query->where('status', SmsStatus::Failed->value);
     }
 
     public function scopeConfirmations(Builder $query): Builder
     {
-        return $query->where('type', SmsType::Confirmation);
+        return $query->where('type', SmsType::Confirmation->value);
     }
 
     public function scopeReminders(Builder $query): Builder
     {
-        return $query->where('type', SmsType::Reminder);
+        return $query->where('type', SmsType::Reminder->value);
     }
 
     public function scopeForOrganization(Builder $query, int $organizationId): Builder

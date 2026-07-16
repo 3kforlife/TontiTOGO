@@ -34,7 +34,10 @@ class MapController extends ApiController
             ->orderByDesc('created_at');
 
         if ($date = $request->query('date')) {
-            $query->filterByPeriod($date);
+            // Ignorer les dates vides ou invalides
+            if ($date && \Carbon\Carbon::hasFormat($date, 'Y-m-d')) {
+                $query->filterByPeriod($date);
+            }
         }
 
         if ($agentId = $request->query('agent_id')) {

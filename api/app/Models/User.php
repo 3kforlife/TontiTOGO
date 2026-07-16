@@ -81,22 +81,22 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function scopeAgents(Builder $query): Builder
     {
-        return $query->where('role', UserRole::Agent);
+        return $query->where('role', UserRole::Agent->value);
     }
 
     public function scopeResponsibles(Builder $query): Builder
     {
-        return $query->where('role', UserRole::Responsible);
+        return $query->where('role', UserRole::Responsible->value);
     }
 
     public function scopeActive(Builder $query): Builder
     {
-        return $query->where('status', UserStatus::Active);
+        return $query->where('status', UserStatus::Active->value);
     }
 
     public function scopeSuspended(Builder $query): Builder
     {
-        return $query->where('status', UserStatus::Suspended);
+        return $query->where('status', UserStatus::Suspended->value);
     }
 
     public function scopeForOrganization(Builder $query, int $organizationId): Builder
