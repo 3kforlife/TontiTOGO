@@ -182,7 +182,7 @@ class NghCorpService
     ): bool {
         $formattedAmount = number_format($amount, 0, ',', ' ');
         $message = "{$organizationName} : Bonjour {$memberName}, votre cotisation"
-                 . " de {$formattedAmount} FCFA pour aujourd'hui a bien ete enregistree."
+                 . " de {$formattedAmount} FCFA pour aujourd'hui a bien été enregistrée."
                  . " Ref: {$reference}.";
 
         return $this->send($phone, $message);
