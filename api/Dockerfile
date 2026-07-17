@@ -55,13 +55,10 @@ COPY . .
 RUN composer dump-autoload --optimize --no-dev
 
 # Copier les assets Swagger UI dans public/ manuellement
-# (vendor:publish avec le tag l5-swagger-assets n'est pas disponible dans cette version)
 RUN mkdir -p public/docs/asset && \
-    cp vendor/swagger-api/swagger-ui/dist/swagger-ui.css public/docs/asset/ && \
-    cp vendor/swagger-api/swagger-ui/dist/swagger-ui-bundle.js public/docs/asset/ && \
-    cp vendor/swagger-api/swagger-ui/dist/swagger-ui-standalone-preset.js public/docs/asset/ && \
-    cp vendor/swagger-api/swagger-ui/dist/favicon-16x16.png public/docs/asset/ && \
-    cp vendor/swagger-api/swagger-ui/dist/favicon-32x32.png public/docs/asset/ 2>/dev/null || true
+    for f in swagger-ui.css swagger-ui-bundle.js swagger-ui-standalone-preset.js favicon-16x16.png favicon-32x32.png; do \
+        [ -f "vendor/swagger-api/swagger-ui/dist/$f" ] && cp "vendor/swagger-api/swagger-ui/dist/$f" "public/docs/asset/" || true; \
+    done
 
 # Permissions sur le dossier storage et bootstrap/cache
 RUN mkdir -p storage/logs \

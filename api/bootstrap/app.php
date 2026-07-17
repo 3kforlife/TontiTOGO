@@ -15,6 +15,10 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
+    ->withSchedule(function (\Illuminate\Console\Scheduling\Schedule $schedule) {
+        // Vérifier chaque minute si des organisations ont l'heure de rappel configurée
+        $schedule->command('reminders:send')->everyMinute();
+    })
     ->withMiddleware(function (Middleware $middleware): void {
         // Render est derrière un reverse proxy — on fait confiance à tous les proxies
         // pour que HTTPS soit correctement détecté et que APP_URL soit bien https://

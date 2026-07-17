@@ -22,8 +22,8 @@ php artisan view:clear
 
 # 3. Optimiser pour la production
 php artisan config:cache
-php artisan route:cache
-php artisan view:cache
+php artisan route:cache  || echo "⚠️  route:cache ignoré (closures détectées)"
+php artisan view:cache   || echo "⚠️  view:cache ignoré"
 
 # 4. Vérifier APP_KEY
 if [ -z "$APP_KEY" ]; then
