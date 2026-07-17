@@ -171,6 +171,7 @@ onMounted(() => store.fetchAll())
             <th class="px-4 py-3 text-center font-medium hidden lg:table-cell">Genre</th>
             <th class="px-4 py-3 text-center font-medium">Statut</th>
             <th class="px-4 py-3 text-left font-medium hidden lg:table-cell">Inscription</th>
+            <th class="px-4 py-3 text-left font-medium hidden xl:table-cell">Créé par</th>
             <th class="px-4 py-3 text-right font-medium">Actions</th>
           </tr>
         </thead>
@@ -195,6 +196,9 @@ onMounted(() => store.fetchAll())
               </button>
             </td>
             <td class="px-4 py-3 text-gray-400 text-xs hidden lg:table-cell">{{ formatDate(member.created_at) }}</td>
+            <td class="px-4 py-3 text-gray-500 text-sm hidden xl:table-cell">
+              {{ member.created_by_agent || 'Responsable' }}
+            </td>
             <td class="px-4 py-3">
               <div class="flex items-center justify-end gap-1">
                 <button class="p-1.5 rounded-lg cursor-pointer hover:bg-gray-100 text-gray-400 hover:text-gray-700" title="Détails" @click="openDetail(member)">

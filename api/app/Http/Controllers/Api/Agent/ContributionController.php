@@ -117,14 +117,34 @@ class ContributionController extends ApiController
             );
         }
 
-        $today = now()->toDateString();
-        $existingContribution = Contribution::where('tontine_participant_id', $participant->id)
-            ->whereDate('created_at', $today)
-            ->first();
+        // Vérifier qu'une cotisation n'existe pas déjà pour la période en cours
+        // selon la fréquence de la tontine
+        $frequency = $participant->tontine->frequency->value ?? $participant->tontine->frequency;
 
-        if ($existingContribution) {
+        $existingQuery = Contribution::where('tontine_participant_id', $participant->id);
+
+        $alreadyPaid = match ($frequency) {
+            'daily'   => $existingQuery->whereDate('created_at', today())->exists(),
+            'weekly'  => $existingQuery->whereBetween('created_at', [
+                            now()->startOfWeek(),
+                            now()->endOfWeek(),
+                        ])->exists(),
+            'monthly' => $existingQuery
+                            ->whereYear('created_at', now()->year)
+                            ->whereMonth('created_at', now()->month)
+                            ->exists(),
+            default   => false,
+        };
+
+        if ($alreadyPaid) {
+            $periodLabel = match ($frequency) {
+                'daily'   => "aujourd'hui",
+                'weekly'  => 'cette semaine',
+                'monthly' => 'ce mois',
+                default   => 'pour cette période',
+            };
             return $this->error(
-                'Une cotisation a déjà été enregistrée pour ce membre aujourd\'hui. Une seule cotisation par jour est autorisée.',
+                "Une cotisation a déjà été enregistrée pour ce membre {$periodLabel}.",
                 422
             );
         }

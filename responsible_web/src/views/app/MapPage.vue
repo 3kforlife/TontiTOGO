@@ -56,7 +56,8 @@ function formatAmount(v) {
 
 function formatDate(d) {
   if (!d) return '—'
-  return new Date(d).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' })
+  // La date vient déjà formatée depuis Laravel (d/m/Y H:i)
+  return d
 }
 
 onMounted(async () => {

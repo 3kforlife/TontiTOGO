@@ -39,10 +39,10 @@ class SendReminderSmsJob implements ShouldQueue
 
         $orgName = $organization->name;
 
-        $participants = TontineParticipant::where('status', 'active')
+        $participants = TontineParticipant::where('status', \App\Enums\ParticipantStatus::Active->value)
             ->whereHas('tontine', fn($q) =>
                 $q->where('organization_id', $this->organizationId)
-                  ->where('status', 'active')
+                  ->where('status', \App\Enums\TontineStatus::Active->value)
             )
             ->with(['member:id,firstname,lastname,phone,status', 'tontine:id,name,frequency'])
             ->get();
@@ -53,7 +53,7 @@ class SendReminderSmsJob implements ShouldQueue
 
         $tontineName = $tontine?->name;
         foreach ($participants as $participant) {
-            if (! $participant->member || $participant->member->status !== 'active') {
+            if (! $participant->member || $participant->member->status?->value !== 'active') {
                 continue;
             }
 
@@ -118,7 +118,10 @@ class SendReminderSmsJob implements ShouldQueue
     {
         $frequency = $participant->tontine->frequency;
 
-        $hasContribution = match ($frequency) {
+        // Extraire la valeur string si c'est un Enum (PostgreSQL)
+        $freqValue = is_object($frequency) ? $frequency->value : $frequency;
+
+        $hasContribution = match ($freqValue) {
             'daily'   => $participant->contributions()
                             ->whereDate('created_at', today())
                             ->exists(),
