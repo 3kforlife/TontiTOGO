@@ -35,9 +35,9 @@ fi
 echo "==> Migrations Supabase..."
 php artisan migrate --force
 
-# 6. Générer la documentation Swagger (une seule fois au démarrage)
-echo "==> Génération Swagger..."
-php artisan l5-swagger:generate 2>/dev/null || echo "Swagger: skip (pas d'annotations ou erreur)"
+# 6. Lancer le scheduler Laravel en arrière-plan (toutes les minutes)
+echo "==> Démarrage du Scheduler Laravel..."
+(while true; do php artisan schedule:run --no-ansi >> /dev/null 2>&1; sleep 60; done) &
 
 # 7. Démarrer Nginx + PHP-FPM
 echo "==> Démarrage Nginx + PHP-FPM"

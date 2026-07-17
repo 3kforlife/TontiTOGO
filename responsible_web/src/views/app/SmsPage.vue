@@ -64,11 +64,6 @@ onMounted(() => store.fetchAll())
         <h1 class="text-xl font-bold text-gray-900">SMS</h1>
         <p class="text-sm text-gray-400 mt-0.5">Journal des messages envoyés</p>
       </div>
-      <button class="btn-primary flex items-center gap-2 cursor-pointer" :disabled="store.sending" @click="handleSendReminders">
-        <svg v-if="!store.sending" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-        <svg v-else class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-dasharray="56" stroke-dashoffset="14"/></svg>
-        {{ store.sending ? 'Envoi en cours...' : 'Envoyer rappels maintenant' }}
-      </button>
     </div>
 
     <!-- Stats -->

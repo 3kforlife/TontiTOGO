@@ -107,7 +107,7 @@ onMounted(async () => {
         <div>
           <label class="form-label">Heure d'envoi des rappels <span class="text-red-500">*</span></label>
           <input v-model="form.sms_reminder_time" type="time" class="form-input w-36" />
-          <p class="text-xs text-gray-400 mt-1">Les rappels seront envoyés chaque jour à cette heure.</p>
+          <p class="text-xs text-gray-400 mt-1">Les rappels seront envoyés à cette heure.</p>
         </div>
       </div>
 
