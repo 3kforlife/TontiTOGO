@@ -121,12 +121,16 @@
 
 <script src="{{ l5_swagger_asset($documentation, 'swagger-ui-bundle.js') }}"></script>
 <script src="{{ l5_swagger_asset($documentation, 'swagger-ui-standalone-preset.js') }}"></script>
-<script>
+<Script>
     window.onload = function() {
         const urls = [];
 
         @foreach($urlsToDocs as $title => $url)
-            urls.push({name: "{{ $title }}", url: "{{ $url }}"});
+            // Forcer HTTPS et corriger le chemin pour Render
+            let fixedUrl = "{{ $url }}";
+            fixedUrl = fixedUrl.replace(/http:\/\//g, 'https://');
+            fixedUrl = fixedUrl.replace(/\/docs\?/g, '/docs/');
+            urls.push({name: "{{ $title }}", url: fixedUrl});
         @endforeach
 
         // Build a system
