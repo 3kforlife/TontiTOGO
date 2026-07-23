@@ -14,7 +14,17 @@ return [
                  * URL d'accès à l'interface Swagger UI
                  */
                 'api' => 'api/documentation',
+                
+                /*
+                 * URL pour le fichier JSON de la documentation
+                 */
+                'docs' => 'docs',
             ],
+            
+            /*
+             * URL de base pour l'API (force HTTPS)
+             */
+            'url' => env('L5_SWAGGER_URL', 'https://tontitogo.onrender.com'),
 
             'paths' => [
                 'use_absolute_path' => env('L5_SWAGGER_USE_ABSOLUTE_PATH', true),
