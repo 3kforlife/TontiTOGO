@@ -18,7 +18,7 @@ return [
                 /*
                  * URL pour le fichier JSON de la documentation
                  */
-                'docs' => 'docs',
+                'docs' => 'api-docs',
             ],
             
             /*
