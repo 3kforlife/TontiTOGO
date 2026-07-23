@@ -31,6 +31,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->api(prepend: [
             // EnsureFrontendRequestsAreStateful retiré — API pure Bearer token
+            \App\Http\Middleware\ForceHttpsForSwagger::class,
         ]);
 
         $middleware->alias([
