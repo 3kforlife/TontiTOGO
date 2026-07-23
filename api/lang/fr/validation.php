@@ -232,7 +232,7 @@ return [
             'in'       => 'Le genre doit être M (Masculin) ou F (Féminin).',
         ],
         'address' => [
-            'min'   => 'L\'adresse doit contenir au moins 5 caractères.',
+            'min'   => 'L\'adresse doit contenir au moins 3 caractères.',
             'max'   => 'L\'adresse ne doit pas dépasser 150 caractères.',
             'regex' => 'L\'adresse ne peut contenir que des lettres, chiffres, espaces, tirets, virgules et points (ex: Quartier Adidogomé, Rue 145).',
         ],

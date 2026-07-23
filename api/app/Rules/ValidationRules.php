@@ -40,7 +40,7 @@ class ValidationRules
         return [
             $nullable ? 'nullable' : 'required',
             'string',
-            'min:5',
+            'min:4',
             'max:150',
             'regex:' . self::REGEX_ADDRESS,
         ];

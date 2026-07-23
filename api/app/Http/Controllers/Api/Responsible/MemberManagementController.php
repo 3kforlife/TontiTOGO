@@ -33,7 +33,7 @@ class MemberManagementController extends ApiController
             ->with('createdByAgent:id,firstname,lastname');
         if ($search = $request->query('search')) $query->search($search);
         if ($status = $request->query('status'))  $query->where('status', MemberStatus::from($status)->value);
-        $members = $query->orderByDesc('created_at')->paginate(6);
+        $members = $query->orderByDesc('created_at')->paginate(4);
         return $this->success([
             'data' => MemberResource::collection($members->items()),
             'total' => $members->total(), 'per_page' => $members->perPage(),

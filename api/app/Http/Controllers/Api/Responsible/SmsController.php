@@ -40,7 +40,7 @@ class SmsController extends ApiController
             $query->where('type', SmsType::from($type)->value);
         }
 
-        $logs = $query->paginate(6);
+        $logs = $query->paginate(4);
 
         return $this->success([
             'data'         => SmsLogResource::collection($logs->items()),

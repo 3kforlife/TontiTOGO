@@ -16,11 +16,11 @@ class VerifyEmailNotification extends VerifyEmail
         $verificationUrl = $this->buildFrontendVerificationUrl($notifiable);
 
         return (new MailMessage())
-            ->subject('TontiTOGO — Vérifiez votre adresse e-mail')
+            ->subject('TontiTOGO — Vérifiez votre adresse email')
             ->greeting("Bonjour {$notifiable->full_name},")
             ->line('Merci de vous être inscrit sur **TontiTOGO**.')
-            ->line('Veuillez cliquer sur le bouton ci-dessous pour confirmer votre adresse e-mail et activer votre compte.')
-            ->action('Vérifier mon adresse e-mail', $verificationUrl)
+            ->line('Veuillez cliquer sur le bouton ci-dessous pour confirmer votre adresse email et activer votre compte.')
+            ->action('Vérifier mon adresse email', $verificationUrl)
             ->line('Ce lien de vérification expirera dans **' . (Config::get('auth.verification.expire', 60)) . ' minutes**.')
             ->line('Si vous n\'avez pas créé de compte sur TontiTOGO, aucune action n\'est requise de votre part.')
             ->salutation('Cordialement, L\'équipe TontiTOGO');

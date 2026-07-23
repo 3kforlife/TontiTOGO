@@ -44,7 +44,7 @@ class TontineManagementController extends ApiController
             $query->where('name', 'like', "%{$search}%");
         }
 
-        $tontines = $query->orderByDesc('created_at')->paginate(6);
+        $tontines = $query->orderByDesc('created_at')->paginate(4);
 
         return $this->success([
             'data'         => TontineResource::collection($tontines->items()),

@@ -60,7 +60,7 @@ class ContributionController extends ApiController
             );
         }
 
-        $contributions = $query->paginate(6);
+        $contributions = $query->paginate(4);
 
         return $this->success([
             'data'         => ContributionResource::collection($contributions->items()),

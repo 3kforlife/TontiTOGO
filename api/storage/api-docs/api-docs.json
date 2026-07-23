@@ -11,8 +11,8 @@
     },
     "servers": [
         {
-            "url": "http://127.0.0.1:8000",
-            "description": "Serveur local de développement"
+            "url": "https://tontitogo.onrender.com",
+            "description": "Serveur de production"
         }
     ],
     "paths": {
